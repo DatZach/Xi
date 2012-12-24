@@ -250,22 +250,24 @@ namespace Xi.Vm
 						break;
 
 					case Opcode.Return:
-					{
-						// If there are no more calls in the stack then we must be at the end of our spawn method
-						if (state.CallStack.Count == 0)
-							return;
+						{
+							// If there are no more calls in the stack then we must be at the end of our spawn method
+							if (state.CallStack.Count == 0)
+								return;
 
-						state.CurrentCall = state.CallStack.Pop();
-						stream = state.CurrentMethod.Instructions;
-						state.Stack.PopScope();
-						
-						continue;
-					}
+							state.CurrentCall = state.CallStack.Pop();
+							stream = state.CurrentMethod.Instructions;
+							state.Stack.PopScope();
+
+							continue;
+						}
 
 					case Opcode.ClassSetFieldStatic:
+						Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue] = state.Stack.Pop();
 						break;
 
 					case Opcode.ClassGetFieldStatic:
+						state.Stack.Push(Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue]);
 						break;
 
 					case Opcode.ClassSetField:
@@ -298,7 +300,7 @@ namespace Xi.Vm
 														state.InstructionPointer + 1));
 
 							// Set state's call info to the new call & grab all requested arguments
-							state.CurrentCall =  new CallInfo(classHandle, (int)instruction.Operand.IntValue, 0);
+							state.CurrentCall = new CallInfo(classHandle, (int)instruction.Operand.IntValue, 0);
 							Stack<Variant> arguments = new Stack<Variant>();
 							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
 								arguments.Push(state.Stack.Pop());
@@ -317,7 +319,38 @@ namespace Xi.Vm
 						}
 
 					case Opcode.ClassCallStatic:
-						break;
+						{
+							/*
+							 * Probably should clean this up... a lot
+							 * Also variable argument lists aren't supported with this method
+							 */
+
+							// Grab class to call from stack
+							Class classHandle = Classes[(int)instruction.Operands[0].IntValue];
+
+							// Push reentrant info onto call stack
+							state.CallStack.Push(new CallInfo(state.CurrentClass,
+														state.CurrentClass.GetMethodIndex(state.CurrentMethod.Name),
+														state.InstructionPointer + 1));
+
+							// Set state's call info to the new call & grab all requested arguments
+							state.CurrentCall = new CallInfo(classHandle, (int)instruction.Operand.IntValue, 0);
+							Stack<Variant> arguments = new Stack<Variant>();
+							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
+								arguments.Push(state.Stack.Pop());
+
+							// Change stream to current method's instruction stream
+							stream = state.CurrentMethod.Instructions;
+
+							// Push stack scope
+							state.Stack.PushScope(state.CurrentMethod.VariableCount + state.CurrentMethod.ArgumentCount);
+
+							// Pop arguments from transition stack into local arguments
+							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
+								state.Stack[i] = arguments.Pop();
+
+							continue;
+						}
 
 					case Opcode.ClassCallVirtual:
 						break;
