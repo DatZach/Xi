@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -178,7 +179,7 @@ namespace Xi.Util
 				case Variant.VariantType.Int64:
 					{
 						long iValue;
-						if (!Int64.TryParse(value, out iValue))
+						if (!Int64.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out iValue))
 							throw new Exception(String.Format("Cannot parse operand \"{0}\"!", value));
 
 						return new Variant(iValue);
@@ -187,7 +188,7 @@ namespace Xi.Util
 				case Variant.VariantType.Double:
 					{
 						double dValue;
-						if (!Double.TryParse(value, out dValue))
+						if (!Double.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out dValue))
 							throw new Exception(String.Format("Cannot parse operand \"{0}\"!", value));
 
 						return new Variant(dValue);

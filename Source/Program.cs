@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using Xi.Util;
 using Xi.Vm;
@@ -7,23 +8,39 @@ namespace Xi
 {
 	class Program
 	{
-		// xi [function] <script> [command line arguments]
 		public static void Main(string[] args)
 		{
+			State state;
 			List<Class> program;
+			VirtualMachine virtualMachine = new VirtualMachine();
 
-			if (args.Length == 0)
+			if (args.Length == 1 && args[0] == "--help")
 			{
-				// Operate in live scripting mode
-				string line, text = "";
+				Console.WriteLine("Usage: Xi [filename] [entrypoint]");
+				return;
+			}
 
-				while ((line = Console.ReadLine()) != "")
-					text += line + "\n";
-
-				program = Assembler.AssembleString(text);
+			if (args.Length != 0)
+			{
+				program = Assembler.AssembleFile(args[0]);
 			}
 			else
-				program = Assembler.AssembleFile(args[args.Length == 1 ? 0 : 1]);
+			{
+				StringBuilder text = new StringBuilder();
+
+				while (true)
+				{
+					string line = Console.ReadLine();
+					if (line == "")
+					{
+						break;
+					}
+
+					text.AppendLine(line);
+				}
+
+				program = Assembler.AssembleString(text.ToString());
+			}
 
 			if (program == null)
 			{
@@ -31,12 +48,18 @@ namespace Xi
 				return;
 			}
 
-			VirtualMachine vm = new VirtualMachine();
-			vm.Classes.AddRange(program);
+			virtualMachine.Classes.AddRange(program);
 
-			State state = args.Length == 2 ? vm.CreateState("Global", args[0]) : vm.CreateState(0, 0);
+			if (args.Length > 1)
+			{
+				state = virtualMachine.CreateState("Global", args[1]);
+			}
+			else
+			{
+				state = virtualMachine.CreateState(0, 0);
+			}
 
-			vm.Execute(state);
+			virtualMachine.Execute(state);
 		}
 	}
 }
