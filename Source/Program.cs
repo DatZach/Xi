@@ -51,15 +51,15 @@ namespace Xi
 
 			State state = args.Length > 1 ? virtualMachine.CreateState("Global", args[1]) : virtualMachine.CreateState(0, 0);
 
-			//try
-			//{
+			try
+			{
 				virtualMachine.Execute(state);
-			//}
-			//catch (Exception e)
-			//{
+			}
+			catch (Exception e)
+			{
 				// Add a stack trace in here eventually
-			//	Console.WriteLine("[Traceback] {0}", e.Message);
-			//}
+				Console.WriteLine("[Traceback] {0}", e.Message);
+			}
 
 			Console.ReadKey();
 		}

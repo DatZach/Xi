@@ -181,17 +181,17 @@ namespace Xi.Util
 
 		private static Variant ReadOperand()
 		{
-			Variant.VariantType type = Variant.VariantType.Int64;
+			VariantType type = VariantType.Int64;
 			string value = ReadWord();
 
 			if (value.First() == '\"' && value.Last() == '\"')
-				type = Variant.VariantType.String;
+				type = VariantType.String;
 			else if (value.IndexOf('.') != -1)
-				type = Variant.VariantType.Double;
+				type = VariantType.Double;
 
 			switch (type)
 			{
-				case Variant.VariantType.Int64:
+				case VariantType.Int64:
 					{
 						long iValue;
 						if (!Int64.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out iValue))
@@ -200,7 +200,7 @@ namespace Xi.Util
 						return new Variant(iValue);
 					}
 
-				case Variant.VariantType.Double:
+				case VariantType.Double:
 					{
 						double dValue;
 						if (!Double.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out dValue))
@@ -209,7 +209,7 @@ namespace Xi.Util
 						return new Variant(dValue);
 					}
 
-				case Variant.VariantType.String:
+				case VariantType.String:
 					return new Variant(value.Trim(new[] { '\"' }));
 			}
 

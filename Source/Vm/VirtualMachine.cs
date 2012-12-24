@@ -77,7 +77,7 @@ namespace Xi.Vm
 						break;
 
 					case Opcode.GetBaseOf:
-						state.Stack.Push(new Variant(((Class)state.Stack.Pop().ObjectValue).Base));
+						state.Stack.Push(new Variant((state.Stack.Pop().ObjectValue).Base));
 						break;
 
 					case Opcode.Add:
@@ -189,7 +189,7 @@ namespace Xi.Vm
 
 					case Opcode.IncrementField:
 						{
-							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+							Class classHandle = state.Stack.Pop().ObjectValue;
 							classHandle.Fields[(int)instruction.Operands[0].IntValue] += instruction.Operands[1];
 							break;
 						}
@@ -272,14 +272,14 @@ namespace Xi.Vm
 
 					case Opcode.ClassSetField:
 						{
-							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+							Class classHandle = state.Stack.Pop().ObjectValue;
 							classHandle.Fields[(int)instruction.Operand.IntValue] = state.Stack.Pop();
 							break;
 						}
 
 					case Opcode.ClassGetField:
 						{
-							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+							Class classHandle = state.Stack.Pop().ObjectValue;
 							state.Stack.Push(classHandle.Fields[(int)instruction.Operand.IntValue]);
 							break;
 						}
@@ -292,7 +292,7 @@ namespace Xi.Vm
 							 */
 
 							// Grab class to call from stack
-							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+							Class classHandle = state.Stack.Pop().ObjectValue;
 
 							// Push reentrant info onto call stack
 							state.CallStack.Push(new CallInfo(state.CurrentClass,
@@ -353,6 +353,7 @@ namespace Xi.Vm
 						}
 
 					case Opcode.ClassCallVirtual:
+						// Is this even needed? We're not Java
 						break;
 
 					case Opcode.New:
@@ -360,6 +361,7 @@ namespace Xi.Vm
 						break;
 
 					case Opcode.CastVariant:
+						state.Stack.Push(state.Stack.Pop().Cast((VariantType)instruction.Operand.IntValue));
 						break;
 
 					case Opcode.SetGlobalVariable:
@@ -395,7 +397,6 @@ namespace Xi.Vm
 
 					case Opcode.Breakpoint:
 						// Primitive breakpoint
-						Console.WriteLine("Breakpoint!");
 						System.Diagnostics.Debugger.Break();
 						break;
 
@@ -419,11 +420,7 @@ namespace Xi.Vm
 			if (methodIndex == -1)
 				return null;
 
-			State state = new State();
-			state.CurrentCall = new CallInfo(classHandle, methodIndex, 0);
-			//state.CallStack.Push(new CallInfo(classHandle, methodIndex, 0));
-
-			return state;
+			return new State { CurrentCall = new CallInfo(classHandle, methodIndex, 0) };
 		}
 
 		public State CreateState(int classIndex, int methodIndex)
@@ -432,11 +429,7 @@ namespace Xi.Vm
 			if (classHandle == null)
 				return null;
 
-			State state = new State();
-			state.CurrentCall = new CallInfo(classHandle, methodIndex, 0);
-			//state.CallStack.Push(new CallInfo(classHandle, methodIndex, 0));
-
-			return state;
+			return new State { CurrentCall = new CallInfo(classHandle, methodIndex, 0) };
 		}
 
 		private Class GetClass(string name)

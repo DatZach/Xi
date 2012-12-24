@@ -1,26 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Xi.Vm
 {
 	class Variant
 	{
-		public enum VariantType
-		{
-			Int64,
-			Double,
-			String,
-			Object,
-			Array,
-			Nill
-		}
-
 		public VariantType Type { get; private set; }
 		public Int64 IntValue;
 		public double DoubleValue;
 		public string StringValue;
-		public object ObjectValue;
+		public Class ObjectValue;
 		public List<Variant> ArrayValue;
 
 		public Variant()
@@ -46,7 +37,7 @@ namespace Xi.Vm
 			StringValue = value;
 		}
 
-		public Variant(object value)
+		public Variant(Class value)
 		{
 			Type = VariantType.Object;
 			ObjectValue = value;
@@ -75,7 +66,22 @@ namespace Xi.Vm
 					return "object";
 
 				case VariantType.Array:
-					return "array";
+					{
+						StringBuilder builder = new StringBuilder();
+						builder.Append("[ ");
+
+						for (int i = 0; i < ArrayValue.Count; ++i)
+						{
+							builder.Append(ArrayValue[i]);
+
+							if (i + 1 != ArrayValue.Count)
+								builder.Append(", ");
+						}
+
+						builder.Append(" ]");
+
+						return builder.ToString();
+					}
 			}
 
 			return "nill";
@@ -88,7 +94,67 @@ namespace Xi.Vm
 
 		public override int GetHashCode()
 		{
-			return (int)DateTime.Now.Ticks;
+			int hashCode = 0x7FFFFFFF;
+
+			switch (Type)
+			{
+				case VariantType.Int64:
+					hashCode = (int)IntValue;
+					break;
+
+				case VariantType.Double:
+					hashCode = (int)DoubleValue;
+					break;
+
+				case VariantType.String:
+					hashCode = StringValue.GetHashCode();
+					break;
+
+				case VariantType.Array:
+					hashCode = ArrayValue.GetHashCode();
+					break;
+
+				case VariantType.Object:
+					hashCode = ObjectValue.GetHashCode();
+					break;
+			}
+
+			return hashCode ^ ((int)Type << 8) ^ ((int)Type << 6) ^ ((int)Type << 4) ^ ((int)Type << 2);
+		}
+
+		public Variant Cast(VariantType type)
+		{
+			switch (Type)
+			{
+				case VariantType.Int64:
+					if (type == VariantType.String)
+						return new Variant(ToString());
+
+					if (type == VariantType.Double)
+						return new Variant((double)IntValue);
+
+					break;
+
+				case VariantType.Double:
+					if (type == VariantType.String)
+						return new Variant(ToString());
+
+					if (type == VariantType.Int64)
+						return new Variant((Int64)DoubleValue);
+
+					break;
+
+				case VariantType.String:
+					if (type == VariantType.Int64)
+						return new Variant(Int64.Parse(StringValue, NumberStyles.Number, CultureInfo.InvariantCulture));
+
+					if (type == VariantType.Double)
+						return new Variant(Double.Parse(StringValue, NumberStyles.Number, CultureInfo.InvariantCulture));
+
+					break;
+			}
+
+			throw new Exception(String.Format("Cannot cast type \"{0}\" to type \"{1}\"!", Type, type));
 		}
 
 		public static Variant operator +(Variant a, Variant b)
@@ -293,5 +359,15 @@ namespace Xi.Vm
 
 			return 1;
 		}
+	}
+
+	public enum VariantType
+	{
+		Int64,
+		Double,
+		String,
+		Object,
+		Array,
+		Nill
 	}
 }
