@@ -285,10 +285,31 @@ namespace Xi.Vm
 						break;
 
 					case Opcode.SetGlobalVariable:
-						break;
+						{
+							var dictScope = state.Scope as IDictionary<string, object>;
+							if (dictScope == null)
+								break;
+
+							if (dictScope.ContainsKey(instruction.Operand.StringValue))
+								dictScope[instruction.Operand.StringValue] = state.Stack.Pop();
+							else
+								dictScope.Add(instruction.Operand.StringValue, state.Stack.Pop());
+							break;
+						}
 
 					case Opcode.GetGlobalVariable:
-						break;
+						{
+							var dictScope = state.Scope as IDictionary<string, object>;
+							if (dictScope == null)
+								break;
+
+							if (dictScope.ContainsKey(instruction.Operand.StringValue))
+								state.Stack.Push((Variant)dictScope[instruction.Operand.StringValue]);
+							else
+								state.Stack.Push(new Variant());
+
+							break;
+						}
 
 					case Opcode.Print:
 						Console.WriteLine(state.Stack.Pop());

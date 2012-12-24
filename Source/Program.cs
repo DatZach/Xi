@@ -59,6 +59,8 @@ namespace Xi
 				state = virtualMachine.CreateState(0, 0);
 			}
 
+			state.Scope.Foo = new Variant("Hello, World!");
+
 			virtualMachine.Execute(state);
 		}
 	}

@@ -1,4 +1,6 @@
-﻿namespace Xi.Vm
+﻿using System.Dynamic;
+
+namespace Xi.Vm
 {
 	class State
 	{
@@ -25,7 +27,7 @@
 			CallStack = new VmStack<CallInfo>();
 			Stack = new VmStack<Variant>();
 			InstructionPointer = 0;
-			Scope = null;
+			Scope = new ExpandoObject();
 		}
 	}
 }

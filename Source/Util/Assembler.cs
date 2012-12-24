@@ -131,7 +131,7 @@ namespace Xi.Util
 			text = text.Replace("\r\n", " ");
 			text = text.Replace('\n', ' ');
 			text = text.Replace("\t", "");
-			stream = text.Split(' ');
+			stream = text.Split(' ').Where(c => c != "").ToArray();
 
 			streamIndex = 0;
 			parseLevel = ParseLevel.Top;
