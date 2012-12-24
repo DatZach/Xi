@@ -59,9 +59,17 @@ namespace Xi
 				state = virtualMachine.CreateState(0, 0);
 			}
 
-			state.Scope.Foo = new Variant("Hello, World!");
+			try
+			{
+				virtualMachine.Execute(state);
+			}
+			catch (Exception e)
+			{
+				// Add a stack trace in here eventually
+				Console.WriteLine("[Traceback] {0}", e.Message);
+			}
 
-			virtualMachine.Execute(state);
+			Console.ReadKey();
 		}
 	}
 }

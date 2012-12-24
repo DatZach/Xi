@@ -54,7 +54,7 @@ namespace Xi.Util
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine("[Error   ] Failed to assemble file!");
+					Console.WriteLine("[Error    ] Failed to assemble file!");
 					Console.WriteLine("\t{0}", e.Message);
 
 					return null;
@@ -113,9 +113,22 @@ namespace Xi.Util
 			Rewind();
 			
 			Opcode opcode = ReadOpcode();
-			instructions.Add(Instruction.OpcodeHasOperands(opcode)
-								 ? new Instruction(opcode, ReadOperand())
-								 : new Instruction(opcode));
+			if ((byte)opcode == 0xFF)
+				throw new Exception(String.Format("Unknown opcode at token {0}", streamIndex));
+			
+			int operandCount = Instruction.GetOperandCount(opcode);
+			if (operandCount == 0)
+				instructions.Add(new Instruction(opcode));
+			else if (operandCount == 1)
+				instructions.Add(new Instruction(opcode, ReadOperand()));
+			else
+			{
+				List<Variant> operands = new List<Variant>();
+				for(int i = 0; i < operandCount; ++i)
+					operands.Add(ReadOperand());
+
+				instructions.Add(new Instruction(opcode, operands));
+			}
 		}
 
 		public static List<Class> AssembleFile(string filename)
@@ -171,7 +184,7 @@ namespace Xi.Util
 
 			if (value.First() == '\"' && value.Last() == '\"')
 				type = Variant.VariantType.String;
-			else if (value.IndexOf('.') != 0)
+			else if (value.IndexOf('.') != -1)
 				type = Variant.VariantType.Double;
 
 			switch (type)

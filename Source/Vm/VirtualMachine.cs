@@ -183,14 +183,16 @@ namespace Xi.Vm
 							// SetVar(*(unsigned short*)instr->buffer.data,
 							//			GetVar(*(unsigned short*)instr->buffer.data) +
 							//					*(short*)(instr->buffer.data + 4));
-							Variant a = state.Stack[(int)instruction.Operands[0].IntValue];
-							a += instruction.Operands[1];
-							state.Stack[(int)instruction.Operands[0].IntValue] = a;
+							state.Stack[(int)instruction.Operands[0].IntValue] += instruction.Operands[1];
 							break;
 						}
 
 					case Opcode.IncrementField:
-						break;
+						{
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+							classHandle.Fields[(int)instruction.Operands[0].IntValue] += instruction.Operands[1];
+							break;
+						}
 
 					case Opcode.Compare:
 						{
@@ -261,10 +263,18 @@ namespace Xi.Vm
 						break;
 
 					case Opcode.ClassSetField:
-						break;
+						{
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+							classHandle.Fields[(int)instruction.Operand.IntValue] = state.Stack.Pop();
+							break;
+						}
 
 					case Opcode.ClassGetField:
-						break;
+						{
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+							state.Stack.Push(classHandle.Fields[(int)instruction.Operand.IntValue]);
+							break;
+						}
 
 					case Opcode.ClassCall:
 						break;

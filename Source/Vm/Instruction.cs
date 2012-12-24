@@ -30,35 +30,73 @@ namespace Xi.Vm
 			Operands = operands;
 		}
 
-		public static bool OpcodeHasOperands(Opcode opcode)
+		public static int GetOperandCount(Opcode opcode)
 		{
-			return new List<Opcode>
+			return new Dictionary<Opcode, int>
 			    {
-				    Opcode.Push,
-					Opcode.SetVariable,
-					Opcode.GetVariable,
-					Opcode.IncrementVariable,
-					Opcode.IncrementField,
-					Opcode.IfEqual,
-					Opcode.IfNotEqual,
-					Opcode.IfLessThan,
-					Opcode.IfGreaterThan,
-					Opcode.IfLessThanOrEqual,
-					Opcode.IfGreaterThanOrEqual,
-					Opcode.Jump,
-					Opcode.ClassSetFieldStatic,
-					Opcode.ClassGetFieldStatic,
-					Opcode.ClassSetField,
-					Opcode.ClassGetField,
-					Opcode.ClassCall,
-					Opcode.ClassCallStatic,
-					Opcode.ClassCallVirtual,
-					Opcode.NewClass,
-					Opcode.New,
-					Opcode.CastVariant,
-					Opcode.SetGlobalVariable,
-					Opcode.GetGlobalVariable
-			    }.Contains(opcode);
+				    { Opcode.NoOperation, 0 },
+
+					{ Opcode.PushNull, 0 },
+					{ Opcode.Push, 1 },
+					{ Opcode.Pop, 0 },
+					{ Opcode.Swap, 0 },
+					{ Opcode.Duplicate, 0 },
+
+					{ Opcode.SetVariable, 1 },
+					{ Opcode.GetVariable, 1 },
+					{ Opcode.GetArgument, 1 },
+					{ Opcode.GetThis, 0 },
+					{ Opcode.GetBase, 0 },
+					{ Opcode.GetBaseOf, 0 },
+
+					{ Opcode.Add, 0 },
+					{ Opcode.Subtract, 0 },
+					{ Opcode.Multiply, 0 },
+					{ Opcode.Divide, 0 },
+					{ Opcode.Modulo, 0 },
+
+					{ Opcode.Negate, 0 },
+					{ Opcode.Not, 0 },
+					{ Opcode.And, 0 },
+					{ Opcode.Or, 0 },
+					{ Opcode.Xor, 0 },
+					{ Opcode.ShiftLeft, 0 },
+					{ Opcode.ShiftRight, 0 },
+
+					{ Opcode.IncrementVariable, 2 },
+					{ Opcode.IncrementField, 2 },
+
+					{ Opcode.Compare, 0 },
+					{ Opcode.IfEqual, 1 },
+					{ Opcode.IfNotEqual, 1 },
+					{ Opcode.IfLessThan, 1 },
+					{ Opcode.IfGreaterThan, 1 },
+					{ Opcode.IfLessThanOrEqual, 1 },
+					{ Opcode.IfGreaterThanOrEqual, 1 },
+					{ Opcode.Jump, 1 },
+					{ Opcode.Return, 0 },
+
+					{ Opcode.ClassSetFieldStatic, 2 },
+					{ Opcode.ClassGetFieldStatic, 2 },
+
+					{ Opcode.ClassSetField, 1 },
+					{ Opcode.ClassGetField, 1 },
+
+					{ Opcode.ClassCall, 1 },
+					{ Opcode.ClassCallStatic, 2 },
+					{ Opcode.ClassCallVirtual, 1 },
+
+					{ Opcode.NewClass, 1 },
+					{ Opcode.New, 1 },
+
+					{ Opcode.CastVariant, 1 },
+
+					{ Opcode.SetGlobalVariable, 1 },
+					{ Opcode.GetGlobalVariable, 1 },
+
+					{ Opcode.Print, 0 },
+					{ Opcode.Breakpoint, 0 }
+			    }[opcode];
 		}
 	}
 

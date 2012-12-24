@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Xi.Vm
 {
@@ -71,7 +72,7 @@ namespace Xi.Vm
 					return StringValue;
 
 				case VariantType.Object:
-					return ObjectValue.ToString();
+					return "object";
 
 				case VariantType.Array:
 					return "array";
@@ -135,6 +136,15 @@ namespace Xi.Vm
 
 		public static Variant operator *(Variant a, Variant b)
 		{
+			if (a.Type == VariantType.String && b.Type == VariantType.Int64)
+			{
+				StringBuilder builder = new StringBuilder();
+				for (Int64 i = 0; i < b.IntValue; ++i)
+					builder.Append(a.StringValue);
+
+				return new Variant(builder.ToString());
+			}
+
 			if (a.Type != b.Type)
 				throw new Exception(String.Format("Variable types do not match ({0} != {1})", a.Type, b.Type));
 
