@@ -250,11 +250,17 @@ namespace Xi.Vm
 						break;
 
 					case Opcode.Return:
-						// Primitive return for now
-						state.CallStack.Pop();
+					{
+						// If there are no more calls in the stack then we must be at the end of our spawn method
 						if (state.CallStack.Count == 0)
 							return;
-						break;
+
+						state.CurrentCall = state.CallStack.Pop();
+						stream = state.CurrentMethod.Instructions;
+						state.Stack.PopScope();
+						
+						continue;
+					}
 
 					case Opcode.ClassSetFieldStatic:
 						break;
@@ -277,7 +283,38 @@ namespace Xi.Vm
 						}
 
 					case Opcode.ClassCall:
-						break;
+						{
+							/*
+							 * Probably should clean this up... a lot
+							 * Also variable argument lists aren't supported with this method
+							 */
+
+							// Grab class to call from stack
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+
+							// Push reentrant info onto call stack
+							state.CallStack.Push(new CallInfo(state.CurrentClass,
+														state.CurrentClass.GetMethodIndex(state.CurrentMethod.Name),
+														state.InstructionPointer + 1));
+
+							// Set state's call info to the new call & grab all requested arguments
+							state.CurrentCall =  new CallInfo(classHandle, (int)instruction.Operand.IntValue, 0);
+							Stack<Variant> arguments = new Stack<Variant>();
+							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
+								arguments.Push(state.Stack.Pop());
+
+							// Change stream to current method's instruction stream
+							stream = state.CurrentMethod.Instructions;
+
+							// Push stack scope
+							state.Stack.PushScope(state.CurrentMethod.VariableCount + state.CurrentMethod.ArgumentCount);
+
+							// Pop arguments from transition stack into local arguments
+							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
+								state.Stack[i] = arguments.Pop();
+
+							continue;
+						}
 
 					case Opcode.ClassCallStatic:
 						break;
@@ -285,10 +322,8 @@ namespace Xi.Vm
 					case Opcode.ClassCallVirtual:
 						break;
 
-					case Opcode.NewClass:
-						break;
-
 					case Opcode.New:
+						state.Stack.Push(new Variant(new Class(Classes[(int)instruction.Operand.IntValue])));
 						break;
 
 					case Opcode.CastVariant:
@@ -352,7 +387,8 @@ namespace Xi.Vm
 				return null;
 
 			State state = new State();
-			state.CallStack.Push(new CallInfo(classHandle, methodIndex, 0));
+			state.CurrentCall = new CallInfo(classHandle, methodIndex, 0);
+			//state.CallStack.Push(new CallInfo(classHandle, methodIndex, 0));
 
 			return state;
 		}
@@ -364,7 +400,8 @@ namespace Xi.Vm
 				return null;
 
 			State state = new State();
-			state.CallStack.Push(new CallInfo(classHandle, methodIndex, 0));
+			state.CurrentCall = new CallInfo(classHandle, methodIndex, 0);
+			//state.CallStack.Push(new CallInfo(classHandle, methodIndex, 0));
 
 			return state;
 		}

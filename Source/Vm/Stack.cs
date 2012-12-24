@@ -24,7 +24,7 @@ namespace Xi.Vm
 
 		public long Count
 		{
-			get { return stackSize; }
+			get { return stackIndex; }
 		}
 
 		public long ScopeDepth

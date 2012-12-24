@@ -10,6 +10,14 @@ namespace Xi.Vm
 		public Class Base { get; private set; }
 		public string Name { get; private set; }
 
+		public Class(Class classHandle)
+		{
+			Name = classHandle.Name;
+			Methods = classHandle.Methods;
+			Fields = classHandle.Fields;
+			Base = classHandle.Base;
+		}
+
 		public Class(string name, List<Method> methods, List<Variant> fields, Class cBase)
 		{
 			Name = name;

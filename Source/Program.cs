@@ -10,9 +10,8 @@ namespace Xi
 	{
 		public static void Main(string[] args)
 		{
-			State state;
-			List<Class> program;
 			VirtualMachine virtualMachine = new VirtualMachine();
+			List<Class> program;
 
 			if (args.Length == 1 && args[0] == "--help")
 			{
@@ -50,24 +49,17 @@ namespace Xi
 
 			virtualMachine.Classes.AddRange(program);
 
-			if (args.Length > 1)
-			{
-				state = virtualMachine.CreateState("Global", args[1]);
-			}
-			else
-			{
-				state = virtualMachine.CreateState(0, 0);
-			}
+			State state = args.Length > 1 ? virtualMachine.CreateState("Global", args[1]) : virtualMachine.CreateState(0, 0);
 
-			try
-			{
+			//try
+			//{
 				virtualMachine.Execute(state);
-			}
-			catch (Exception e)
-			{
+			//}
+			//catch (Exception e)
+			//{
 				// Add a stack trace in here eventually
-				Console.WriteLine("[Traceback] {0}", e.Message);
-			}
+			//	Console.WriteLine("[Traceback] {0}", e.Message);
+			//}
 
 			Console.ReadKey();
 		}

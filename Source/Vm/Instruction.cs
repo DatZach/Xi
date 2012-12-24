@@ -86,7 +86,6 @@ namespace Xi.Vm
 					{ Opcode.ClassCallStatic, 2 },
 					{ Opcode.ClassCallVirtual, 1 },
 
-					{ Opcode.NewClass, 1 },
 					{ Opcode.New, 1 },
 
 					{ Opcode.CastVariant, 1 },
@@ -162,7 +161,6 @@ namespace Xi.Vm
 		ClassCallVirtual,
 
 		/* Memory */
-		NewClass,
 		New,
 
 		/* Variant conversion */
