@@ -10,6 +10,8 @@ namespace Xi
 	{
 		public static void Main(string[] args)
 		{
+			var a = Compiler.Lexer.Parser.ParseFile("test.xi");
+
 			VirtualMachine virtualMachine = new VirtualMachine();
 			List<Class> program;
 
@@ -31,9 +33,7 @@ namespace Xi
 				{
 					string line = Console.ReadLine();
 					if (line == "")
-					{
 						break;
-					}
 
 					text.AppendLine(line);
 				}
