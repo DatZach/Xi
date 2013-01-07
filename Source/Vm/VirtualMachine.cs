@@ -125,15 +125,19 @@ namespace Xi.Vm
 							break;
 						}
 
-					case Opcode.Negate:
+					case Opcode.LogicalNegate:
+						state.Stack.Push(-state.Stack.Pop());
+						break;
+
+					case Opcode.BitwiseNegate:
 						state.Stack.Push(~state.Stack.Pop());
 						break;
 
-					case Opcode.Not:
+					case Opcode.BitwiseNot:
 						state.Stack.Push(!state.Stack.Pop());
 						break;
 
-					case Opcode.And:
+					case Opcode.BitwiseAnd:
 						{
 							Variant a = state.Stack.Pop();
 							Variant b = state.Stack.Pop();
@@ -142,7 +146,7 @@ namespace Xi.Vm
 							break;
 						}
 
-					case Opcode.Or:
+					case Opcode.BitwiseOr:
 						{
 							Variant a = state.Stack.Pop();
 							Variant b = state.Stack.Pop();
@@ -151,7 +155,7 @@ namespace Xi.Vm
 							break;
 						}
 
-					case Opcode.Xor:
+					case Opcode.BitwiseXor:
 						{
 							Variant a = state.Stack.Pop();
 							Variant b = state.Stack.Pop();
@@ -160,7 +164,7 @@ namespace Xi.Vm
 							break;
 						}
 
-					case Opcode.ShiftLeft:
+					case Opcode.BitwiseShiftLeft:
 						{
 							Variant a = state.Stack.Pop();
 							Variant b = state.Stack.Pop();
@@ -169,7 +173,7 @@ namespace Xi.Vm
 							break;
 						}
 
-					case Opcode.ShiftRight:
+					case Opcode.BitwiseShiftRight:
 						{
 							Variant a = state.Stack.Pop();
 							Variant b = state.Stack.Pop();

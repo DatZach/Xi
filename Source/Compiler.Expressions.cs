@@ -8,15 +8,10 @@ namespace Xi
 	{
 		private void PrintExpression()
 		{
-			// Hacky as fuck
-			if (stream.Pass(TokenType.Word))
+			if (stream.AcceptWord("print"))
 			{
-				if (stream.Peek().Value == "print")
-				{
-					stream.Expect(TokenType.Word);
-					Expression();
-					Instructions.Add(new Instruction(Opcode.Print));
-				}
+				Expression();
+				Instructions.Add(new Instruction(Opcode.Print));
 			}
 			else
 				Expression();
@@ -77,8 +72,7 @@ namespace Xi
 				{
 					Factor();
 
-					// BUG: This is a binary negate, not a logical negate
-					Instructions.Add(new Instruction(Opcode.Negate));
+					Instructions.Add(new Instruction(Opcode.LogicalNegate));
 				}
 			}
 			else
@@ -102,8 +96,7 @@ namespace Xi
 			}
 			else
 			{
-				Console.WriteLine("Expected variable, string or number literal");
-				// TODO: Need to find a way to gracefully fail
+				throw new Exception("Expected variable, string or number literal");
 			}
 		}
 	}

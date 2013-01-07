@@ -55,6 +55,18 @@ namespace Xi.Lexer
 			return false;
 		}
 
+		public bool AcceptWord(string value)
+		{
+			Token token = Peek();
+			if (token.Type == TokenType.Word && token.Value == value)
+			{
+				Read();
+				return true;
+			}
+
+			return false;
+		}
+
 		public bool Pass(TokenType type)
 		{
 			return Peek().Type == type;

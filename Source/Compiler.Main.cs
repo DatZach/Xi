@@ -21,7 +21,14 @@ namespace Xi
 		{
 			stream = tokenStream;
 
-			PrintExpression();
+			try
+			{
+				PrintExpression();
+			}
+			catch(Exception e)
+			{
+				Console.WriteLine(e.Message);
+			}
 		}
 
 		public void DumpInstructionStream()

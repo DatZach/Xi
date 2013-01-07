@@ -55,13 +55,13 @@ namespace Xi.Vm
 					{ Opcode.Divide, 0 },
 					{ Opcode.Modulo, 0 },
 
-					{ Opcode.Negate, 0 },
-					{ Opcode.Not, 0 },
-					{ Opcode.And, 0 },
-					{ Opcode.Or, 0 },
-					{ Opcode.Xor, 0 },
-					{ Opcode.ShiftLeft, 0 },
-					{ Opcode.ShiftRight, 0 },
+					{ Opcode.BitwiseNegate, 0 },
+					{ Opcode.BitwiseNot, 0 },
+					{ Opcode.BitwiseAnd, 0 },
+					{ Opcode.BitwiseOr, 0 },
+					{ Opcode.BitwiseXor, 0 },
+					{ Opcode.BitwiseShiftLeft, 0 },
+					{ Opcode.BitwiseShiftRight, 0 },
 
 					{ Opcode.IncrementVariable, 2 },
 					{ Opcode.IncrementField, 2 },
@@ -126,13 +126,14 @@ namespace Xi.Vm
 		Modulo,
 
 		/* Binary Arithmetics */
-		Negate,
-		Not,
-		And,
-		Or,
-		Xor,
-		ShiftLeft,
-		ShiftRight,
+		LogicalNegate,
+		BitwiseNegate,
+		BitwiseNot,
+		BitwiseAnd,
+		BitwiseOr,
+		BitwiseXor,
+		BitwiseShiftLeft,
+		BitwiseShiftRight,
 
 		/* Miscellaneous Arithmetics */
 		IncrementVariable,

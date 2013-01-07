@@ -251,6 +251,17 @@ namespace Xi.Vm
 			throw new Exception(String.Format("Cannot % variant type \"{0}\"", a.Type));
 		}
 
+		public static Variant operator -(Variant a)
+		{
+			if (a.Type == VariantType.Int64)
+				return new Variant(-a.IntValue);
+
+			if (a.Type == VariantType.Double)
+				return new Variant(-a.DoubleValue);
+
+			throw new Exception(String.Format("Cannot - variant type \"{0}\"", a.Type));
+		}
+
 		public static Variant operator ~(Variant a)
 		{
 			if (a.Type == VariantType.Int64)
