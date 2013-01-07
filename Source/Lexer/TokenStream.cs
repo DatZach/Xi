@@ -55,6 +55,11 @@ namespace Xi.Lexer
 			return false;
 		}
 
+		public bool Pass(TokenType type)
+		{
+			return Peek().Type == type;
+		}
+
 		public string GetWord()
 		{
 			Token token = Read();
@@ -75,18 +80,11 @@ namespace Xi.Lexer
 				case TokenType.String:
 					return new Variant(token.Value);
 
-				case TokenType.Integer:
+				case TokenType.Number:
 				{
+					// TODO: Support doubles
 					long value;
 					long.TryParse(token.Value, NumberStyles.Number, null, out value);
-
-					return new Variant(value);
-				}
-
-				case TokenType.Double:
-				{
-					double value;
-					double.TryParse(token.Value, NumberStyles.Number, null, out value);
 
 					return new Variant(value);
 				}

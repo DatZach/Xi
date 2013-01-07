@@ -1,0 +1,4 @@
+<expresion>	::= <term> [('+' | '-') <term>]*
+<term>		::= <signed-factor> [('*' | '/') <signed-factor>]*
+<signed-factor>	::= [('-' | '+')] <factor>
+<factor>	::= (<literal> | <variable>)

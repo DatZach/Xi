@@ -1,0 +1,42 @@
+Xi Operator Precedence
+
+Precedence	Operators	Description
+0		LITERAL		Variant Literal
+		VARIABLE	Variant Variable
+
+1		++, --		Suffix
+		()		Function call
+		[]		Array subscripting
+		.		Element selection by reference
+
+2		++, --		Prefix
+		+ -		Unary plus/minus
+		! ~		Logical NOT and bitwise NOT
+
+3		*		Multiplication
+		/		Division
+		%		Modulo
+
+4		+		Addition
+		-		Subtraction
+
+5		<<		Left shift
+		>>		Right shift
+
+6		< <=		Relational operators
+		> >=		Relational operators
+
+7		== !=		Relational operators
+
+8		&		Bitwise AND
+
+9		^ |		Bitwise XOR and OR
+
+10		&& ||		Logical AND and OR
+
+11		?:		Ternary
+		=		Assignment
+		+= -=		Assignment by sum and difference
+		*= /= %=	Assignment by product, quotent and remainder
+		<<= >>=		Assignment by bitwise left shift and right shift
+		&= ^= |=	Assignment by bitwise AND, XOR and OR

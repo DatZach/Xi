@@ -114,12 +114,26 @@ namespace Xi.Lexer
 						tokens.Add(new Token(t));
 						break;
 
+					case BasicTokenType.EndOfStream:
+						tokens.Add(new Token(TokenType.EndOfStream, "", t.Filename, t.Line));
+						break;
+
 					case BasicTokenType.Unknown:
 						throw new Exception("Unknown token \"" + t.Value + "\"!");
 				}
 			}
 
 			return tokens;
+		}
+
+		public static bool IsAddOperation(Token token)
+		{
+			return new List<TokenType> { TokenType.Add, TokenType.Subtract }.Contains(token.Type);
+		}
+
+		public static bool IsMulOperation(Token token)
+		{
+			return new List<TokenType> { TokenType.Multiply, TokenType.Divide, TokenType.Modulo }.Contains(token.Type);
 		}
 	}
 }

@@ -53,7 +53,8 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Compiler.cs" />
+    <Compile Include="Compiler.Expressions.cs" />
+    <Compile Include="Compiler.Main.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Lexer\BasicToken.cs" />
     <Compile Include="Lexer\Parser.cs" />

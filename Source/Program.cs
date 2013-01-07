@@ -11,12 +11,7 @@ namespace Xi
 	{
 		public static void Main(string[] args)
 		{
-			Compiler compiler = new Compiler();
-			compiler.Compile(new TokenStream(Parser.ParseString("1 + 2")));
-			compiler.DumpInstructionStream();
-
-			Console.ReadKey();
-
+			// TODO: This entire method is boched now
 			VirtualMachine virtualMachine = new VirtualMachine();
 			List<Class> program;
 
@@ -32,21 +27,25 @@ namespace Xi
 			}
 			else
 			{
-				StringBuilder text = new StringBuilder();
+				string value;
 
-				while (true)
+				do
 				{
-					string line = Console.ReadLine();
-					if (line == "")
-						break;
+					Compiler compiler = new Compiler();
+					Console.Write("> ");
+					value = Console.ReadLine();
 
-					text.AppendLine(line);
-				}
+					compiler.Compile(new TokenStream(Parser.ParseString(value)));
 
-				program = Assembler.AssembleString(text.ToString());
+					// TODO: Preserve VM state
+					virtualMachine.Classes.Clear();
+					virtualMachine.Classes.Add(new Class("Global", new List<Method>() { new Method("Main", compiler.Instructions, 0, 0) }, new List<Variant>(), null));
+					virtualMachine.Execute(virtualMachine.CreateState("Global", "Main"));
+
+				} while (value != "exit");
 			}
 
-			if (program == null)
+			/*if (program == null)
 			{
 				Console.WriteLine("[Traceback] Cannot run program, syntax error encountered.");
 				return;
@@ -64,7 +63,7 @@ namespace Xi
 			{
 				// Add a stack trace in here eventually
 				Console.WriteLine("[Traceback] {0}", e.Message);
-			}
+			}*/
 
 			Console.ReadKey();
 		}

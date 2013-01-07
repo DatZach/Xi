@@ -7,9 +7,10 @@ using Xi.Vm;
 
 namespace Xi
 {
-	class Compiler
+	internal partial class Compiler
 	{
 		public List<Instruction> Instructions { get; private set; }
+		private TokenStream stream;
  
 		public Compiler()
 		{
@@ -18,9 +19,9 @@ namespace Xi
 
 		public void Compile(TokenStream tokenStream)
 		{
-			Instructions.Add(new Instruction(Opcode.Push, new Variant(1)));
-			Instructions.Add(new Instruction(Opcode.Push, new Variant(2)));
-			Instructions.Add(new Instruction(Opcode.Add));
+			stream = tokenStream;
+
+			PrintExpression();
 		}
 
 		public void DumpInstructionStream()

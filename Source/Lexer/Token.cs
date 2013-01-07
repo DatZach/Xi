@@ -19,10 +19,9 @@ namespace Xi.Lexer
 
 		public Token(BasicToken token)
 		{
-			// TODO Shit hack, will do for now
 			Type = new Dictionary<BasicTokenType, TokenType>
 			{
-				{ BasicTokenType.Number, TokenType.Integer },
+				{ BasicTokenType.Number, TokenType.Number },
 				{ BasicTokenType.String, TokenType.String }
 			}[token.Type];
 
@@ -38,8 +37,7 @@ namespace Xi.Lexer
 		Unknown,
 		Word,
 		String,
-		Integer,
-		Double,
+		Number,
 
 		KeywordClass,
 		KeywordFunction,
