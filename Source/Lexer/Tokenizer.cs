@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Xi.Util;
 
-namespace Xi.Compiler.Lexer
+namespace Xi.Lexer
 {
 	internal static class Tokenizer
 	{

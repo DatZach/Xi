@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
+using Xi.Lexer;
 using Xi.Util;
 using Xi.Vm;
 
@@ -10,7 +11,11 @@ namespace Xi
 	{
 		public static void Main(string[] args)
 		{
-			var a = Compiler.Lexer.Parser.ParseFile("test.xi");
+			Compiler compiler = new Compiler();
+			compiler.Compile(new TokenStream(Parser.ParseString("1 + 2")));
+			compiler.DumpInstructionStream();
+
+			Console.ReadKey();
 
 			VirtualMachine virtualMachine = new VirtualMachine();
 			List<Class> program;

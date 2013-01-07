@@ -53,10 +53,13 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Compiler\Lexer\BasicToken.cs" />
-    <Compile Include="Compiler\Lexer\Parser.cs" />
-    <Compile Include="Compiler\Lexer\Token.cs" />
-    <Compile Include="Compiler\Lexer\Tokenizer.cs" />
+    <Compile Include="Compiler.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="Lexer\BasicToken.cs" />
+    <Compile Include="Lexer\Parser.cs" />
+    <Compile Include="Lexer\Token.cs" />
+    <Compile Include="Lexer\Tokenizer.cs" />
+    <Compile Include="Lexer\TokenStream.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Util\Assembler.cs" />
     <Compile Include="Util\StringStream.cs" />

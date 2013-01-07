@@ -1,4 +1,4 @@
-﻿namespace Xi.Compiler.Lexer
+﻿namespace Xi.Lexer
 {
 	internal class BasicToken
 	{
@@ -24,7 +24,7 @@
 		}
 	}
 
-	enum BasicTokenType
+	internal enum BasicTokenType
 	{
 		EndOfStream,
 		Unknown,

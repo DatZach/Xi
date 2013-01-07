@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Xi.Util;
 
-namespace Xi.Compiler.Lexer
+namespace Xi.Lexer
 {
 	internal static class Parser
 	{

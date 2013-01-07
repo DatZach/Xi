@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Xi.Compiler.Lexer
+namespace Xi.Lexer
 {
 	internal class Token
 	{
@@ -32,7 +32,7 @@ namespace Xi.Compiler.Lexer
 		}
 	}
 
-	enum TokenType
+	internal enum TokenType
 	{
 		EndOfStream,
 		Unknown,
