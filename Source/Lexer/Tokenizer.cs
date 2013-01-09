@@ -8,6 +8,8 @@ namespace Xi.Lexer
 {
 	internal static class Tokenizer
 	{
+		private const string Delimiters = "~!%^&*()-+=[]{}|:;?/<,>.";
+
 		public static List<BasicToken> ParseStream(StringStream stream, string filename)
 		{
 			List<BasicToken> tokens = new List<BasicToken>();
@@ -32,8 +34,18 @@ namespace Xi.Lexer
 					continue;
 				}
 
+				// Skip multi line comments
+				if (stream.Peek() == '/' && stream.PeekAhead(1) == '*')
+				{
+					while (!stream.IsEndOfStream && !(stream.Peek() == '*' && stream.PeekAhead(1) == '/'))
+					{
+						if (stream.Read() == '\n')
+							++line;
+					}
+				}
+
 				// Parse delimiters
-				if ("~!%^&*()-+=[]{}|:;?/<,>.".Contains(stream.Peek()))
+				if (Delimiters.Contains(stream.Peek()))
 				{
 					tokens.Add(new BasicToken(BasicTokenType.Delimiter, "" + stream.Read(), filename, line));
 					continue;
@@ -69,14 +81,13 @@ namespace Xi.Lexer
 				{
 					string word = "";
 
-					while (!stream.IsEndOfStream && (char.IsLetter(stream.Peek()) || stream.Peek() == '_'))
+					while (!stream.IsEndOfStream && (char.IsLetterOrDigit(stream.Peek()) || stream.Peek() == '_'))
 						word += stream.Read();
 
 					tokens.Add(new BasicToken(BasicTokenType.Word, word, filename, line));
 					continue;
 				}
 
-				// TODO Proper floating point numbers
 				// Parse numbers
 				if (char.IsDigit(stream.Peek()))
 				{
@@ -107,7 +118,7 @@ namespace Xi.Lexer
 					}
 					else
 					{
-						while (!stream.IsEndOfStream && (char.IsLetterOrDigit(stream.Peek()) || stream.Peek() == '.'))
+						while (!stream.IsEndOfStream && (char.IsDigit(stream.Peek()) || stream.Peek() == '.'))
 							number += stream.Read();
 					}
 

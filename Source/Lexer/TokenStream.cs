@@ -94,11 +94,22 @@ namespace Xi.Lexer
 
 				case TokenType.Number:
 				{
-					// TODO: Support doubles
-					long value;
-					long.TryParse(token.Value, NumberStyles.Number, null, out value);
+					if (token.Value.Contains("."))
+					{
+						double value;
+						if (!double.TryParse(token.Value, NumberStyles.Number, null, out value))
+							return new Variant(0.0);
 
-					return new Variant(value);
+						return new Variant(value);
+					}
+					else
+					{
+						long value;
+						if (!long.TryParse(token.Value, NumberStyles.Number, null, out value))
+							return new Variant(0);
+
+						return new Variant(value);
+					}
 				}
 			}
 
