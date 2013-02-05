@@ -6,6 +6,12 @@ namespace Xi
 {
 	internal partial class Compiler
 	{
+		private void Statement()
+		{
+			while(!stream.IsEndOfStream && !stream.Accept(TokenType.CloseCurlyBracket))
+				PrintExpression();
+		}
+
 		private void PrintExpression()
 		{
 			if (stream.AcceptWord("print"))
@@ -34,6 +40,8 @@ namespace Xi
 					Instructions.Add(new Instruction(Opcode.Subtract));
 				}
 			}
+
+			stream.Expect(TokenType.Semicolon);
 		}
 
 		private void Term()

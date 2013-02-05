@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -23,9 +21,9 @@ namespace Xi
 
 			try
 			{
-				PrintExpression();
+				Program();
 			}
-			catch(Exception e)
+			catch(StackOverflowException e)
 			{
 				Console.WriteLine(e.Message);
 			}

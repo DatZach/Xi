@@ -128,11 +128,17 @@ namespace Xi.Lexer
 
 		public static bool IsAddOperation(Token token)
 		{
+			if (token == null)
+				return false;
+
 			return new List<TokenType> { TokenType.Add, TokenType.Subtract }.Contains(token.Type);
 		}
 
 		public static bool IsMulOperation(Token token)
 		{
+			if (token == null)
+				return false;
+
 			return new List<TokenType> { TokenType.Multiply, TokenType.Divide, TokenType.Modulo }.Contains(token.Type);
 		}
 	}

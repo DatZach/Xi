@@ -72,7 +72,7 @@ namespace Xi.Lexer
 					}
 
 					tokens.Add(new BasicToken(BasicTokenType.String, value, filename, startLine));
-					++stream.Position;
+					//++stream.Position;
 					continue;
 				}
 

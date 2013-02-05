@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="Compiler.Expressions.cs" />
     <Compile Include="Compiler.Main.cs" />
-    <Compile Include="Errors.cs" />
+    <Compile Include="Compiler.Structure.cs" />
     <Compile Include="Lexer\BasicToken.cs" />
     <Compile Include="Lexer\Parser.cs" />
     <Compile Include="Lexer\Token.cs" />
@@ -99,6 +99,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Compiler.Errors.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

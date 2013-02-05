@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Xi.Vm;
 
 namespace Xi.Lexer
@@ -11,7 +13,15 @@ namespace Xi.Lexer
 
 		public bool IsEndOfStream
 		{
-			get { return Position >= tokens.Count; }
+			get { return Position >= tokens.Count || tokens[Position].Type == TokenType.EndOfStream; }
+		}
+
+		public uint CurrentLine
+		{
+			get
+			{
+				return Peek() == null ? tokens.Last().Line : Peek().Line;
+			}
 		}
 
 		public TokenStream(List<Token> tokens)
@@ -37,10 +47,11 @@ namespace Xi.Lexer
 
 		public void Expect(TokenType type)
 		{
-			if (Read().Type == type)
+			if (!IsEndOfStream && Read().Type == type)
 				return;
 
-			Errors.Expected(type);
+			// TODO Fix errors somehow...
+			Expected(type);
 		}
 
 		public bool Accept(TokenType type)
@@ -77,7 +88,8 @@ namespace Xi.Lexer
 			Token token = Read();
 			if (token.Type != TokenType.Word)
 			{
-				Errors.Expected(TokenType.Word);
+				// TODO Fix this
+				Expected(TokenType.Word);
 				return "";
 			}
 
@@ -114,9 +126,15 @@ namespace Xi.Lexer
 			}
 
 			// Should this error?
-			Errors.Expected(TokenType.Unknown);
+			// TODO Fix this
+			Expected(TokenType.Unknown);
 
 			return new Variant();
+		}
+
+		private void Expected(TokenType type)
+		{
+			Console.WriteLine("Error on line {0}:\n\tExpected \"{1}\" got \"{2}\" instead.", CurrentLine, type, Peek());
 		}
 	}
 }

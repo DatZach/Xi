@@ -61,11 +61,23 @@ namespace Xi
 
 			do
 			{
-				Console.Write("> ");
+				Console.Write("(>^-^)> ");
 				value = Console.ReadLine();
 
+				List<Token> tokenStream;
 				Compiler compiler = new Compiler();
-				compiler.Compile(new TokenStream(Parser.ParseString(value)));
+
+				try
+				{
+					tokenStream = Parser.ParseString(value);
+				}
+				catch(Exception e)
+				{
+					Console.WriteLine("Lexer Error: {0}", e.Message);
+					continue;
+				}
+
+				compiler.Compile(new TokenStream(tokenStream));
 
 				// TODO: Preserve VM state
 				State state = new State();
