@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Xi.Vm
 {
-	class Class
+	public class Class
 	{
 		public List<Method> Methods { get; private set; }
 		public List<Variant> Fields { get; private set; }

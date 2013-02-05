@@ -2,7 +2,7 @@
 
 namespace Xi.Vm
 {
-	class Instruction
+	public class Instruction
 	{
 		public Opcode Opcode { get; private set; }
 		public List<Variant> Operands { get; private set; }
@@ -99,7 +99,7 @@ namespace Xi.Vm
 		}
 	}
 
-	enum Opcode : byte
+	public enum Opcode : byte
 	{
 		NoOperation,
 

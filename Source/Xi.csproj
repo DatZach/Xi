@@ -62,6 +62,7 @@
     <Compile Include="Lexer\Tokenizer.cs" />
     <Compile Include="Lexer\TokenStream.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Script.cs" />
     <Compile Include="Util\Assembler.cs" />
     <Compile Include="Util\StringStream.cs" />
     <Compile Include="Vm\Class.cs" />

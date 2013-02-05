@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Xi.Vm
 {
-	class VirtualMachine
+	static class VirtualMachine
 	{
-		public List<Class> Classes { get; private set; }
-
-		public VirtualMachine()
-		{
-			Classes = new List<Class>();
-		}
-
-		public void Execute(State state)
+		public static void Execute(State state)
 		{
 			List<Instruction> stream = state.CurrentMethod.Instructions;
 
@@ -267,11 +259,11 @@ namespace Xi.Vm
 						}
 
 					case Opcode.ClassSetFieldStatic:
-						Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue] = state.Stack.Pop();
+						state.Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue] = state.Stack.Pop();
 						break;
 
 					case Opcode.ClassGetFieldStatic:
-						state.Stack.Push(Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue]);
+						state.Stack.Push(state.Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue]);
 						break;
 
 					case Opcode.ClassSetField:
@@ -330,7 +322,7 @@ namespace Xi.Vm
 							 */
 
 							// Grab class to call from stack
-							Class classHandle = Classes[(int)instruction.Operands[0].IntValue];
+							Class classHandle = state.Classes[(int)instruction.Operands[0].IntValue];
 
 							// Push reentrant info onto call stack
 							state.CallStack.Push(new CallInfo(state.CurrentClass,
@@ -361,7 +353,7 @@ namespace Xi.Vm
 						break;
 
 					case Opcode.New:
-						state.Stack.Push(new Variant(new Class(Classes[(int)instruction.Operand.IntValue])));
+						state.Stack.Push(new Variant(new Class(state.Classes[(int)instruction.Operand.IntValue])));
 						break;
 
 					case Opcode.CastVariant:
@@ -412,33 +404,6 @@ namespace Xi.Vm
 			}
 
 			state.Stack.PopScope();
-		}
-
-		public State CreateState(string className, string methodName)
-		{
-			Class classHandle = GetClass(className);
-			if (classHandle == null)
-				return null;
-
-			int methodIndex = classHandle.GetMethodIndex(methodName);
-			if (methodIndex == -1)
-				return null;
-
-			return new State { CurrentCall = new CallInfo(classHandle, methodIndex, 0) };
-		}
-
-		public State CreateState(int classIndex, int methodIndex)
-		{
-			Class classHandle = Classes[classIndex];
-			if (classHandle == null)
-				return null;
-
-			return new State { CurrentCall = new CallInfo(classHandle, methodIndex, 0) };
-		}
-
-		private Class GetClass(string name)
-		{
-			return Classes.FirstOrDefault(m => m.Name == name);
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Xi.Vm
 {
-	class Method
+	public class Method
 	{
 		public List<Instruction> Instructions { get; private set; }
 		public int VariableCount { get; private set; }

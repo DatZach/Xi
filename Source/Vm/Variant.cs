@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Xi.Vm
 {
-	class Variant
+	public class Variant
 	{
 		public VariantType Type { get; private set; }
 		public Int64 IntValue;
