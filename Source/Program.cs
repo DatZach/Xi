@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using Xi.Lexer;
-using Xi.Util;
 using Xi.Vm;
 
 namespace Xi
@@ -11,12 +9,19 @@ namespace Xi
 	{
 		public static void Main(string[] args)
 		{
-			// TODO: This entire method is boched now
-			List<Class> program;
-
-			if (args.Length == 1 && args[0] == "--help")
+			if (args.Length == 1)
 			{
-				Console.WriteLine("Usage: Xi [filename] [entrypoint]");
+				switch(args[0])
+				{
+					case "--help":
+						Console.WriteLine("Usage: Xi [filename] [entrypoint]");
+						break;
+
+					case "--version":
+						Console.WriteLine("Xi Version 1.idkman");
+						break;
+				}
+				
 				return;
 			}
 
@@ -30,8 +35,19 @@ namespace Xi
 
 		private static void RunProgram(string filename, string entry)
 		{
-			Compiler compiler = new Compiler();
+			// TODO Fix exceptions unhandled
+			Script script = new Script();
+			if (!script.LoadFile(filename))
+			{
+				Console.WriteLine("Cannot open script \"{0}\"!", filename);
+				return;
+			}
 
+			// TODO Fix this bs
+			if (String.IsNullOrEmpty(entry))
+				entry = "Global.Main";
+
+			script.Call(entry);
 		}
 
 		private static void RunRepl()

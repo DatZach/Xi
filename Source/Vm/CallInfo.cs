@@ -4,7 +4,6 @@
 	{
 		public Class Class { get; private set; }
 		public int MethodIndex { get; private set; }
-		// public int InstructionPointer { get; private set; }
 		public int InstructionPointer;
 
 		public CallInfo()
