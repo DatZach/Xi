@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -35,12 +36,19 @@ namespace Xi
 
 		private static void RunProgram(string filename, string entry)
 		{
-			// TODO Fix exceptions unhandled
+			// TODO Too ugly?
 			Script script = new Script();
-			if (!script.LoadFile(filename))
+			try
 			{
-				Console.WriteLine("Cannot open script \"{0}\"!", filename);
-				return;
+				if (!script.LoadFile(filename))
+				{
+					Console.WriteLine("Cannot open script \"{0}\"!", filename);
+					return;
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
 			}
 
 			// TODO Fix this bs
