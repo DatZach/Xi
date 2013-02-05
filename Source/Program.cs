@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -16,14 +15,12 @@ namespace Xi
 				{
 					case "--help":
 						Console.WriteLine("Usage: Xi [filename] [entrypoint]");
-						break;
+						return;
 
 					case "--version":
 						Console.WriteLine("Xi Version 1.idkman");
-						break;
+						return;
 				}
-				
-				return;
 			}
 
 			if (args.Length != 0)
