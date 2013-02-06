@@ -51,11 +51,27 @@ namespace Xi.Lexer
 				return;
 
 			// TODO Fix errors somehow...
-			Expected(type);
+			Expected(type.ToString());
+		}
+
+		public void Expect(TokenType type, string value)
+		{
+			if (!IsEndOfStream)
+			{
+				Token token = Read();
+				if (token.Type == type && token.Value == value)
+					return;
+			}
+
+			// TODO Fix errors somehow...
+			Expected(value);
 		}
 
 		public bool Accept(TokenType type)
 		{
+			if (IsEndOfStream)
+				return false;
+
 			Token token = Peek();
 			if (token.Type == type)
 			{
@@ -66,10 +82,13 @@ namespace Xi.Lexer
 			return false;
 		}
 
-		public bool AcceptWord(string value)
+		public bool Accept(TokenType type, string value)
 		{
+			if (IsEndOfStream)
+				return false;
+
 			Token token = Peek();
-			if (token.Type == TokenType.Word && token.Value == value)
+			if (token.Type == type && token.Value == value)
 			{
 				Read();
 				return true;
@@ -89,7 +108,7 @@ namespace Xi.Lexer
 			if (token.Type != TokenType.Word)
 			{
 				// TODO Fix this
-				Expected(TokenType.Word);
+				Expected("word");
 				return "";
 			}
 
@@ -127,14 +146,18 @@ namespace Xi.Lexer
 
 			// Should this error?
 			// TODO Fix this
-			Expected(TokenType.Unknown);
+			Expected("variant");
 
 			return new Variant();
 		}
 
-		private void Expected(TokenType type)
+		// TODO fix this redundency
+		public void Expected(string value)
 		{
-			Console.WriteLine("Error on line {0}:\n\tExpected \"{1}\" got \"{2}\" instead.", CurrentLine, type, Peek());
+			Token peekedToken = Peek();
+			string peekedValue = peekedToken == null ? "" : peekedToken.Value;
+
+			throw new Exception(String.Format("Error on line {0}:\n\tExpected \"{1}\" got \"{2}\" instead.", CurrentLine, value, peekedValue));
 		}
 	}
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Xi.Lexer
+﻿namespace Xi.Lexer
 {
 	internal class Token
 	{
@@ -17,17 +15,12 @@ namespace Xi.Lexer
 			Line = line;
 		}
 
-		public Token(BasicToken token)
+		public Token(TokenType type, string filename, uint line)
 		{
-			Type = new Dictionary<BasicTokenType, TokenType>
-			{
-				{ BasicTokenType.Number, TokenType.Number },
-				{ BasicTokenType.String, TokenType.String }
-			}[token.Type];
-
-			Value = token.Value;
-			Filename = token.Filename;
-			Line = token.Line;
+			Type = type;
+			Value = "";
+			Filename = filename;
+			Line = line;
 		}
 	}
 
@@ -36,57 +29,8 @@ namespace Xi.Lexer
 		EndOfStream,
 		Unknown,
 		Word,
-		String,
 		Number,
-
-		KeywordClass,
-		KeywordFunction,
-		KeywordVariant,
-		Public,
-		Private,
-		Protected,
-		Static,
-		Virtual,
-		New,
-		This,
-		Base,
-		If,
-		Else,
-		While,
-		Loop,
-		For,
-		Foreach,
-		Do,
-		Until,
-		Break,
-		Continue,
-		Negate,
-		BinaryNot,
-		Modulo,
-		BinaryXor,
-		BinaryAnd,
-		Multiply,
-		OpenParentheses,
-		CloseParentheses,
-		Subtract,
-		Add,
-		Equal,
-		OpenBracket,
-		CloseBracket,
-		OpenCurlyBracket,
-		CloseCurlyBracket,
-		BinaryOr,
-		Colon,
-		Semicolon,
-		Ternary,
-		Divide,
-		Comma,
-		Period,
-		CompareLessThan,
-		CompareGreaterThan,
-		CompareEqual,
-		CompareNotEqual,
-		CompareLessThanOrEqual,
-		CompareGreaterThanOrEqual
+		String,
+		Delimiter
 	}
 }

@@ -61,7 +61,7 @@ namespace Xi
 
 			do
 			{
-				Console.Write("(>^-^)> ");
+				Console.Write(">> ");
 				value = Console.ReadLine();
 
 				List<Token> tokenStream;
@@ -69,7 +69,7 @@ namespace Xi
 
 				try
 				{
-					tokenStream = Parser.ParseString(value);
+					tokenStream = Tokenizer.ParseString(value);
 				}
 				catch(Exception e)
 				{
@@ -87,7 +87,15 @@ namespace Xi
 
 				state.SetEntryPoint("Global", "Main");
 
-				VirtualMachine.Execute(state);
+				try
+				{
+					VirtualMachine.Execute(state);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine("VM Error: {0}", e.Message);
+				}
+
 			} while (value != "exit");
 		}
 	}

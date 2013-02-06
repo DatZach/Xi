@@ -23,7 +23,7 @@ namespace Xi
 			{
 				Program();
 			}
-			catch(StackOverflowException e)
+			catch(Exception e)
 			{
 				Console.WriteLine(e.Message);
 			}

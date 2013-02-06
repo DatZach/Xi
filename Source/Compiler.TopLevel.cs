@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xi.Lexer;
+﻿using Xi.Lexer;
 
 namespace Xi
 {
@@ -12,13 +8,13 @@ namespace Xi
 		{
 			while (!stream.IsEndOfStream)
 			{
-				if (stream.AcceptWord("using"))
+				if (stream.Accept(TokenType.Word, "using"))
 					UsingStatement();
-				else if (stream.AcceptWord("class"))
+				else if (stream.Accept(TokenType.Word, "class"))
 					ClassDeclaration();
-				else if (stream.Accept(TokenType.OpenCurlyBracket))
+				else if (stream.Accept(TokenType.Delimiter, "{"))
 					OrphanDeclaration();
-				else if (stream.Accept(TokenType.KeywordVariant) || stream.AcceptWord("global"))
+				else if (stream.Accept(TokenType.Word, "var") || stream.Accept(TokenType.Word, "global"))
 					VariableDeclaration();
 				else
 					Block();

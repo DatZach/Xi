@@ -17,7 +17,7 @@ namespace Xi
 
 		public bool LoadString(string value)
 		{
-			TokenStream tokenStream = new TokenStream(Parser.ParseString(value));
+			TokenStream tokenStream = new TokenStream(Tokenizer.ParseString(value));
 
 			Compiler compiler = new Compiler();
 			compiler.Compile(tokenStream);

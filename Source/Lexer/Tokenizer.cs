@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using Xi.Util;
 
@@ -10,9 +11,22 @@ namespace Xi.Lexer
 	{
 		private const string Delimiters = "~!%^&*()-+=[]{}|:;?/<,>.";
 
-		public static List<BasicToken> ParseStream(StringStream stream, string filename)
+		public static List<Token> ParseString(string value)
 		{
-			List<BasicToken> tokens = new List<BasicToken>();
+			return ParseStream(new StringStream(value), "");
+		}
+
+		public static List<Token> ParseFile(string filename)
+		{
+			using (StreamReader reader = new StreamReader(filename))
+			{
+				return ParseStream(new StringStream(reader.ReadToEnd()), filename);
+			}
+		}
+
+		private static List<Token> ParseStream(StringStream stream, string filename)
+		{
+			List<Token> tokens = new List<Token>();
 			uint line = 1;
 
 			while (!stream.IsEndOfStream)
@@ -47,7 +61,7 @@ namespace Xi.Lexer
 				// Parse delimiters
 				if (Delimiters.Contains(stream.Peek()))
 				{
-					tokens.Add(new BasicToken(BasicTokenType.Delimiter, "" + stream.Read(), filename, line));
+					tokens.Add(new Token(TokenType.Delimiter, "" + stream.Read(), filename, line));
 					continue;
 				}
 
@@ -71,7 +85,7 @@ namespace Xi.Lexer
 						value += ch;
 					}
 
-					tokens.Add(new BasicToken(BasicTokenType.String, value, filename, startLine));
+					tokens.Add(new Token(TokenType.String, value, filename, startLine));
 					//++stream.Position;
 					continue;
 				}
@@ -84,7 +98,7 @@ namespace Xi.Lexer
 					while (!stream.IsEndOfStream && (char.IsLetterOrDigit(stream.Peek()) || stream.Peek() == '_'))
 						word += stream.Read();
 
-					tokens.Add(new BasicToken(BasicTokenType.Word, word, filename, line));
+					tokens.Add(new Token(TokenType.Word, word, filename, line));
 					continue;
 				}
 
@@ -122,7 +136,7 @@ namespace Xi.Lexer
 							number += stream.Read();
 					}
 
-					tokens.Add(new BasicToken(BasicTokenType.Number, number, filename, line));
+					tokens.Add(new Token(TokenType.Number, number, filename, line));
 					continue;
 				}
 
@@ -133,7 +147,7 @@ namespace Xi.Lexer
 				throw new Exception("Unexpected token \"" + stream.Read() + "\" on line " + line);
 			}
 
-			tokens.Add(new BasicToken(BasicTokenType.EndOfStream, filename, line));
+			tokens.Add(new Token(TokenType.EndOfStream, filename, line));
 
 			return tokens;
 		}

@@ -1,5 +1,4 @@
 ﻿using System;
-using Xi.Lexer;
 
 namespace Xi
 {
@@ -10,9 +9,9 @@ namespace Xi
 
 		}
 
-		public void Expected(TokenType type)
+		public void Expected(string value)
 		{
-			Console.WriteLine("Error on line {0}:\n\tExpected \"{1}\" got \"{2}\" instead.", stream.CurrentLine, stream.Peek(), type);
+			Console.WriteLine("Error on line {0}:\n\tExpected \"{1}\" got \"{2}\" instead.", stream.CurrentLine, value, stream.Peek().Value);
 		}
 	}
 }

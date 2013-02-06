@@ -8,13 +8,13 @@ namespace Xi
 	{
 		private void Statement()
 		{
-			while(!stream.IsEndOfStream && !stream.Accept(TokenType.CloseCurlyBracket))
+			while (!stream.IsEndOfStream && !stream.Accept(TokenType.Delimiter, "}"))
 				PrintExpression();
 		}
 
 		private void PrintExpression()
 		{
-			if (stream.AcceptWord("print"))
+			if (stream.Accept(TokenType.Word, "print"))
 			{
 				Expression();
 				Instructions.Add(new Instruction(Opcode.Print));
@@ -29,19 +29,17 @@ namespace Xi
 
 			while (Parser.IsAddOperation(stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Add))
+				if (stream.Accept(TokenType.Delimiter, "+"))
 				{
 					Term();
 					Instructions.Add(new Instruction(Opcode.Add));
 				}
-				else if (stream.Accept(TokenType.Subtract))
+				else if (stream.Accept(TokenType.Delimiter, "-"))
 				{
 					Term();
 					Instructions.Add(new Instruction(Opcode.Subtract));
 				}
 			}
-
-			stream.Expect(TokenType.Semicolon);
 		}
 
 		private void Term()
@@ -50,17 +48,17 @@ namespace Xi
 
 			while (Parser.IsMulOperation(stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Multiply))
+				if (stream.Accept(TokenType.Delimiter, "*"))
 				{
 					SignedFactor();
 					Instructions.Add(new Instruction(Opcode.Multiply));
 				}
-				else if (stream.Accept(TokenType.Divide))
+				else if (stream.Accept(TokenType.Delimiter, "/"))
 				{
 					SignedFactor();
 					Instructions.Add(new Instruction(Opcode.Divide));
 				}
-				else if (stream.Accept(TokenType.Modulo))
+				else if (stream.Accept(TokenType.Delimiter, "%"))
 				{
 					SignedFactor();
 					Instructions.Add(new Instruction(Opcode.Modulo));
@@ -72,11 +70,11 @@ namespace Xi
 		{
 			if (Parser.IsAddOperation(stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Add))
+				if (stream.Accept(TokenType.Delimiter, "+"))
 				{
 					// Return absolute value of literal/variable
 				}
-				else if (stream.Accept(TokenType.Subtract))
+				else if (stream.Accept(TokenType.Delimiter, "-"))
 				{
 					Factor();
 
@@ -89,10 +87,10 @@ namespace Xi
 
 		private void Factor()
 		{
-			if (stream.Accept(TokenType.OpenParentheses))
+			if (stream.Accept(TokenType.Delimiter, "("))
 			{
 				Expression();
-				stream.Expect(TokenType.CloseParentheses);
+				stream.Expect(TokenType.Delimiter, ")");
 			}
 			else if (stream.Accept(TokenType.Word))
 			{
