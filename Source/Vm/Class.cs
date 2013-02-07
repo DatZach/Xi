@@ -10,6 +10,14 @@ namespace Xi.Vm
 		public Class Base { get; private set; }
 		public string Name { get; private set; }
 
+		internal Class(string name, Class cBase)
+		{
+			Methods = new List<Method>();
+			Fields = new List<Variant>();
+			Base = cBase;
+			Name = name;
+		}
+
 		public Class(Class classHandle)
 		{
 			Name = classHandle.Name;

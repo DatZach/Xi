@@ -9,6 +9,14 @@ namespace Xi.Vm
 		public int ArgumentCount { get; private set; }
 		public string Name { get; private set; }
 
+		internal Method(string name, int argumentCount)
+		{
+			Instructions = new List<Instruction>();
+			VariableCount = 0;
+			ArgumentCount = argumentCount;
+			Name = name;
+		}
+
 		public Method(string name, List<Instruction> instructions, int variableCount, int argumentCount)
 		{
 			Name = name;

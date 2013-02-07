@@ -6,12 +6,15 @@ namespace Xi
 	{
 		public void Error(string message)
 		{
+			string errorMessage = String.Format("Error on line {0}: \n\t", stream.CurrentLine);
+			errorMessage += message.Replace("\n", "\n\t");
 
+			throw new Exception(errorMessage);
 		}
 
 		public void Expected(string value)
 		{
-			Console.WriteLine("Error on line {0}:\n\tExpected \"{1}\" got \"{2}\" instead.", stream.CurrentLine, value, stream.Peek().Value);
+			Error(String.Format("\tExpected \"{0}\" got \"{1}\" instead.", value, stream.Peek().Value));
 		}
 	}
 }

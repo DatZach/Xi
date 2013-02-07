@@ -7,12 +7,11 @@ namespace Xi
 {
 	internal partial class Compiler
 	{
-		public List<Instruction> Instructions { get; private set; }
 		private TokenStream stream;
  
 		public Compiler()
 		{
-			Instructions = new List<Instruction>();
+			Classes = new List<Class>();
 		}
 
 		public void Compile(TokenStream tokenStream)

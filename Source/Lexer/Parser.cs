@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Xi.Lexer
 {
-	class Parser
+	internal static class Parser
 	{
 		// TODO Should probably move this elsewhere
 

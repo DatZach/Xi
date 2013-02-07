@@ -23,9 +23,9 @@ namespace Xi
 			compiler.Compile(tokenStream);
 
 			// TODO Read classes/methods from compiler instead of implicitly declaring them here
-			Method entryPointMethod = new Method("Main", compiler.Instructions, 0, 0);
-			Class globalClass = new Class("Global", new List<Method> { entryPointMethod }, new List<Variant>(), null);
-			state.Classes.Add(globalClass);
+			//Method entryPointMethod = new Method("Main", compiler.Instructions, 0, 0);
+			//Class globalClass = new Class("Global", new List<Method> { entryPointMethod }, new List<Variant>(), null);
+			state.Classes.AddRange(compiler.Classes);
 
 			return true;
 		}

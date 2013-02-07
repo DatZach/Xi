@@ -17,7 +17,7 @@ namespace Xi
 				else if (stream.Accept(TokenType.Word, "var") || stream.Accept(TokenType.Word, "global"))
 					VariableDeclaration();
 				else
-					Block();
+					OrphanDeclaration(); // TODO This is a dirty hack
 			}
 		}
 
@@ -28,11 +28,35 @@ namespace Xi
 
 		private void ClassDeclaration()
 		{
+			// TODO allow for multiple inherited classes
 			
+			// Get class name & base name
+			string name = stream.GetWord();
+			string baseName = "";
+
+			// Do we have a base class?
+			if (stream.Accept(TokenType.Delimiter, ":"))
+				baseName = stream.GetWord();
+
+			// Add class
+			AddClass(name, Classes.Find(c => c.Name == baseName));
+
+			stream.Expect(TokenType.Delimiter, "{");
+
+			while(!stream.Accept(TokenType.Delimiter, "}"))
+			{
+				// <class-variable>
+				// <constructor>
+				// <destructor>
+				// <class-function>
+			}
 		}
 
 		private void OrphanDeclaration()
 		{
+			AddClass(ClassNameDefault);
+			AddMethod(MethodNameEntry);
+
 			Block();
 		}
 

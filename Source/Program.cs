@@ -50,7 +50,7 @@ namespace Xi
 
 			// TODO Fix this bs
 			if (String.IsNullOrEmpty(entry))
-				entry = "Global.Main";
+				entry = Compiler.ClassNameDefault + "." + Compiler.MethodNameEntry;
 
 			script.Call(entry);
 		}
@@ -81,14 +81,14 @@ namespace Xi
 
 				// TODO: Preserve VM state
 				State state = new State();
-				Method entryPointMethod = new Method("Main", compiler.Instructions, 0, 0);
-				Class globalClass = new Class("Global", new List<Method> { entryPointMethod }, new List<Variant>(), null);
-				state.Classes.Add(globalClass);
-
-				state.SetEntryPoint("Global", "Main");
+				//Method entryPointMethod = new Method("Main", compiler.Instructions, 0, 0);
+				//Class globalClass = new Class("Global", new List<Method> { entryPointMethod }, new List<Variant>(), null);
+				state.Classes.AddRange(compiler.Classes);
 
 				try
 				{
+					// TODO Add Compiler.EntryClass/Compiler.EntryMethod
+					state.SetEntryPoint(Compiler.ClassNameDefault, Compiler.MethodNameEntry);
 					VirtualMachine.Execute(state);
 				}
 				catch (Exception e)
