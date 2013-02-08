@@ -14,7 +14,7 @@ namespace Xi.Util
 		private static ParseLevel parseLevel;
 
 		private static string curClassName, curMethodName;
-		private static long curMethodVariables, curMethodArguments;
+		private static long curMethodArguments;
 		private static List<Class> classes;
 		private static List<Method> methods;
 		private static List<Variant> fields;
@@ -92,7 +92,6 @@ namespace Xi.Util
 
 				case "Method":
 					curMethodName = ReadWord();
-					curMethodVariables = ReadLong();
 					curMethodArguments = ReadLong();
 					instructions = new List<Instruction>();
 					parseLevel = ParseLevel.Method;
@@ -155,7 +154,6 @@ namespace Xi.Util
 			curClassName = "";
 			curMethodName = "";
 			curMethodArguments = 0;
-			curMethodVariables = 0;
 		}
 
 		private static string ReadWord()

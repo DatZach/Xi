@@ -1,7 +1,7 @@
 <program>			::= (<using> | <variable> | <class> | <orphan> | <block>)*
 
 <using>				::= 'using' <ident> ';'
-<variable>			::= ['global'] 'var' (<ident> ['=' <expression>])+ ';'
+<variable>			::= ['global'] 'var' (<ident> ['=' <expression>])+ [';']
 <class>				::= 'class' <ident> '{'
 						(<class-variable> | <constructor> | <destructor> | <class-function>)*
 						'}'
@@ -20,8 +20,8 @@
 						'}'
 <parameter-list>	::= [':' <ident> [',' <ident>]*]
 
-<block>				::= (<variable> | <statement>)*
-<statement>			::= <expression>*
+<block>				::= (<variable> | <assignment>)*
+<assignment>		::= [<ident> <assign-op>] <expression>
 <expresion>			::= <term> [<add-op> <term>]* ';'
 <term>				::= <signed-factor> [<mul-op> <signed-factor>]*
 <signed-factor>		::= [<add-op>] <factor>
@@ -30,3 +30,4 @@
 <accessor>			::= ['public' | 'private' | 'protected']
 <add-op>			::= ('+' | '-')
 <mul-op>			::= ('*' | '/' | '%')
+<assign-op>			::= ('=' | '+=' | '-=' | '*=' | '/=' | '%=' | '|=' | '^=' | '&=')

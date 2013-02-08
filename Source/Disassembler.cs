@@ -13,7 +13,7 @@ namespace Xi
 				Console.WriteLine("--- Class {0} : {1} ---", c.Name, c.Base != null ? c.Base.Name : "null");
 				foreach(Method m in c.Methods)
 				{
-					Console.WriteLine("--- Method {0} ---", m.Name);
+					Console.WriteLine("--- Method {0} : {1} ---", m.Name, m.ArgumentCount);
 					foreach(Instruction instr in m.Instructions)
 					{
 						Console.Write("{0}", instr.Opcode);

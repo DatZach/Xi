@@ -80,6 +80,8 @@ namespace Xi
 			}
 			else if (globalVariable)
 				Expected("Expected keyword \"var\" after keyword \"global\".");
+
+			stream.Accept(TokenType.Delimiter, ";");
 		}
 
 		private void Block()

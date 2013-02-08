@@ -9,18 +9,29 @@ namespace Xi
 		private void Statement()
 		{
 			while (!stream.IsEndOfStream && !stream.Accept(TokenType.Delimiter, "}"))
-				PrintExpression();
+				Assignment();
 		}
 
-		private void PrintExpression()
+		private void Assignment()
 		{
-			if (stream.Accept(TokenType.Word, "print"))
+			if (Parser.IsAssignOperation(stream.PeekAhead(1)))
 			{
+				int variableIndex = GetVariableIndex(stream.GetWord());
+				Token operation = stream.Read();
+
 				Expression();
-				Instructions.Add(new Instruction(Opcode.Print));
+
+				switch (operation.Value)
+				{
+					case "=":
+						Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
+						break;
+				}
 			}
 			else
 				Expression();
+
+			stream.Accept(TokenType.Delimiter, ";");
 		}
 
 		private void Expression()
@@ -87,7 +98,12 @@ namespace Xi
 
 		private void Factor()
 		{
-			if (stream.Accept(TokenType.Delimiter, "("))
+			if (stream.Accept(TokenType.Word, "print"))
+			{
+				Expression();
+				Instructions.Add(new Instruction(Opcode.Print));
+			}
+			else if (stream.Accept(TokenType.Delimiter, "("))
 			{
 				Expression();
 				stream.Expect(TokenType.Delimiter, ")");
