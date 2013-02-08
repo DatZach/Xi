@@ -78,6 +78,7 @@ namespace Xi
 				}
 
 				compiler.Compile(new TokenStream(tokenStream));
+				Disassembler.DumpClasses(compiler.Classes);
 
 				// TODO: Preserve VM state
 				State state = new State();
