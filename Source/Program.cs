@@ -82,8 +82,6 @@ namespace Xi
 
 				// TODO: Preserve VM state
 				State state = new State();
-				//Method entryPointMethod = new Method("Main", compiler.Instructions, 0, 0);
-				//Class globalClass = new Class("Global", new List<Method> { entryPointMethod }, new List<Variant>(), null);
 				state.Classes.AddRange(compiler.Classes);
 
 				try
@@ -96,7 +94,6 @@ namespace Xi
 				{
 					Console.WriteLine("VM Error: {0}", e.Message);
 				}
-
 			} while (value != "exit");
 		}
 	}

@@ -10,7 +10,7 @@ namespace Xi.Vm
 			List<Instruction> stream = state.CurrentMethod.Instructions;
 
 			// Prepare stack
-			state.Stack.PushScope(state.CurrentMethod.VariableCount);
+			state.Stack.PushScope(state.CurrentMethod.Variables.Count);
 
 			while (state.InstructionPointer < stream.Count)
 			{
@@ -305,7 +305,7 @@ namespace Xi.Vm
 							stream = state.CurrentMethod.Instructions;
 
 							// Push stack scope
-							state.Stack.PushScope(state.CurrentMethod.VariableCount + state.CurrentMethod.ArgumentCount);
+							state.Stack.PushScope(state.CurrentMethod.Variables.Count + state.CurrentMethod.ArgumentCount);
 
 							// Pop arguments from transition stack into local arguments
 							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
@@ -339,7 +339,7 @@ namespace Xi.Vm
 							stream = state.CurrentMethod.Instructions;
 
 							// Push stack scope
-							state.Stack.PushScope(state.CurrentMethod.VariableCount + state.CurrentMethod.ArgumentCount);
+							state.Stack.PushScope(state.CurrentMethod.Variables.Count + state.CurrentMethod.ArgumentCount);
 
 							// Pop arguments from transition stack into local arguments
 							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)

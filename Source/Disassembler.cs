@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Xi.Vm;
 
 namespace Xi
@@ -18,7 +16,10 @@ namespace Xi
 					Console.WriteLine("--- Method {0} ---", m.Name);
 					foreach(Instruction instr in m.Instructions)
 					{
-						Console.Write("{0}\t\t", instr.Opcode);
+						Console.Write("{0}", instr.Opcode);
+						for (int i = instr.Opcode.ToString().Length; i < 16; ++i)
+							Console.Write(" ");
+
 						if (instr.Operands != null)
 						{
 							foreach (Variant v in instr.Operands)

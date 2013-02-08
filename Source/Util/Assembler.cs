@@ -106,7 +106,7 @@ namespace Xi.Util
 
 			if (value == "EndMethod")
 			{
-				methods.Add(new Method(curMethodName, instructions, (int)curMethodVariables, (int)curMethodArguments));
+				methods.Add(new Method(curMethodName, instructions, (int)curMethodArguments));
 				parseLevel = ParseLevel.Class;
 				return;
 			}

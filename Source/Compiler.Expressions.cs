@@ -92,9 +92,9 @@ namespace Xi
 				Expression();
 				stream.Expect(TokenType.Delimiter, ")");
 			}
-			else if (stream.Accept(TokenType.Word))
+			else if (stream.Pass(TokenType.Word))
 			{
-				// Variable
+				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(GetVariableIndex(stream.GetWord()))));
 			}
 			else if (stream.Pass(TokenType.Number) || stream.Pass(TokenType.String))
 			{

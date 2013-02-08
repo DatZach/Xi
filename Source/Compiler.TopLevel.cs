@@ -1,4 +1,5 @@
 ﻿using Xi.Lexer;
+using Xi.Vm;
 
 namespace Xi
 {
@@ -14,8 +15,6 @@ namespace Xi
 					ClassDeclaration();
 				else if (stream.Accept(TokenType.Delimiter, "{"))
 					OrphanDeclaration();
-				else if (stream.Accept(TokenType.Word, "var") || stream.Accept(TokenType.Word, "global"))
-					VariableDeclaration();
 				else
 					OrphanDeclaration(); // TODO This is a dirty hack
 			}
@@ -23,13 +22,13 @@ namespace Xi
 
 		private void UsingStatement()
 		{
-			
+
 		}
 
 		private void ClassDeclaration()
 		{
 			// TODO allow for multiple inherited classes
-			
+
 			// Get class name & base name
 			string name = stream.GetWord();
 			string baseName = "";
@@ -43,7 +42,7 @@ namespace Xi
 
 			stream.Expect(TokenType.Delimiter, "{");
 
-			while(!stream.Accept(TokenType.Delimiter, "}"))
+			while (!stream.Accept(TokenType.Delimiter, "}"))
 			{
 				// <class-variable>
 				// <constructor>
@@ -62,11 +61,30 @@ namespace Xi
 
 		private void VariableDeclaration()
 		{
-			
+			bool globalVariable = stream.Accept(TokenType.Word, "global");
+
+			if (stream.Accept(TokenType.Word, "var"))
+			{
+				do
+				{
+					string name = stream.GetWord();
+
+					AddVariable(name);
+
+					if (stream.Accept(TokenType.Delimiter, "="))
+					{
+						Instructions.Add(new Instruction(Opcode.Push, stream.GetVariant()));
+						Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
+					}
+				} while(stream.Accept(TokenType.Delimiter, ","));
+			}
+			else if (globalVariable)
+				Expected("Expected keyword \"var\" after keyword \"global\".");
 		}
 
 		private void Block()
 		{
+			VariableDeclaration();
 			Statement();
 		}
 	}

@@ -56,5 +56,27 @@ namespace Xi
 
 			CurrentClass.Methods.Add(new Method(name, argCount));
 		}
+
+		void AddVariable(string name)
+		{
+			if (CurrentMethod == null)
+			{
+				Error("Cannot declare variable outside of method scope.");
+				return;
+			}
+
+			CurrentMethod.Variables.Add(name);
+		}
+
+		int GetVariableIndex(string name)
+		{
+			if (CurrentMethod == null)
+			{
+				Error("Cannot get variable outside of method scope.");
+				return 0;
+			}
+
+			return CurrentMethod.Variables.IndexOf(name);
+		}
 	}
 }
