@@ -55,6 +55,14 @@ namespace Xi
 					case "&=":
 						Instructions.Add(new Instruction(Opcode.BitwiseAnd));
 						break;
+
+					case "<<=":
+						Instructions.Add(new Instruction(Opcode.BitwiseShiftLeft));
+						break;
+
+					case ">>=":
+						Instructions.Add(new Instruction(Opcode.BitwiseShiftRight));
+						break;
 				}
 
 				Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));

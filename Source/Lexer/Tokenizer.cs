@@ -9,19 +9,14 @@ namespace Xi.Lexer
 {
 	internal static class Tokenizer
 	{
-		private const string Delimiters = "~!%^&*()-+=[]{}|:;?/<,>.";
-		private static readonly List<string> multiCharacterDelimiters = new List<string>
+		//private const string Delimiters = "~!%^&*()-+=[]{}|:;?/<,>.";
+
+		// NOTE Make sure that the largest delimiters come first in the list or else the parser will confuse it with a smaller one
+		private static readonly List<string> delimiters = new List<string>
 		{
-			"+=",
-     		"-=",
-			"*=",
-			"/=",
-			"%=",
-			"|=",
-			"^=",
-			"&=",
-			"<<=",
-			">>="
+			"<<=", ">>=",
+			"+=", "-=","*=", "/=", "%=", "|=", "^=", "&=", "<<", ">>",
+			"~", "!", "%", "^", "&", "*", "(", ")", "-", "+", "=", "[", "]", "{", "}", "|", ":", ";", "?", "/", "<", ",", ">", "."
 		};
 
 		public static List<Token> ParseString(string value)
@@ -149,7 +144,29 @@ namespace Xi.Lexer
 				}
 
 				// Parse delimiters
-				if (Delimiters.Contains(stream.Peek()))
+				bool foundDelimiter = false;
+				string peekedDelimiter = "";
+				foreach (string del in delimiters)
+				{
+					peekedDelimiter = "";
+					for (int i = 0; i < del.Length; ++i)
+						peekedDelimiter += stream.PeekAhead(i);
+
+					if (peekedDelimiter == del)
+					{
+						stream.Position += del.Length;
+						foundDelimiter = true;
+						break;
+					}
+				}
+
+				if (foundDelimiter)
+				{
+					tokens.Add(new Token(TokenType.Delimiter, peekedDelimiter, filename, line));
+					continue;
+				}
+
+				/*if (Delimiters.Contains(stream.Peek()))
 				{
 					if (multiCharacterDelimiters.Count(d => d[0] == stream.Peek()) != 0)
 					{
@@ -166,7 +183,7 @@ namespace Xi.Lexer
 
 					tokens.Add(new Token(TokenType.Delimiter, "" + stream.Read(), filename, line));
 					continue;
-				}
+				}*/
 
 				// Don't run off the rails
 				if (stream.IsEndOfStream)

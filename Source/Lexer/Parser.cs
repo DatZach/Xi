@@ -27,7 +27,7 @@ namespace Xi.Lexer
 			if (token == null || token.Type != TokenType.Delimiter)
 				return false;
 
-			return new List<string> { "=", "+=", "-=", "*=", "/=", "%=", "|=", "^=", "&=" }.Contains(token.Value);
+			return new List<string> { "=", "+=", "-=", "*=", "/=", "%=", "|=", "^=", "&=", "<<=", ">>=" }.Contains(token.Value);
 		}
 	}
 }
