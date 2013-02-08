@@ -19,14 +19,45 @@ namespace Xi
 				int variableIndex = GetVariableIndex(stream.GetWord());
 				Token operation = stream.Read();
 
+				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
 				Expression();
 
 				switch (operation.Value)
 				{
-					case "=":
-						Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
+					case "+=":
+						Instructions.Add(new Instruction(Opcode.Add));
+						break;
+
+					case "-=":
+						Instructions.Add(new Instruction(Opcode.Subtract));
+						break;
+
+					case "*=":
+						Instructions.Add(new Instruction(Opcode.Multiply));
+						break;
+
+					case "/=":
+						Instructions.Add(new Instruction(Opcode.Divide));
+						break;
+
+					case "%=":
+						Instructions.Add(new Instruction(Opcode.Modulo));
+						break;
+
+					case "|=":
+						Instructions.Add(new Instruction(Opcode.BitwiseOr));
+						break;
+
+					case "^=":
+						Instructions.Add(new Instruction(Opcode.BitwiseXor));
+						break;
+
+					case "&=":
+						Instructions.Add(new Instruction(Opcode.BitwiseAnd));
 						break;
 				}
+
+				Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
 			}
 			else
 				Expression();

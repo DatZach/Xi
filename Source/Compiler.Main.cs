@@ -14,7 +14,7 @@ namespace Xi
 			Classes = new List<Class>();
 		}
 
-		public void Compile(TokenStream tokenStream)
+		public bool Compile(TokenStream tokenStream)
 		{
 			stream = tokenStream;
 
@@ -22,10 +22,13 @@ namespace Xi
 			{
 				Program();
 			}
-			catch(StackOverflowException e)
+			catch(Exception e)
 			{
 				Console.WriteLine(e.Message);
+				return false;
 			}
+
+			return true;
 		}
 
 		public void DumpInstructionStream()

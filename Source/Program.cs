@@ -77,7 +77,10 @@ namespace Xi
 					continue;
 				}
 
-				compiler.Compile(new TokenStream(tokenStream));
+				// TODO Maybe move the catch up a level to provide better management up here?
+				if (!compiler.Compile(new TokenStream(tokenStream)))
+					continue;
+
 				Disassembler.DumpClasses(compiler.Classes);
 
 				// TODO: Preserve VM state

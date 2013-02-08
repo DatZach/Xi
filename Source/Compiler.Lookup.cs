@@ -38,7 +38,7 @@ namespace Xi
 		void AddClass(string name, Class cBase = null)
 		{
 			foreach (Class c in Classes.Where(c => c.Name == name))
-				Error(string.Format("Class \"{0}\" already declared previously.", c.Name));
+				Error("Class \"{0}\" already declared previously.", c.Name);
 
 			Classes.Add(new Class(name, cBase));
 		}
@@ -52,7 +52,7 @@ namespace Xi
 			}
 
 			foreach (Method m in CurrentClass.Methods.Where(m => m.Name == name))
-				Error(string.Format("Method \"{0}\" already declared previously.", m.Name));
+				Error("Method \"{0}\" already declared previously.", m.Name);
 
 			CurrentClass.Methods.Add(new Method(name, argCount));
 		}
@@ -76,7 +76,11 @@ namespace Xi
 				return 0;
 			}
 
-			return CurrentMethod.Variables.IndexOf(name);
+			int index = CurrentMethod.Variables.IndexOf(name);
+			if (index == -1)
+				Error("Unknown variable \"{0}\".", name);
+
+			return index;
 		}
 	}
 }

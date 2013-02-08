@@ -10,6 +10,19 @@ namespace Xi.Lexer
 	internal static class Tokenizer
 	{
 		private const string Delimiters = "~!%^&*()-+=[]{}|:;?/<,>.";
+		private static readonly List<string> multiCharacterDelimiters = new List<string>
+		{
+			"+=",
+     		"-=",
+			"*=",
+			"/=",
+			"%=",
+			"|=",
+			"^=",
+			"&=",
+			"<<=",
+			">>="
+		};
 
 		public static List<Token> ParseString(string value)
 		{
@@ -58,13 +71,6 @@ namespace Xi.Lexer
 					}
 				}
 
-				// Parse delimiters
-				if (Delimiters.Contains(stream.Peek()))
-				{
-					tokens.Add(new Token(TokenType.Delimiter, "" + stream.Read(), filename, line));
-					continue;
-				}
-
 				// TODO Proper multiline strings
 				// Parse strings
 				if (stream.Peek() == '\"')
@@ -103,9 +109,11 @@ namespace Xi.Lexer
 				}
 
 				// Parse numbers
-				if (char.IsDigit(stream.Peek()))
+				if (char.IsDigit(stream.Peek()) || (stream.Peek() == '-' && char.IsDigit(stream.PeekAhead(1))))
 				{
 					string number = "";
+					if (stream.Peek() == '-')
+						number += stream.Read();
 
 					if (stream.Peek() == '0' && stream.PeekAhead(1) == 'x')
 					{
@@ -137,6 +145,26 @@ namespace Xi.Lexer
 					}
 
 					tokens.Add(new Token(TokenType.Number, number, filename, line));
+					continue;
+				}
+
+				// Parse delimiters
+				if (Delimiters.Contains(stream.Peek()))
+				{
+					if (multiCharacterDelimiters.Count(d => d[0] == stream.Peek()) != 0)
+					{
+						string value = multiCharacterDelimiters.First(d => d[0] == stream.Peek());
+						++stream.Position;
+						if (value[1] == stream.Read())
+						{
+							tokens.Add(new Token(TokenType.Delimiter, value, filename, line));
+							continue;
+						}
+
+						stream.Position -= 2;
+					}
+
+					tokens.Add(new Token(TokenType.Delimiter, "" + stream.Read(), filename, line));
 					continue;
 				}
 

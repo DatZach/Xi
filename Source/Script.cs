@@ -20,7 +20,8 @@ namespace Xi
 			TokenStream tokenStream = new TokenStream(Tokenizer.ParseString(value));
 
 			Compiler compiler = new Compiler();
-			compiler.Compile(tokenStream);
+			if (!compiler.Compile(tokenStream))
+				return false;
 
 			// TODO Read classes/methods from compiler instead of implicitly declaring them here
 			//Method entryPointMethod = new Method("Main", compiler.Instructions, 0, 0);
