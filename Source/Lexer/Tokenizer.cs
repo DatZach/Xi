@@ -61,6 +61,9 @@ namespace Xi.Lexer
 						if (stream.Read() == StringStream.NewLine)
 							++line;
 					}
+
+					stream.Position += 2;
+					continue;
 				}
 
 				// TODO Proper multiline strings

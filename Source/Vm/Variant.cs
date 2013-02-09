@@ -124,22 +124,22 @@ namespace Xi.Vm
 					return "object";
 
 				case VariantType.Array:
+				{
+					StringBuilder builder = new StringBuilder();
+					builder.Append("[ ");
+
+					for (int i = 0; i < ArrayValue.Count; ++i)
 					{
-						StringBuilder builder = new StringBuilder();
-						builder.Append("[ ");
+						builder.Append(ArrayValue[i]);
 
-						for (int i = 0; i < ArrayValue.Count; ++i)
-						{
-							builder.Append(ArrayValue[i]);
-
-							if (i + 1 != ArrayValue.Count)
-								builder.Append(", ");
-						}
-
-						builder.Append(" ]");
-
-						return builder.ToString();
+						if (i + 1 != ArrayValue.Count)
+							builder.Append(", ");
 					}
+
+					builder.Append(" ]");
+
+					return builder.ToString();
+				}
 			}
 
 			return "nill";

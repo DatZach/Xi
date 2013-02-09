@@ -91,6 +91,11 @@ namespace Xi
 
 						Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
 					}
+					else
+					{
+						Instructions.Add(new Instruction(Opcode.Push, new Variant()));
+						Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
+					}
 				} while(stream.Accept(TokenType.Delimiter, ","));
 			}
 			else if (globalVariable)

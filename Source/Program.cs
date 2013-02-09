@@ -10,7 +10,7 @@ namespace Xi
 	{
 		public static void Main(string[] args)
 		{
-			if (args.Length == 1)
+			if (args.Length == 1 && args[0][0] == '-' && args[0][1] == '-') // TODO Fix this hack
 			{
 				HandleCommandLineSwitches(args[0]);
 				return;
