@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -78,19 +77,38 @@ namespace Xi
 
 		private void Expression()
 		{
-			Term();
+			ShiftTerm();
 
 			while (Parser.IsAddOperation(stream.Peek()))
 			{
 				if (stream.Accept(TokenType.Delimiter, "+"))
 				{
-					Term();
+					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.Add));
 				}
 				else if (stream.Accept(TokenType.Delimiter, "-"))
 				{
-					Term();
+					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.Subtract));
+				}
+			}
+		}
+
+		private void ShiftTerm()
+		{
+			Term();
+
+			while (Parser.IsBitwiseShiftOperation(stream.Peek()))
+			{
+				if (stream.Accept(TokenType.Delimiter, "<<"))
+				{
+					Term();
+					Instructions.Add(new Instruction(Opcode.BitwiseShiftLeft));
+				}
+				else if (stream.Accept(TokenType.Delimiter, ">>"))
+				{
+					Term();
+					Instructions.Add(new Instruction(Opcode.BitwiseShiftRight));
 				}
 			}
 		}
@@ -188,9 +206,7 @@ namespace Xi
 				Instructions.Add(new Instruction(Opcode.Push, stream.GetVariant()));
 			}
 			else
-			{
-				throw new Exception("Expected variable, string or number literal");
-			}
+				Expected("builtin function, variable or literal");
 		}
 	}
 }

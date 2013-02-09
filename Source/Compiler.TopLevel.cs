@@ -1,4 +1,5 @@
-﻿using Xi.Lexer;
+﻿using System.Collections.Generic;
+using Xi.Lexer;
 using Xi.Vm;
 
 namespace Xi
@@ -73,13 +74,27 @@ namespace Xi
 
 					if (stream.Accept(TokenType.Delimiter, "="))
 					{
-						Instructions.Add(new Instruction(Opcode.Push, stream.GetVariant()));
+						if (stream.Accept(TokenType.Delimiter, "["))
+						{
+							List<Variant> arrayValues = new List<Variant>();
+
+							while (!stream.Accept(TokenType.Delimiter, "]"))
+							{
+								arrayValues.Add(stream.GetVariant());
+								stream.Accept(TokenType.Delimiter, ",");
+							}
+
+							Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayValues)));
+						}
+						else
+							Instructions.Add(new Instruction(Opcode.Push, stream.GetVariant()));
+
 						Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
 					}
 				} while(stream.Accept(TokenType.Delimiter, ","));
 			}
 			else if (globalVariable)
-				Expected("Expected keyword \"var\" after keyword \"global\".");
+				Expected("keyword \"var\" after keyword \"global\".");
 
 			stream.Accept(TokenType.Delimiter, ";");
 		}

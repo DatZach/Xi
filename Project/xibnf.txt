@@ -22,7 +22,8 @@
 
 <block>				::= (<variable> | <assignment>)*
 <assignment>		::= [<ident> <assign-op>] <expression>
-<expresion>			::= <term> [<add-op> <term>]* ';'
+<expresion>			::= <shift-term> [<add-op> <shift-term>]* ';'
+<shift-term>		::= <term> [<bitwise-shift-op> <term>]*
 <term>				::= <signed-factor> [<mul-op> <signed-factor>]*
 <signed-factor>		::= [<add-op>] <factor>
 <factor>			::= (<literal> | <variable>)
