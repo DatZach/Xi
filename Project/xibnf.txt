@@ -24,7 +24,8 @@
 <assignment>		::= [<ident> <assign-op>] <expression>
 <expresion>			::= <shift-term> [<add-op> <shift-term>]* ';'
 <shift-term>		::= <relation-gl-term> [<bitwise-shift-op> <relation-gl-term>]*
-<relation-gl-term>	::= <term> [<relation-gl-op> <term>]*
+<relation-gl-term>	::= <relation-term> [<relation-gl-op> <relation-term>]*
+<relation-term>		::= <term> [<relation-op> <term>]*
 <term>				::= <signed-factor> [<mul-op> <signed-factor>]*
 <signed-factor>		::= [<add-op>] <factor>
 <factor>			::= (<literal> | <variable>)

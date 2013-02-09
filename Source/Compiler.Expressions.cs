@@ -115,29 +115,48 @@ namespace Xi
 
 		private void RelationGlTerm()
 		{
-			Term();
+			RelationTerm();
 
 			while(Parser.IsRelationGlOperation(stream.Peek()))
 			{
 				if (stream.Accept(TokenType.Delimiter, "<"))
 				{
-					Term();
+					RelationTerm();
 					Instructions.Add(new Instruction(Opcode.CompareLesserThan));
 				}
 				else if (stream.Accept(TokenType.Delimiter, ">"))
 				{
-					Term();
+					RelationTerm();
 					Instructions.Add(new Instruction(Opcode.CompareGreaterThan));
 				}
 				else if (stream.Accept(TokenType.Delimiter, "<="))
 				{
-					Term();
+					RelationTerm();
 					Instructions.Add(new Instruction(Opcode.CompareLesserThanOrEqual));
 				}
 				else if (stream.Accept(TokenType.Delimiter, ">="))
 				{
-					Term();
+					RelationTerm();
 					Instructions.Add(new Instruction(Opcode.CompareGreaterThanOrEqual));
+				}
+			}
+		}
+
+		private void RelationTerm()
+		{
+			Term();
+
+			while(Parser.IsRelationOperation(stream.Peek()))
+			{
+				if (stream.Accept(TokenType.Delimiter, "=="))
+				{
+					Term();
+					Instructions.Add(new Instruction(Opcode.CompareEqual));
+				}
+				else if (stream.Accept(TokenType.Delimiter, "!="))
+				{
+					Term();
+					Instructions.Add(new Instruction(Opcode.CompareNotEqual));
 				}
 			}
 		}
