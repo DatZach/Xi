@@ -16,9 +16,10 @@ namespace Xi
 				foreach(Method m in c.Methods)
 				{
 					Console.WriteLine("--- Method {0} : {1} ---", m.Name, m.ArgumentCount);
+					int ii = 0;
 					foreach(Instruction instr in m.Instructions)
 					{
-						Console.Write("{0}", instr.Opcode);
+						Console.Write("{0}\t{1}", ii++, instr.Opcode);
 						for (int i = instr.Opcode.ToString().Length; i < operandTabLength; ++i)
 							Console.Write(" ");
 

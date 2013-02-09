@@ -74,6 +74,7 @@
     <Compile Include="Compiler.Main.cs" />
     <Compile Include="Compiler.TopLevel.cs" />
     <Compile Include="Disassembler.cs" />
+    <Compile Include="Label.cs" />
     <Compile Include="Lexer\Parser.cs" />
     <Compile Include="Lexer\Token.cs" />
     <Compile Include="Lexer\Tokenizer.cs" />

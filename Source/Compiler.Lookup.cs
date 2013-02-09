@@ -21,7 +21,7 @@ namespace Xi
 			get { return CurrentClass != null ? CurrentClass.Methods.Last() : null; }
 		}
 
-		private List<Instruction> Instructions
+		internal List<Instruction> Instructions
 		{
 			get
 			{

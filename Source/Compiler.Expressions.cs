@@ -78,6 +78,27 @@ namespace Xi
 		private void TernaryExpression()
 		{
 			LogicalAndOr();
+
+			while (stream.Accept(TokenType.Delimiter, "?"))
+			{
+				Label labelElse = new Label(this);
+				Label labelEnd = new Label(this);
+
+				Instructions.Add(new Instruction(Opcode.Push, new Variant(1)));
+				Instructions.Add(new Instruction(Opcode.CompareEqual));
+				Instructions.Add(new Instruction(Opcode.IfFalse, new Variant(0)));
+				labelElse.PatchHere();
+
+				LogicalAndOr();
+				Instructions.Add(new Instruction(Opcode.Jump, new Variant(0)));
+				labelEnd.PatchHere();
+
+				stream.Expect(TokenType.Delimiter, ":");
+
+				labelElse.Mark();
+				LogicalAndOr();
+				labelEnd.Mark();
+			}
 		}
 
 		private void LogicalAndOr()

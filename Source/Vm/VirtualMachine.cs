@@ -263,16 +263,20 @@ namespace Xi.Vm
 					case Opcode.IfTrue:
 						if (state.Stack.Pop().IntValue == 1)
 							state.InstructionPointer = (int)instruction.Operand.IntValue;
-						break;
+						else
+							++state.InstructionPointer;
+						continue;
 
 					case Opcode.IfFalse:
-						if (state.Stack.Pop().IntValue == 1)
+						if (state.Stack.Pop().IntValue == 0)
 							state.InstructionPointer = (int)instruction.Operand.IntValue;
-						break;
+						else
+							++state.InstructionPointer;
+						continue;
 
 					case Opcode.Jump:
 						state.InstructionPointer = (int)instruction.Operand.IntValue;
-						break;
+						continue;
 
 					case Opcode.Return:
 						{
