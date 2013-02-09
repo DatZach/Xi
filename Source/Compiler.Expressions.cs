@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -19,7 +20,9 @@ namespace Xi
 				int variableIndex = GetVariableIndex(stream.GetWord());
 				Token operation = stream.Read();
 
-				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
+				if (operation.Value != "=")
+					Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
+
 				Expression();
 
 				switch (operation.Value)
@@ -144,14 +147,41 @@ namespace Xi
 				Expression();
 				Instructions.Add(new Instruction(Opcode.Print));
 			}
+			else if (stream.Accept(TokenType.Word, "len"))
+			{
+				Expression();
+				Instructions.Add(new Instruction(Opcode.GetVariableLength));
+			}
 			else if (stream.Accept(TokenType.Delimiter, "("))
 			{
 				Expression();
 				stream.Expect(TokenType.Delimiter, ")");
 			}
+			else if (stream.Accept(TokenType.Delimiter, "["))
+			{
+				List<Variant> arrayValues = new List<Variant>();
+
+				while (!stream.Accept(TokenType.Delimiter, "]"))
+				{
+					arrayValues.Add(stream.GetVariant());
+					stream.Accept(TokenType.Delimiter, ",");
+				}
+
+				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayValues)));
+			}
 			else if (stream.Pass(TokenType.Word))
 			{
-				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(GetVariableIndex(stream.GetWord()))));
+				if (stream.PeekAhead(1).Value == "[")
+				{
+					Variant arrayVariable = new Variant(GetVariableIndex(stream.GetWord()));
+					stream.Expect(TokenType.Delimiter, "[");
+					Expression();
+					stream.Expect(TokenType.Delimiter, "]");
+
+					Instructions.Add(new Instruction(Opcode.GetArrayVariable, arrayVariable));
+				}
+				else
+					Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(GetVariableIndex(stream.GetWord()))));
 			}
 			else if (stream.Pass(TokenType.Number) || stream.Pass(TokenType.String))
 			{

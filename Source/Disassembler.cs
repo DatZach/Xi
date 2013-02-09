@@ -8,6 +8,8 @@ namespace Xi
 	{
 		public static void DumpClasses(List<Class> classes)
 		{
+			const int operandTabLength = 18;
+
 			foreach(Class c in classes)
 			{
 				Console.WriteLine("--- Class {0} : {1} ---", c.Name, c.Base != null ? c.Base.Name : "null");
@@ -17,7 +19,7 @@ namespace Xi
 					foreach(Instruction instr in m.Instructions)
 					{
 						Console.Write("{0}", instr.Opcode);
-						for (int i = instr.Opcode.ToString().Length; i < 16; ++i)
+						for (int i = instr.Opcode.ToString().Length; i < operandTabLength; ++i)
 							Console.Write(" ");
 
 						if (instr.Operands != null)

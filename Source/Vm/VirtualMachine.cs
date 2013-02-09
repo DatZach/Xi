@@ -51,6 +51,18 @@ namespace Xi.Vm
 						state.Stack.Push(state.Stack[(int)instruction.Operand.IntValue]);
 						break;
 
+					case Opcode.SetArrayVariable:
+						state.Stack[(int)instruction.Operands[0].IntValue][(int)state.Stack.Pop().IntValue] = state.Stack.Pop();
+						break;
+
+					case Opcode.GetArrayVariable:
+						state.Stack.Push(state.Stack[(int)instruction.Operands[0].IntValue][(int)state.Stack.Pop().IntValue]);
+						break;
+
+					case Opcode.GetVariableLength:
+						state.Stack.Push(new Variant(state.Stack.Pop().Length));
+						break;
+
 					case Opcode.GetArgument:
 						/*
 						 * May not be needed?

@@ -16,6 +16,54 @@ namespace Xi.Vm
 		public Class ObjectValue;
 		public List<Variant> ArrayValue;
 
+		public int Length
+		{
+			get
+			{
+				switch(Type)
+				{
+					case VariantType.String:
+						return StringValue.Length;
+
+					case VariantType.Double:
+						return 8;
+
+					case VariantType.Int64:
+						return 8;
+
+					case VariantType.Nill:
+						return 0;
+
+					case VariantType.Array:
+						return ArrayValue.Count;
+
+					case VariantType.Object:
+						return 8;
+				}
+
+				return 0;
+			}
+		}
+
+		public Variant this[int index]
+		{
+			get
+			{
+				if (Type != VariantType.Array)
+					throw new Exception(String.Format("Cannot index type \"{0}\"", Type));
+
+				return ArrayValue[index];
+			}
+
+			set
+			{
+				if (Type != VariantType.Array)
+					throw new Exception(String.Format("Cannot index type \"{0}\"", Type));
+
+				ArrayValue[index] = value;
+			}
+		}
+
 		public Variant()
 		{
 			timestamp = DateTime.Now.Ticks;

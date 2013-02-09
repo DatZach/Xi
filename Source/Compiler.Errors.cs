@@ -15,6 +15,8 @@ namespace Xi
 
 		public void Expected(string value)
 		{
+			// TODO Stream may need rewinding?
+			//--stream.Position;
 			Error("\tExpected \"{0}\" got \"{1}\" instead.", value, stream.Peek().Value);
 		}
 	}
