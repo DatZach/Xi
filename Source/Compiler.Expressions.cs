@@ -89,14 +89,16 @@ namespace Xi
 				if (stream.Accept(TokenType.Delimiter, "&&"))
 				{
 					BitwiseXorOr();
-					
-					// TODO Implement
+
+					Instructions.Add(new Instruction(Opcode.CompareEqual));
 				}
 				else if (stream.Accept(TokenType.Delimiter, "||"))
 				{
 					BitwiseXorOr();
 
-					// TODO Implement
+					Instructions.Add(new Instruction(Opcode.Add));
+					Instructions.Add(new Instruction(Opcode.Push, new Variant(0)));
+					Instructions.Add(new Instruction(Opcode.CompareGreaterThan));
 				}
 			}
 		}
