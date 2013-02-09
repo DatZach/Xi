@@ -1,37 +1,43 @@
-<program>			::= (<using> | <variable> | <class> | <orphan> | <block>)*
+<program>				::= (<using> | <variable> | <class> | <orphan> | <block>)*
 
-<using>				::= 'using' <ident> ';'
-<variable>			::= ['global'] 'var' (<ident> ['=' <expression>])+ [';']
-<class>				::= 'class' <ident> '{'
-						(<class-variable> | <constructor> | <destructor> | <class-function>)*
-						'}'
-<orphan>			::= '{' <block> '}'
+<using>					::= 'using' <ident> ';'
+<variable>				::= ['global'] 'var' (<ident> ['=' <expression>])+ [';']
+<class>					::= 'class' <ident> '{'
+							(<class-variable> | <constructor> | <destructor> | <class-function>)*
+							'}'
+<orphan>				::= '{' <block> '}'
 
-<class-variable>	::= <accessor> <variable>
-<constructor>		::= 'public' 'constructor' <parameter-list> '{'
-						<block>
-						'}'
-<destructor>		::= 'public' 'destructor' <parameter-list> '{'
-						<block>
-						'}'
-<class-function>	::= <accessor> <function>
-<function>			::= 'function' <ident> <parameter-list> '{'
-						<block>
-						'}'
-<parameter-list>	::= [':' <ident> [',' <ident>]*]
+<class-variable>		::= <accessor> <variable>
+<constructor>			::= 'public' 'constructor' <parameter-list> '{'
+							<block>
+							'}'
+<destructor>			::= 'public' 'destructor' <parameter-list> '{'
+							<block>
+							'}'
+<class-function>		::= <accessor> <function>
+<function>				::= 'function' <ident> <parameter-list> '{'
+							<block>
+							'}'
+<parameter-list>		::= [':' <ident> [',' <ident>]*]
 
-<block>				::= (<variable> | <assignment>)*
-<assignment>		::= [<ident> <assign-op>] <expression>
-<expresion>			::= <shift-term> [<add-op> <shift-term>]* ';'
-<shift-term>		::= <relation-gl-term> [<bitwise-shift-op> <relation-gl-term>]*
-<relation-gl-term>	::= <relation-term> [<relation-gl-op> <relation-term>]*
-<relation-term>		::= <term> [<relation-op> <term>]*
-<term>				::= <signed-factor> [<mul-op> <signed-factor>]*
-<signed-factor>		::= ([<add-op>] <factor> | '!' <factor> | '~' <factor>)
-<factor>			::= (<literal> | <variable>)
+<block>					::= (<variable> | <assignment>)*
+<assignment>			::= [<ident> <assign-op>] <ternary-expression>
+<ternary-expression>	::= <logical-and-or> ['?' <logical-and-or> ':' <logical-and-or>]*
+<logical-and-or>		::= <bitwise-xor-or> [<logical-and-or-op> <bitwise-xor-or>]*
+<bitwise-xor-or>		::= <bitwise-and> [<bitwise-xor-or-op> <bitwise-and>]*
+<bitwise-and>			::= <relation-term> ['&' <relation-term>]*
+<relation-term>			::= <relation-gl-term> [<relation-op> <relation-gl-term>]*
+<relation-gl-term>		::= <shift-term> [<relation-gl-op> <shift-term>]*
+<shift-term>			::= <expression> [<bitwise-shift-op> <expression>]*
+<expression>			::= <term> [<add-op> <term>]* ';'
+<term>					::= <signed-factor> [<mul-op> <signed-factor>]*
+<signed-factor>			::= ([<add-op>] <factor> | '!' <factor> | '~' <factor>)
+<factor>				::= (<literal> | <variable>)
 
-<accessor>			::= ['public' | 'private' | 'protected']
-<add-op>			::= ('+' | '-')
-<mul-op>			::= ('*' | '/' | '%')
-<assign-op>			::= ('=' | '+=' | '-=' | '*=' | '/=' | '%=' | '|=' | '^=' | '&=')
-<relation-gl-op>	::= ('<' | '>' | '<=' | '>=')
+<accessor>				::= ['public' | 'private' | 'protected']
+<add-op>				::= ('+' | '-')
+<mul-op>				::= ('*' | '/' | '%')
+<assign-op>				::= ('=' | '+=' | '-=' | '*=' | '/=' | '%=' | '|=' | '^=' | '&=')
+<relation-gl-op>		::= ('<' | '>' | '<=' | '>=')
+<logical-and-or-op>		::= ('&&' | '||')
+<bitwise-xor-or>		::= ('^' | '|')

@@ -36,7 +36,8 @@ Precedence	Operators	Description
 10		&& ||		Logical AND and OR
 
 11		?:		Ternary
-		=		Assignment
+
+12		=		Assignment
 		+= -=		Assignment by sum and difference
 		*= /= %=	Assignment by product, quotent and remainder
 		<<= >>=		Assignment by bitwise left shift and right shift

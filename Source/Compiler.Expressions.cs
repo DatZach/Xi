@@ -22,7 +22,7 @@ namespace Xi
 				if (operation.Value != "=")
 					Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
 
-				Expression();
+				TernaryExpression();
 
 				switch (operation.Value)
 				{
@@ -70,93 +70,149 @@ namespace Xi
 				Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
 			}
 			else
-				Expression();
+				TernaryExpression();
 
 			stream.Accept(TokenType.Delimiter, ";");
 		}
 
-		private void Expression()
+		private void TernaryExpression()
 		{
-			ShiftTerm();
+			LogicalAndOr();
+		}
 
-			while (Parser.IsAddOperation(stream.Peek()))
+		private void LogicalAndOr()
+		{
+			BitwiseXorOr();
+
+			while (Parser.IsLogicalAndOrOperation(stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "+"))
+				if (stream.Accept(TokenType.Delimiter, "&&"))
 				{
-					ShiftTerm();
-					Instructions.Add(new Instruction(Opcode.Add));
+					BitwiseXorOr();
+					
+					// TODO Implement
 				}
-				else if (stream.Accept(TokenType.Delimiter, "-"))
+				else if (stream.Accept(TokenType.Delimiter, "||"))
 				{
-					ShiftTerm();
-					Instructions.Add(new Instruction(Opcode.Subtract));
+					BitwiseXorOr();
+
+					// TODO Implement
 				}
 			}
 		}
 
-		private void ShiftTerm()
+		private void BitwiseXorOr()
+		{
+			BitwiseAnd();
+
+			while(Parser.IsBitwiseXorOrOperation(stream.Peek()))
+			{
+				if (stream.Accept(TokenType.Delimiter, "^"))
+				{
+					BitwiseAnd();
+					Instructions.Add(new Instruction(Opcode.BitwiseXor));
+				}
+				else if (stream.Accept(TokenType.Delimiter, "|"))
+				{
+					BitwiseAnd();
+					Instructions.Add(new Instruction(Opcode.BitwiseOr));
+				}
+			}
+		}
+
+		private void BitwiseAnd()
+		{
+			RelationTerm();
+
+			while(stream.Accept(TokenType.Delimiter, "&"))
+			{
+				RelationTerm();
+				Instructions.Add(new Instruction(Opcode.BitwiseAnd));
+			}
+		}
+
+		private void RelationTerm()
 		{
 			RelationGlTerm();
 
-			while (Parser.IsBitwiseShiftOperation(stream.Peek()))
+			while (Parser.IsRelationOperation(stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "<<"))
+				if (stream.Accept(TokenType.Delimiter, "=="))
 				{
 					RelationGlTerm();
-					Instructions.Add(new Instruction(Opcode.BitwiseShiftLeft));
+					Instructions.Add(new Instruction(Opcode.CompareEqual));
 				}
-				else if (stream.Accept(TokenType.Delimiter, ">>"))
+				else if (stream.Accept(TokenType.Delimiter, "!="))
 				{
 					RelationGlTerm();
-					Instructions.Add(new Instruction(Opcode.BitwiseShiftRight));
+					Instructions.Add(new Instruction(Opcode.CompareNotEqual));
 				}
 			}
 		}
 
 		private void RelationGlTerm()
 		{
-			RelationTerm();
+			ShiftTerm();
 
-			while(Parser.IsRelationGlOperation(stream.Peek()))
+			while (Parser.IsRelationGlOperation(stream.Peek()))
 			{
 				if (stream.Accept(TokenType.Delimiter, "<"))
 				{
-					RelationTerm();
+					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.CompareLesserThan));
 				}
 				else if (stream.Accept(TokenType.Delimiter, ">"))
 				{
-					RelationTerm();
+					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.CompareGreaterThan));
 				}
 				else if (stream.Accept(TokenType.Delimiter, "<="))
 				{
-					RelationTerm();
+					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.CompareLesserThanOrEqual));
 				}
 				else if (stream.Accept(TokenType.Delimiter, ">="))
 				{
-					RelationTerm();
+					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.CompareGreaterThanOrEqual));
 				}
 			}
 		}
 
-		private void RelationTerm()
+		private void ShiftTerm()
+		{
+			Expression();
+
+			while (Parser.IsBitwiseShiftOperation(stream.Peek()))
+			{
+				if (stream.Accept(TokenType.Delimiter, "<<"))
+				{
+					Expression();
+					Instructions.Add(new Instruction(Opcode.BitwiseShiftLeft));
+				}
+				else if (stream.Accept(TokenType.Delimiter, ">>"))
+				{
+					Expression();
+					Instructions.Add(new Instruction(Opcode.BitwiseShiftRight));
+				}
+			}
+		}
+
+		private void Expression()
 		{
 			Term();
 
-			while(Parser.IsRelationOperation(stream.Peek()))
+			while (Parser.IsAddOperation(stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "=="))
+				if (stream.Accept(TokenType.Delimiter, "+"))
 				{
 					Term();
-					Instructions.Add(new Instruction(Opcode.CompareEqual));
+					Instructions.Add(new Instruction(Opcode.Add));
 				}
-				else if (stream.Accept(TokenType.Delimiter, "!="))
+				else if (stream.Accept(TokenType.Delimiter, "-"))
 				{
 					Term();
-					Instructions.Add(new Instruction(Opcode.CompareNotEqual));
+					Instructions.Add(new Instruction(Opcode.Subtract));
 				}
 			}
 		}
@@ -217,17 +273,17 @@ namespace Xi
 		{
 			if (stream.Accept(TokenType.Word, "print"))
 			{
-				Expression();
+				TernaryExpression();
 				Instructions.Add(new Instruction(Opcode.Print));
 			}
 			else if (stream.Accept(TokenType.Word, "len"))
 			{
-				Expression();
+				TernaryExpression();
 				Instructions.Add(new Instruction(Opcode.GetVariableLength));
 			}
 			else if (stream.Accept(TokenType.Delimiter, "("))
 			{
-				Expression();
+				TernaryExpression();
 				stream.Expect(TokenType.Delimiter, ")");
 			}
 			else if (stream.Accept(TokenType.Delimiter, "["))

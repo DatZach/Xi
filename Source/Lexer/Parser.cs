@@ -53,5 +53,21 @@ namespace Xi.Lexer
 
 			return new List<string> { "==", "!=" }.Contains(token.Value);
 		}
+
+		public static bool IsLogicalAndOrOperation(Token token)
+		{
+			if (token == null || token.Type != TokenType.Delimiter)
+				return false;
+
+			return new List<string> { "&&", "||" }.Contains(token.Value);
+		}
+
+		public static bool IsBitwiseXorOrOperation(Token token)
+		{
+			if (token == null || token.Type != TokenType.Delimiter)
+				return false;
+
+			return new List<string> { "^", "|" }.Contains(token.Value);
+		}
 	}
 }
