@@ -31,7 +31,7 @@
 <shift-term>			::= <expression> [<bitwise-shift-op> <expression>]*
 <expression>			::= <term> [<add-op> <term>]* ';'
 <term>					::= <signed-factor> [<mul-op> <signed-factor>]*
-<signed-factor>			::= ([<add-op>] <factor> | '!' <factor> | '~' <factor>)
+<signed-factor>			::= ([<add-op>] <factor> | '!' <factor> | '~' <factor> | <inc-op> <factor>)
 <factor>				::= (<literal> | <variable>)
 
 <accessor>				::= ['public' | 'private' | 'protected']
@@ -41,3 +41,4 @@
 <relation-gl-op>		::= ('<' | '>' | '<=' | '>=')
 <logical-and-or-op>		::= ('&&' | '||')
 <bitwise-xor-or>		::= ('^' | '|')
+<inc-op>				::= ('++' | '--')

@@ -128,7 +128,7 @@ namespace Xi
 		{
 			BitwiseAnd();
 
-			while(Parser.IsBitwiseXorOrOperation(stream.Peek()))
+			while (Parser.IsBitwiseXorOrOperation(stream.Peek()))
 			{
 				if (stream.Accept(TokenType.Delimiter, "^"))
 				{
@@ -147,7 +147,7 @@ namespace Xi
 		{
 			RelationTerm();
 
-			while(stream.Accept(TokenType.Delimiter, "&"))
+			while (stream.Accept(TokenType.Delimiter, "&"))
 			{
 				RelationTerm();
 				Instructions.Add(new Instruction(Opcode.BitwiseAnd));
@@ -288,6 +288,18 @@ namespace Xi
 				Factor();
 				Instructions.Add(new Instruction(Opcode.BitwiseNegate));
 			}
+			else if (stream.Accept(TokenType.Delimiter, "++"))
+			{
+				int variableIndex = GetVariableIndex(stream.GetWord());
+				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(1) }));
+				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
+			}
+			else if (stream.Accept(TokenType.Delimiter, "--"))
+			{
+				int variableIndex = GetVariableIndex(stream.GetWord());
+				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(-1) }));
+				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
+			}
 			else
 				Factor();
 		}
@@ -339,8 +351,21 @@ namespace Xi
 			{
 				Instructions.Add(new Instruction(Opcode.Push, stream.GetVariant()));
 			}
-			else
+			else if (!Parser.IsIncrementOperation(stream.Peek()))
 				Expected("builtin function, variable or literal");
+
+			if (stream.Accept(TokenType.Delimiter, "++"))
+			{
+				int variableIndex = GetVariableIndex(stream.PeekAhead(-2).Value);
+				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
+				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(1) }));
+			}
+			else if (stream.Accept(TokenType.Delimiter, "--"))
+			{
+				int variableIndex = GetVariableIndex(stream.PeekAhead(-2).Value);
+				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
+				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(-1) }));
+			}
 		}
 	}
 }
