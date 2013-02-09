@@ -206,56 +206,69 @@ namespace Xi.Vm
 						state.Stack.Push(+state.Stack.Pop());
 						break;
 
-					case Opcode.Compare:
+					case Opcode.CompareEqual:
 						{
 							Variant a = state.Stack.Pop();
 							Variant b = state.Stack.Pop();
 
-							state.Stack.Push(new Variant(b == a));
+							state.Stack.Push(new Variant(b == a ? 1 : 0));
 							break;
 						}
 
-					case Opcode.IfEqual:
-						if (state.Stack.Pop().IntValue == 0)
-							state.InstructionPointer = (int)instruction.Operand.IntValue;
+					case Opcode.CompareNotEqual:
+						{
+							Variant a = state.Stack.Pop();
+							Variant b = state.Stack.Pop();
 
-						break;
+							state.Stack.Push(new Variant(b != a ? 1 : 0));
+							break;
+						}
 
-					case Opcode.IfNotEqual:
-						if (state.Stack.Pop().IntValue != 0)
-							state.InstructionPointer = (int)instruction.Operand.IntValue;
+					case Opcode.CompareGreaterThan:
+						{
+							Variant a = state.Stack.Pop();
+							Variant b = state.Stack.Pop();
 
-						break;
+							state.Stack.Push(new Variant(b > a ? 1 : 0));
+							break;
+						}
 
-					case Opcode.IfLessThan:
-						if (state.Stack.Pop().IntValue == -1)
-							state.InstructionPointer = (int)instruction.Operand.IntValue;
+					case Opcode.CompareLesserThan:
+						{
+							Variant a = state.Stack.Pop();
+							Variant b = state.Stack.Pop();
 
-						break;
+							state.Stack.Push(new Variant(b < a ? 1 : 0));
+							break;
+						}
 
-					case Opcode.IfGreaterThan:
+					case Opcode.CompareGreaterThanOrEqual:
+						{
+							Variant a = state.Stack.Pop();
+							Variant b = state.Stack.Pop();
+
+							state.Stack.Push(new Variant(b >= a ? 1 : 0));
+							break;
+						}
+
+					case Opcode.CompareLesserThanOrEqual:
+						{
+							Variant a = state.Stack.Pop();
+							Variant b = state.Stack.Pop();
+
+							state.Stack.Push(new Variant(b <= a ? 1 : 0));
+							break;
+						}
+
+					case Opcode.IfTrue:
 						if (state.Stack.Pop().IntValue == 1)
 							state.InstructionPointer = (int)instruction.Operand.IntValue;
-
 						break;
 
-					case Opcode.IfLessThanOrEqual:
-						{
-							Variant a = state.Stack.Pop();
-							if (a.IntValue == -1 || a.IntValue == 0)
-								state.InstructionPointer = (int)instruction.Operand.IntValue;
-
-							break;
-						}
-
-					case Opcode.IfGreaterThanOrEqual:
-						{
-							Variant a = state.Stack.Pop();
-							if (a.IntValue == 1 || a.IntValue == 0)
-								state.InstructionPointer = (int)instruction.Operand.IntValue;
-
-							break;
-						}
+					case Opcode.IfFalse:
+						if (state.Stack.Pop().IntValue == 1)
+							state.InstructionPointer = (int)instruction.Operand.IntValue;
+						break;
 
 					case Opcode.Jump:
 						state.InstructionPointer = (int)instruction.Operand.IntValue;

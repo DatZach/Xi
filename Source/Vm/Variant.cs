@@ -7,6 +7,8 @@ namespace Xi.Vm
 {
 	public class Variant
 	{
+		public static double Epsilon = Double.Epsilon;
+
 		private readonly long timestamp;
 
 		public VariantType Type { get; private set; }
@@ -390,29 +392,83 @@ namespace Xi.Vm
 			if (a.Type == VariantType.Double)
 				return a.DoubleValue > b.DoubleValue;
 
-			throw new Exception(String.Format("Cannot < variant type \"{0}\"", a.Type));
+			throw new Exception(String.Format("Cannot > variant type \"{0}\"", a.Type));
 		}
 
-		public static int operator ==(Variant a, Variant b)
+		public static bool operator <=(Variant a, Variant b)
 		{
-			if (a > b)
-				return 1;
+			if (a.Type == VariantType.Int64)
+				return a.IntValue <= b.IntValue;
 
-			if (a < b)
-				return -1;
+			if (a.Type == VariantType.Double)
+				return a.DoubleValue <= b.DoubleValue;
 
-			return 0;
+			throw new Exception(String.Format("Cannot <= variant type \"{0}\"", a.Type));
 		}
 
-		public static int operator !=(Variant a, Variant b)
+		public static bool operator >=(Variant a, Variant b)
 		{
-			if (a > b)
-				return -1;
+			if (a.Type == VariantType.Int64)
+				return a.IntValue >= b.IntValue;
 
-			if (a < b)
-				return 1;
+			if (a.Type == VariantType.Double)
+				return a.DoubleValue >= b.DoubleValue;
 
-			return 1;
+			throw new Exception(String.Format("Cannot >= variant type \"{0}\"", a.Type));
+		}
+
+		public static bool operator ==(Variant a, Variant b)
+		{
+			if (((object)a) == null || ((object)b) == null)
+				throw new ArgumentException("Cannot compare null variant.");
+
+			if (a.Type != b.Type)
+				throw new Exception(String.Format("Cannot compare variants of differing types \"{0}\" and \"{1}\"", a.Type, b.Type));
+
+			switch (a.Type)
+			{
+				case VariantType.Int64:
+					return a.IntValue == b.IntValue;
+
+				case VariantType.Double:
+					return Math.Abs(a.DoubleValue - b.DoubleValue) < Epsilon;
+
+				case VariantType.String:
+					return a.StringValue == b.StringValue;
+
+				case VariantType.Array:
+				case VariantType.Object:
+					return a.Equals(b);
+			}
+
+			return false;
+		}
+
+		public static bool operator !=(Variant a, Variant b)
+		{
+			if (((object)a) == null || ((object)b) == null)
+				throw new ArgumentException("Cannot compare null variant.");
+
+			if (a.Type != b.Type)
+				throw new Exception(String.Format("Cannot compare variants of differing types \"{0}\" and \"{1}\"", a.Type, b.Type));
+
+			switch (a.Type)
+			{
+				case VariantType.Int64:
+					return a.IntValue != b.IntValue;
+
+				case VariantType.Double:
+					return !(Math.Abs(a.DoubleValue - b.DoubleValue) < Epsilon);
+
+				case VariantType.String:
+					return a.StringValue != b.StringValue;
+
+				case VariantType.Array:
+				case VariantType.Object:
+					return !a.Equals(b);
+			}
+
+			return false;
 		}
 	}
 

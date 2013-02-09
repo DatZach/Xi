@@ -96,19 +96,48 @@ namespace Xi
 
 		private void ShiftTerm()
 		{
-			Term();
+			RelationGlTerm();
 
 			while (Parser.IsBitwiseShiftOperation(stream.Peek()))
 			{
 				if (stream.Accept(TokenType.Delimiter, "<<"))
 				{
-					Term();
+					RelationGlTerm();
 					Instructions.Add(new Instruction(Opcode.BitwiseShiftLeft));
 				}
 				else if (stream.Accept(TokenType.Delimiter, ">>"))
 				{
-					Term();
+					RelationGlTerm();
 					Instructions.Add(new Instruction(Opcode.BitwiseShiftRight));
+				}
+			}
+		}
+
+		private void RelationGlTerm()
+		{
+			Term();
+
+			while(Parser.IsRelationGlOperation(stream.Peek()))
+			{
+				if (stream.Accept(TokenType.Delimiter, "<"))
+				{
+					Term();
+					Instructions.Add(new Instruction(Opcode.CompareLesserThan));
+				}
+				else if (stream.Accept(TokenType.Delimiter, ">"))
+				{
+					Term();
+					Instructions.Add(new Instruction(Opcode.CompareGreaterThan));
+				}
+				else if (stream.Accept(TokenType.Delimiter, "<="))
+				{
+					Term();
+					Instructions.Add(new Instruction(Opcode.CompareLesserThanOrEqual));
+				}
+				else if (stream.Accept(TokenType.Delimiter, ">="))
+				{
+					Term();
+					Instructions.Add(new Instruction(Opcode.CompareGreaterThanOrEqual));
 				}
 			}
 		}
