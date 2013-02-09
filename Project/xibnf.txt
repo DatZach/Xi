@@ -27,7 +27,7 @@
 <relation-gl-term>	::= <relation-term> [<relation-gl-op> <relation-term>]*
 <relation-term>		::= <term> [<relation-op> <term>]*
 <term>				::= <signed-factor> [<mul-op> <signed-factor>]*
-<signed-factor>		::= [<add-op>] <factor>
+<signed-factor>		::= ([<add-op>] <factor> | '!' <factor> | '~' <factor>)
 <factor>			::= (<literal> | <variable>)
 
 <accessor>			::= ['public' | 'private' | 'protected']

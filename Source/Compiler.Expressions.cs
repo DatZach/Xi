@@ -187,20 +187,27 @@ namespace Xi
 
 		private void SignedFactor()
 		{
-			if (Parser.IsAddOperation(stream.Peek()))
+			if (stream.Accept(TokenType.Delimiter, "+"))
 			{
-				if (stream.Accept(TokenType.Delimiter, "+"))
-				{
-					Factor();
+				Factor();
 
-					Instructions.Add(new Instruction(Opcode.AbsoluteValue));
-				}
-				else if (stream.Accept(TokenType.Delimiter, "-"))
-				{
-					Factor();
+				Instructions.Add(new Instruction(Opcode.AbsoluteValue));
+			}
+			else if (stream.Accept(TokenType.Delimiter, "-"))
+			{
+				Factor();
 
-					Instructions.Add(new Instruction(Opcode.LogicalNegate));
-				}
+				Instructions.Add(new Instruction(Opcode.LogicalNegate));
+			}
+			else if (stream.Accept(TokenType.Delimiter, "!"))
+			{
+				Factor();
+				Instructions.Add(new Instruction(Opcode.BitwiseNot));
+			}
+			else if (stream.Accept(TokenType.Delimiter, "~"))
+			{
+				Factor();
+				Instructions.Add(new Instruction(Opcode.BitwiseNegate));
 			}
 			else
 				Factor();
