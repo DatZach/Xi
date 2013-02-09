@@ -122,7 +122,9 @@ namespace Xi
 			{
 				if (stream.Accept(TokenType.Delimiter, "+"))
 				{
-					// Return absolute value of literal/variable
+					Factor();
+
+					Instructions.Add(new Instruction(Opcode.AbsoluteValue));
 				}
 				else if (stream.Accept(TokenType.Delimiter, "-"))
 				{

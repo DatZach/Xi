@@ -7,6 +7,8 @@
 
 	class StringStream
 	{
+		public const char NewLine = '\n';
+
 		public string Value { get; private set; }
 		public int Position;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -11,16 +12,8 @@ namespace Xi
 		{
 			if (args.Length == 1)
 			{
-				switch(args[0])
-				{
-					case "--help":
-						Console.WriteLine("Usage: Xi [filename] [entrypoint]");
-						return;
-
-					case "--version":
-						Console.WriteLine("Xi Version 1.idkman");
-						return;
-				}
+				HandleCommandLineSwitches(args[0]);
+				return;
 			}
 
 			if (args.Length != 0)
@@ -98,6 +91,47 @@ namespace Xi
 					Console.WriteLine("VM Error: {0}", e.Message);
 				}
 			} while (value != "exit");
+		}
+
+		private static void HandleCommandLineSwitches(string value)
+		{
+			const int helpTopicTabLength = 14;
+
+			Dictionary<string, string> helpTopics = new Dictionary<string, string>
+			{
+				{ "[filename]",		"Filename of script to run." },
+				{ "[entrypoint]",	"Entry point to start executing the script from.\n" +
+									"Follows the format Class.Method, class and method must be static."},
+				{ "[flags]",		"Flags that change the behavior of the script." },
+				{ "--version",		"Display Xi version." },
+				{ "--help",			"Display this information." },
+				{ "--args",			"Command line arguments to pass" }
+			};
+
+			switch (value)
+			{
+				case "--help":
+					Console.WriteLine("Usage: Xi [flags] [filename] [entrypoint]");
+					foreach(KeyValuePair<string, string> topic in helpTopics)
+					{
+						int indentValue = topic.Key.Length;
+						Console.Write(topic.Key);
+
+						foreach (string helpValue in topic.Value.Split(new [] { '\n' }))
+						{
+							for (; indentValue < helpTopicTabLength; ++indentValue)
+								Console.Write(" ");
+
+							Console.WriteLine(helpValue);
+							indentValue = 0;
+						}
+					}
+					break;
+
+				case "--version":
+					Console.WriteLine("Xi {0}", Assembly.GetExecutingAssembly().GetName().Version);
+					break;
+			}
 		}
 	}
 }

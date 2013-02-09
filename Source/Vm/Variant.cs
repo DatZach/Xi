@@ -7,6 +7,8 @@ namespace Xi.Vm
 {
 	public class Variant
 	{
+		private readonly long timestamp;
+
 		public VariantType Type { get; private set; }
 		public Int64 IntValue;
 		public double DoubleValue;
@@ -16,35 +18,41 @@ namespace Xi.Vm
 
 		public Variant()
 		{
+			timestamp = DateTime.Now.Ticks;
 			Type = VariantType.Nill;
 		}
 
 		public Variant(Int64 value)
 		{
+			timestamp = DateTime.Now.Ticks;
 			Type = VariantType.Int64;
 			IntValue = value;
 		}
 
 		public Variant(double value)
 		{
+			timestamp = DateTime.Now.Ticks;
 			Type = VariantType.Double;
 			DoubleValue = value;
 		}
 
 		public Variant(string value)
 		{
+			timestamp = DateTime.Now.Ticks;
 			Type = VariantType.String;
 			StringValue = value;
 		}
 
 		public Variant(Class value)
 		{
+			timestamp = DateTime.Now.Ticks;
 			Type = VariantType.Object;
 			ObjectValue = value;
 		}
 
 		public Variant(List<Variant> value)
 		{
+			timestamp = DateTime.Now.Ticks;
 			Type = VariantType.Array;
 			ArrayValue = value;
 		}
@@ -94,30 +102,7 @@ namespace Xi.Vm
 
 		public override int GetHashCode()
 		{
-			int hashCode = 0x7FFFFFFF;
-
-			switch (Type)
-			{
-				case VariantType.Int64:
-					hashCode = (int)IntValue;
-					break;
-
-				case VariantType.Double:
-					hashCode = (int)DoubleValue;
-					break;
-
-				case VariantType.String:
-					hashCode = StringValue.GetHashCode();
-					break;
-
-				case VariantType.Array:
-					hashCode = ArrayValue.GetHashCode();
-					break;
-
-				case VariantType.Object:
-					hashCode = ObjectValue.GetHashCode();
-					break;
-			}
+			int hashCode = 0x7FFFFFFF ^ (int)timestamp;
 
 			return hashCode ^ ((int)Type << 8) ^ ((int)Type << 6) ^ ((int)Type << 4) ^ ((int)Type << 2);
 		}
@@ -259,7 +244,18 @@ namespace Xi.Vm
 			if (a.Type == VariantType.Double)
 				return new Variant(-a.DoubleValue);
 
-			throw new Exception(String.Format("Cannot - variant type \"{0}\"", a.Type));
+			throw new Exception(String.Format("Cannot unary - variant type \"{0}\"", a.Type));
+		}
+
+		public static Variant operator +(Variant a)
+		{
+			if (a.Type == VariantType.Int64)
+				return new Variant(Math.Abs(a.IntValue));
+
+			if (a.Type == VariantType.Double)
+				return new Variant(Math.Abs(a.DoubleValue));
+
+			throw new Exception(String.Format("Cannot unary + variant type \"{0}\"", a.Type));
 		}
 
 		public static Variant operator ~(Variant a)

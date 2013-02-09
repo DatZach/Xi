@@ -3,6 +3,7 @@ Xi Operator Precedence
 Precedence	Operators	Description
 0		LITERAL		Variant Literal
 		VARIABLE	Variant Variable
+		print		Built in print
 
 1		++, --		Suffix
 		()		Function call

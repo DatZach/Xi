@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using Xi.Util;
 
 namespace Xi.Lexer
 {
 	internal static class Tokenizer
 	{
-		//private const string Delimiters = "~!%^&*()-+=[]{}|:;?/<,>.";
-
-		// NOTE Make sure that the largest delimiters come first in the list or else the parser will confuse it with a smaller one
+		// NOTE Make sure that the largest delimiters come first in the list
 		private static readonly List<string> delimiters = new List<string>
 		{
 			"<<=", ">>=",
@@ -43,14 +40,14 @@ namespace Xi.Lexer
 				while (!stream.IsEndOfStream && char.IsWhiteSpace(stream.Peek()))
 				{
 					// Read new lines
-					if (stream.Read() == '\n')
+					if (stream.Read() == StringStream.NewLine)
 						++line;
 				}
 
 				// Skip single line comments
 				if (stream.Peek() == '/' && stream.PeekAhead(1) == '/')
 				{
-					while (!stream.IsEndOfStream && stream.Peek() != '\n')
+					while (!stream.IsEndOfStream && stream.Peek() != StringStream.NewLine)
 						stream.Read();
 
 					continue;
@@ -61,7 +58,7 @@ namespace Xi.Lexer
 				{
 					while (!stream.IsEndOfStream && !(stream.Peek() == '*' && stream.PeekAhead(1) == '/'))
 					{
-						if (stream.Read() == '\n')
+						if (stream.Read() == StringStream.NewLine)
 							++line;
 					}
 				}
@@ -80,7 +77,7 @@ namespace Xi.Lexer
 						if (stream.IsEndOfStream)
 							throw new Exception("Unterminated string on line " + startLine);
 
-						if (ch == '\n')
+						if (ch == StringStream.NewLine)
 							++line;
 
 						value += ch;
@@ -165,25 +162,6 @@ namespace Xi.Lexer
 					tokens.Add(new Token(TokenType.Delimiter, peekedDelimiter, filename, line));
 					continue;
 				}
-
-				/*if (Delimiters.Contains(stream.Peek()))
-				{
-					if (multiCharacterDelimiters.Count(d => d[0] == stream.Peek()) != 0)
-					{
-						string value = multiCharacterDelimiters.First(d => d[0] == stream.Peek());
-						++stream.Position;
-						if (value[1] == stream.Read())
-						{
-							tokens.Add(new Token(TokenType.Delimiter, value, filename, line));
-							continue;
-						}
-
-						stream.Position -= 2;
-					}
-
-					tokens.Add(new Token(TokenType.Delimiter, "" + stream.Read(), filename, line));
-					continue;
-				}*/
 
 				// Don't run off the rails
 				if (stream.IsEndOfStream)

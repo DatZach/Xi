@@ -65,6 +65,7 @@ namespace Xi.Vm
 
 					{ Opcode.IncrementVariable, 2 },
 					{ Opcode.IncrementField, 2 },
+					{ Opcode.AbsoluteValue, 0 },
 
 					{ Opcode.Compare, 0 },
 					{ Opcode.IfEqual, 1 },
@@ -138,6 +139,7 @@ namespace Xi.Vm
 		/* Miscellaneous Arithmetics */
 		IncrementVariable,
 		IncrementField,
+		AbsoluteValue,
 
 		/* Execution Flow */
 		Compare,

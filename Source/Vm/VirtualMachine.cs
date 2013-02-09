@@ -190,6 +190,10 @@ namespace Xi.Vm
 							break;
 						}
 
+					case Opcode.AbsoluteValue:
+						state.Stack.Push(+state.Stack.Pop());
+						break;
+
 					case Opcode.Compare:
 						{
 							Variant a = state.Stack.Pop();
