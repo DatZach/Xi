@@ -10,7 +10,7 @@ namespace Xi
 		{
 			AddModule(name);
 
-			while (!stream.IsEndOfStream)
+			while (!stream.EndOfStream)
 			{
 				if (stream.Accept(TokenType.Word, "using"))
 					UsingStatement();

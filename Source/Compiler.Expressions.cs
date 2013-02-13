@@ -8,7 +8,7 @@ namespace Xi
 	{
 		private void Statement()
 		{
-			while (!stream.IsEndOfStream && !stream.Accept(TokenType.Delimiter, "}"))
+			while (!stream.EndOfStream && !stream.Accept(TokenType.Delimiter, "}"))
 				Assignment();
 		}
 

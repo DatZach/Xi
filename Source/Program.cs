@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Xi.Lexer;
+using Xi.Util;
 using Xi.Vm;
 
 namespace Xi

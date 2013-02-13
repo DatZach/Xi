@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -13,7 +14,7 @@ namespace Xi
 		public Compiler()
 		{
 			Modules = new List<Module>();
-			//Classes = new List<Class>();
+			CurrentMethod = null;
 		}
 
 		public bool Compile(TokenStream tokenStream)
@@ -22,10 +23,9 @@ namespace Xi
 
 			try
 			{
-				// TODO Get actual name of module (filename)
-				Module("Main");
+				Module(Path.GetFileNameWithoutExtension(tokenStream.Filename));
 			}
-			catch(StackOverflowException e)
+			catch(Exception e)
 			{
 				Console.WriteLine(e.Message);
 				return false;

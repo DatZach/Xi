@@ -10,7 +10,6 @@ namespace Xi
 		public const string MethodNameEntry = "Main";
 
 		public List<Module> Modules { get; private set; }
-		//public List<Class> Classes { get; private set; } // TODO remove
 
 		private Module CurrentModule
 		{
@@ -28,16 +27,7 @@ namespace Xi
 			}
 		}
 
-		private Method CurrentMethod
-		{
-			get
-			{
-				return CurrentModule.Body;
-
-				// TODO Fix this
-				//return CurrentClass != null ? CurrentClass.Methods.Last() : null;
-			}
-		}
+		private Method CurrentMethod;
 
 		public List<Instruction> Instructions
 		{
@@ -78,6 +68,7 @@ namespace Xi
 			}
 
 			CurrentModule.Body = new Method("Body", 0);
+			CurrentMethod = CurrentModule.Body;
 		}
 
 		void AddClass(string name, Class cBase = null)
@@ -99,7 +90,8 @@ namespace Xi
 			foreach (Method m in CurrentClass.Methods.Where(m => m.Name == name))
 				Error("Method \"{0}\" already declared previously.", m.Name);
 
-			CurrentClass.Methods.Add(new Method(name, argCount));
+			CurrentMethod = new Method(name, argCount);
+			CurrentClass.Methods.Add(CurrentMethod);
 		}
 
 		void AddVariable(string name)
@@ -123,7 +115,7 @@ namespace Xi
 
 			int index = CurrentMethod.Variables.IndexOf(name);
 			if (index == -1)
-				Error("Unknown variable \"{0}\".", name);
+				Error("Undeclared variable \"{0}\".", name);
 
 			return index;
 		}

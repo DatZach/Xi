@@ -11,9 +11,17 @@ namespace Xi.Lexer
 		private readonly List<Token> tokens;
 		public int Position;
 
-		public bool IsEndOfStream
+		public bool EndOfStream
 		{
 			get { return Position >= tokens.Count || tokens[Position].Type == TokenType.EndOfStream; }
+		}
+
+		public string Filename
+		{
+			get
+			{
+				return tokens.First() == null ? "" : tokens.First().Filename;
+			}
 		}
 
 		public uint CurrentLine
@@ -32,7 +40,7 @@ namespace Xi.Lexer
 
 		public Token Peek()
 		{
-			return IsEndOfStream ? null : tokens[Position];
+			return EndOfStream ? new Token(TokenType.EndOfStream, tokens.First().Filename, 0) : tokens[Position];
 		}
 
 		public Token PeekAhead(int offset)
@@ -42,12 +50,12 @@ namespace Xi.Lexer
 
 		public Token Read()
 		{
-			return IsEndOfStream ? null : tokens[Position++];
+			return EndOfStream ? null : tokens[Position++];
 		}
 
 		public void Expect(TokenType type)
 		{
-			if (!IsEndOfStream && Read().Type == type)
+			if (!EndOfStream && Read().Type == type)
 				return;
 
 			// TODO Fix errors somehow...
@@ -56,7 +64,7 @@ namespace Xi.Lexer
 
 		public void Expect(TokenType type, string value)
 		{
-			if (!IsEndOfStream)
+			if (!EndOfStream)
 			{
 				Token token = Read();
 				if (token.Type == type && token.Value == value)
@@ -69,7 +77,7 @@ namespace Xi.Lexer
 
 		public bool Accept(TokenType type)
 		{
-			if (IsEndOfStream)
+			if (EndOfStream)
 				return false;
 
 			Token token = Peek();
@@ -84,7 +92,7 @@ namespace Xi.Lexer
 
 		public bool Accept(TokenType type, string value)
 		{
-			if (IsEndOfStream)
+			if (EndOfStream)
 				return false;
 
 			Token token = Peek();

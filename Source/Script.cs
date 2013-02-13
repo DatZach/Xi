@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -17,34 +16,14 @@ namespace Xi
 
 		public bool LoadString(string value)
 		{
-			TokenStream tokenStream = new TokenStream(Tokenizer.ParseString(value));
-
-			Compiler compiler = new Compiler();
-			if (!compiler.Compile(tokenStream))
-				return false;
-
-			// TODO Read classes/methods from compiler instead of implicitly declaring them here
-			//Method entryPointMethod = new Method("Main", compiler.Instructions, 0, 0);
-			//Class globalClass = new Class("Global", new List<Method> { entryPointMethod }, new List<Variant>(), null);
-			state.Modules.AddRange(compiler.Modules);
-
-			return true;
+			List<Token> tokens = Tokenizer.ParseString(value);
+			return CompileStream(new TokenStream(tokens));
 		}
 
 		public bool LoadFile(string filename)
 		{
-			try
-			{
-				using (TextReader reader = new StreamReader(filename))
-				{
-					string value = reader.ReadToEnd();
-					return LoadString(value);
-				}
-			}
-			catch(IOException)
-			{
-				return false;
-			}
+			List<Token> tokens = Tokenizer.ParseFile(filename);
+			return CompileStream(new TokenStream(tokens));
 		}
 
 		public Variant[] Call(string method, params Variant[] arguments)
@@ -58,6 +37,17 @@ namespace Xi
 			VirtualMachine.Execute(state);
 
 			return null;
+		}
+
+		private bool CompileStream(TokenStream tokenStream)
+		{
+			Compiler compiler = new Compiler();
+			if (!compiler.Compile(tokenStream))
+				return false;
+
+			state.Modules.AddRange(compiler.Modules);
+
+			return true;
 		}
 	}
 }
