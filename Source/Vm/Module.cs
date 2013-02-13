@@ -8,7 +8,7 @@ namespace Xi.Vm
 		public List<Class> Classes { get; private set; }
 		public List<Method> Methods { get; private set; } 
 		public List<Variant> Fields { get; private set; }
-		public Method Body { get; private set; }
+		public Method Body;
 		public string Name { get; private set; }
 
 		public Module(string name)

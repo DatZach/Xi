@@ -10,7 +10,7 @@ namespace Xi
 		public const string MethodNameEntry = "Main";
 
 		public List<Module> Modules { get; private set; }
-		public List<Class> Classes { get; private set; } // TODO remove
+		//public List<Class> Classes { get; private set; } // TODO remove
 
 		private Module CurrentModule
 		{
@@ -24,7 +24,7 @@ namespace Xi
 		{
 			get
 			{
-				return Classes.Count != 0 ? Classes.Last() : null;
+				return CurrentModule.Classes.Count != 0 ? CurrentModule.Classes.Last() : null;
 			}
 		}
 
@@ -32,7 +32,10 @@ namespace Xi
 		{
 			get
 			{
-				return CurrentClass != null ? CurrentClass.Methods.Last() : null;
+				return CurrentModule.Body;
+
+				// TODO Fix this
+				//return CurrentClass != null ? CurrentClass.Methods.Last() : null;
 			}
 		}
 
@@ -59,12 +62,30 @@ namespace Xi
 			Modules.Add(new Module(name));
 		}
 
+		void AddModuleBody()
+		{
+			// Neither of these errors should technically be triggerable
+			if (CurrentModule == null)
+			{
+				Error("Cannot declare body to non-existant module.");
+				return;
+			}
+
+			if (CurrentModule.Body != null)
+			{
+				Error("Module \"{0}\" already has a body declared!", CurrentModule.Name);
+				return;
+			}
+
+			CurrentModule.Body = new Method("Body", 0);
+		}
+
 		void AddClass(string name, Class cBase = null)
 		{
-			foreach (Class c in Classes.Where(c => c.Name == name))
+			foreach (Class c in CurrentModule.Classes.Where(c => c.Name == name))
 				Error("Class \"{0}\" already declared previously.", c.Name);
 
-			Classes.Add(new Class(name, cBase));
+			CurrentModule.Classes.Add(new Class(name, cBase));
 		}
 
 		void AddMethod(string name, int argCount = 0)

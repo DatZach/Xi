@@ -74,7 +74,7 @@ namespace Xi
 				if (!compiler.Compile(new TokenStream(tokenStream)))
 					continue;
 
-				Disassembler.DumpClasses(compiler.Classes);
+				Disassembler.Dump(compiler.Modules);
 
 				// TODO: Preserve VM state
 				State state = new State();

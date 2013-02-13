@@ -6,8 +6,10 @@ namespace Xi
 {
 	partial class Compiler
 	{
-		private void Program()
+		private void Module(string name)
 		{
+			AddModule(name);
+
 			while (!stream.IsEndOfStream)
 			{
 				if (stream.Accept(TokenType.Word, "using"))
@@ -39,7 +41,7 @@ namespace Xi
 				baseName = stream.GetWord();
 
 			// Add class
-			AddClass(name, Classes.Find(c => c.Name == baseName));
+			AddClass(name, CurrentModule.Classes.Find(c => c.Name == baseName));
 
 			stream.Expect(TokenType.Delimiter, "{");
 
@@ -54,8 +56,9 @@ namespace Xi
 
 		private void OrphanDeclaration()
 		{
-			AddClass(ClassNameDefault);
-			AddMethod(MethodNameEntry);
+			//AddClass(ClassNameDefault);
+			//AddMethod(MethodNameEntry);
+			AddModuleBody();
 
 			Block();
 		}

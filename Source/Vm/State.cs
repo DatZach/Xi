@@ -55,7 +55,6 @@ namespace Xi.Vm
 			Modules = new List<Module>();
 			CallStack = new VmStack<CallInfo>();
 			Stack = new VmStack<Variant>();
-			InstructionPointer = 0;
 			Scope = new ExpandoObject();
 		}
 
@@ -73,18 +72,5 @@ namespace Xi.Vm
 			// TODO This is a hack, just get rid of indexs, they're silly
 			CallStack.Push(new CallInfo(module, -1, 0));
 		}
-
-		/*public void SetEntryPoint(string className, string methodName)
-		{
-			Class classHandle = Classes.FirstOrDefault(c => c.Name == className);
-			if (classHandle == null)
-				throw new Exception(String.Format("No class \"{0}\" exists.", className));
-
-			int methodIndex = classHandle.GetMethodIndex(methodName);
-			if (methodIndex == -1)
-				throw new Exception(String.Format("No method \"{0}\" is a member of class \"{1}\".", methodName, className));
-
-			CurrentCall = new CallInfo(classHandle, methodIndex, 0);
-		}*/
 	}
 }

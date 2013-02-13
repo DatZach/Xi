@@ -12,7 +12,8 @@ namespace Xi
  
 		public Compiler()
 		{
-			Classes = new List<Class>();
+			Modules = new List<Module>();
+			//Classes = new List<Class>();
 		}
 
 		public bool Compile(TokenStream tokenStream)
@@ -21,7 +22,8 @@ namespace Xi
 
 			try
 			{
-				Program();
+				// TODO Get actual name of module (filename)
+				Module("Main");
 			}
 			catch(StackOverflowException e)
 			{
