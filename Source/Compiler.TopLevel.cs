@@ -104,6 +104,11 @@ namespace Xi
 			stream.Accept(TokenType.Delimiter, ";");
 		}
 
+		private void FunctionDeclaration()
+		{
+			
+		}
+
 		private void Block()
 		{
 			VariableDeclaration();

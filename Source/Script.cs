@@ -26,7 +26,7 @@ namespace Xi
 			// TODO Read classes/methods from compiler instead of implicitly declaring them here
 			//Method entryPointMethod = new Method("Main", compiler.Instructions, 0, 0);
 			//Class globalClass = new Class("Global", new List<Method> { entryPointMethod }, new List<Variant>(), null);
-			state.Classes.AddRange(compiler.Classes);
+			state.Modules.AddRange(compiler.Modules);
 
 			return true;
 		}
@@ -53,7 +53,8 @@ namespace Xi
 			if (values.Length != 2)
 				throw new ArgumentException("Invalid \"method\" value, expected format \"Class.Method\".");
 
-			state.SetEntryPoint(values[0], values[1]);
+			// TODO a tad bit of a hack
+			state.SetEntryPoint(state.Modules[0].Name);
 			VirtualMachine.Execute(state);
 
 			return null;

@@ -21,7 +21,7 @@
 <parameter-list>		::= [':' <ident> [',' <ident>]*]
 
 <block>					::= (<variable> | <assignment>)*
-<assignment>			::= [<ident> <assign-op>] <ternary-expression>
+<assignment>			::= [<ident> <assign-op> ]* <ternary-expression>
 <ternary-expression>	::= <logical-and-or> ['?' <logical-and-or> ':' <logical-and-or>]*
 <logical-and-or>		::= <bitwise-xor-or> [<logical-and-or-op> <bitwise-xor-or>]*
 <bitwise-xor-or>		::= <bitwise-and> [<bitwise-xor-or-op> <bitwise-and>]*

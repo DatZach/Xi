@@ -78,12 +78,14 @@ namespace Xi
 
 				// TODO: Preserve VM state
 				State state = new State();
-				state.Classes.AddRange(compiler.Classes);
+				state.Modules.AddRange(compiler.Modules);
 
 				try
 				{
 					// TODO Add Compiler.EntryClass/Compiler.EntryMethod
-					state.SetEntryPoint(Compiler.ClassNameDefault, Compiler.MethodNameEntry);
+					//state.SetEntryPoint(Compiler.ClassNameDefault, Compiler.MethodNameEntry);
+					// TODO a tad bit of a hack
+					state.SetEntryPoint(state.Modules[0].Name);
 					VirtualMachine.Execute(state);
 				}
 				catch (Exception e)

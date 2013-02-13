@@ -36,16 +36,12 @@ namespace Xi.Vm
 
 		public Method GetMethod(string name)
 		{
-			return Methods.FirstOrDefault(m => m.Name == name);
+			return Methods.First(m => m.Name == name);
 		}
 
 		public int GetMethodIndex(string name)
 		{
-			for (int i = 0; i < Methods.Count; ++i)
-				if (Methods[i].Name == name)
-					return i;
-
-			return -1;
+			return Methods.IndexOf(Methods.Single(m => m.Name == name));
 		}
 	}
 }

@@ -87,6 +87,7 @@
     <Compile Include="Vm\CallInfo.cs" />
     <Compile Include="Vm\Instruction.cs" />
     <Compile Include="Vm\Method.cs" />
+    <Compile Include="Vm\Module.cs" />
     <Compile Include="Vm\Stack.cs" />
     <Compile Include="Vm\State.cs" />
     <Compile Include="Vm\Variant.cs" />

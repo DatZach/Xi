@@ -5,6 +5,7 @@ using Xi.Vm;
 
 namespace Xi
 {
+	// TODO Somehow move this into its own namespace
 	internal partial class Compiler
 	{
 		private TokenStream stream;

@@ -7,18 +7,23 @@ namespace Xi.Vm
 {
 	class State
 	{
-		public List<Class> Classes { get; private set; }
+		public List<Module> Modules { get; private set; }
 		public VmStack<CallInfo> CallStack;
 		public VmStack<Variant> Stack;
 		public dynamic Scope;
 
-		public CallInfo CurrentCall;
+		//public CallInfo CurrentCall;
+
+		public Module CurrentModule
+		{
+			get { return CallStack.Top.Module; }
+		}
 
 		public Class CurrentClass
 		{
 			get
 			{
-				return CurrentCall.Class;
+				return CallStack.Top.Class;
 			}
 		}
 
@@ -26,35 +31,50 @@ namespace Xi.Vm
 		{
 			get
 			{
-				return CurrentClass == null ? null : CurrentClass.Methods[CurrentCall.MethodIndex];
+				return CallStack.Top.Method;
 			}
 
-			set
+			// TODO wth is this?
+			/*set
 			{
 				if (CurrentClass == null)
 					return;
 
 				CurrentClass.Methods[CallStack.Top.MethodIndex] = value;
-			}
+			}*/
 		}
 
 		public int InstructionPointer
 		{
-			get { return CurrentCall.InstructionPointer; }
-			set { CurrentCall.InstructionPointer = value; }
+			get { return CallStack.Top.InstructionPointer; }
+			set { CallStack.Top.InstructionPointer = value; }
 		}
 
 		public State()
 		{
-			CurrentCall = new CallInfo();
+			Modules = new List<Module>();
 			CallStack = new VmStack<CallInfo>();
 			Stack = new VmStack<Variant>();
 			InstructionPointer = 0;
 			Scope = new ExpandoObject();
-			Classes = new List<Class>();
 		}
 
-		public void SetEntryPoint(string className, string methodName)
+		public void SetEntryPoint(string moduleName)
+		{
+			// Find module
+			Module module = Modules.First(m => m.Name == moduleName);
+			if (module == null)
+				throw new Exception(String.Format("Cannot set entry point to non-existant module \"{0}\".", moduleName));
+
+			// Make sure it has a body
+			if (module.Body == null)
+				throw new Exception(String.Format("Module \"{0}\" has no body, cannot set entry point here.", moduleName));
+
+			// TODO This is a hack, just get rid of indexs, they're silly
+			CallStack.Push(new CallInfo(module, -1, 0));
+		}
+
+		/*public void SetEntryPoint(string className, string methodName)
 		{
 			Class classHandle = Classes.FirstOrDefault(c => c.Name == className);
 			if (classHandle == null)
@@ -65,6 +85,6 @@ namespace Xi.Vm
 				throw new Exception(String.Format("No method \"{0}\" is a member of class \"{1}\".", methodName, className));
 
 			CurrentCall = new CallInfo(classHandle, methodIndex, 0);
-		}
+		}*/
 	}
 }

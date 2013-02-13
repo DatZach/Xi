@@ -73,15 +73,20 @@ namespace Xi.Vm
 						break;
 
 					case Opcode.GetThis:
-						state.Stack.Push(new Variant(state.CurrentClass));
+						state.Stack.Push(state.CurrentClass == null ? new Variant(state.CurrentModule) : new Variant(state.CurrentClass));
+						//state.Stack.Push(new Variant(state.CurrentClass));
 						break;
 
 					case Opcode.GetBase:
+						// TODO Maybe this shouldn't throw an exception?
+						if (state.CurrentClass == null)
+							throw new Exception("Cannot GetBase outside of the scope of a class.");
+
 						state.Stack.Push(new Variant(state.CurrentClass.Base));
 						break;
 
 					case Opcode.GetBaseOf:
-						state.Stack.Push(new Variant((state.Stack.Pop().ObjectValue).Base));
+						state.Stack.Push(new Variant(((Class)(state.Stack.Pop().ObjectValue)).Base));
 						break;
 
 					case Opcode.Add:
@@ -197,7 +202,7 @@ namespace Xi.Vm
 
 					case Opcode.IncrementField:
 						{
-							Class classHandle = state.Stack.Pop().ObjectValue;
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
 							classHandle.Fields[(int)instruction.Operands[0].IntValue] += instruction.Operands[1];
 							break;
 						}
@@ -284,7 +289,7 @@ namespace Xi.Vm
 							if (state.CallStack.Count == 0)
 								return;
 
-							state.CurrentCall = state.CallStack.Pop();
+							state.CallStack.Pop();
 							stream = state.CurrentMethod.Instructions;
 							state.Stack.PopScope();
 
@@ -292,23 +297,27 @@ namespace Xi.Vm
 						}
 
 					case Opcode.ClassSetFieldStatic:
-						state.Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue] = state.Stack.Pop();
+						// TODO Eventually also reference module
+						// TODO Also reimplement this
+						//state.Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue] = state.Stack.Pop();
 						break;
 
 					case Opcode.ClassGetFieldStatic:
-						state.Stack.Push(state.Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue]);
+						// TODO Eventually also reference module
+						// TODO Also reimplement this
+						//state.Stack.Push(state.Classes[(int)instruction.Operands[0].IntValue].Fields[(int)instruction.Operands[1].IntValue]);
 						break;
 
 					case Opcode.ClassSetField:
 						{
-							Class classHandle = state.Stack.Pop().ObjectValue;
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
 							classHandle.Fields[(int)instruction.Operand.IntValue] = state.Stack.Pop();
 							break;
 						}
 
 					case Opcode.ClassGetField:
 						{
-							Class classHandle = state.Stack.Pop().ObjectValue;
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
 							state.Stack.Push(classHandle.Fields[(int)instruction.Operand.IntValue]);
 							break;
 						}
@@ -321,15 +330,18 @@ namespace Xi.Vm
 							 */
 
 							// Grab class to call from stack
-							Class classHandle = state.Stack.Pop().ObjectValue;
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
 
+							// TODO This is sort of a hack (cannot call cross modules)
 							// Push reentrant info onto call stack
-							state.CallStack.Push(new CallInfo(state.CurrentClass,
-														state.CurrentClass.GetMethodIndex(state.CurrentMethod.Name),
+							state.CallStack.Push(new CallInfo(state.CurrentModule, state.CurrentClass,
+														classHandle.GetMethodIndex(state.CurrentMethod.Name),
 														state.InstructionPointer + 1));
 
 							// Set state's call info to the new call & grab all requested arguments
-							state.CurrentCall = new CallInfo(classHandle, (int)instruction.Operand.IntValue, 0);
+							//state.CurrentCall = new CallInfo(classHandle, (int)instruction.Operand.IntValue, 0);
+							// TODO Also a bit of a hack
+							state.CallStack.Push(new CallInfo(state.CurrentModule, classHandle, (int)instruction.Operand.IntValue, 0));
 							Stack<Variant> arguments = new Stack<Variant>();
 							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
 								arguments.Push(state.Stack.Pop());
@@ -354,12 +366,17 @@ namespace Xi.Vm
 							 * Also variable argument lists aren't supported with this method
 							 */
 
+							// TODO Probably should reimplement this up... a lot
+
+							/*
+
 							// Grab class to call from stack
 							Class classHandle = state.Classes[(int)instruction.Operands[0].IntValue];
 
 							// Push reentrant info onto call stack
-							state.CallStack.Push(new CallInfo(state.CurrentClass,
-														state.CurrentClass.GetMethodIndex(state.CurrentMethod.Name),
+							// TODO Hack cannot call cross blah bloh blab
+							state.CallStack.Push(new CallInfo(state.CurrentModule, state.CurrentClass,
+														classHandle.GetMethodIndex(state.CurrentMethod.Name),
 														state.InstructionPointer + 1));
 
 							// Set state's call info to the new call & grab all requested arguments
@@ -377,6 +394,8 @@ namespace Xi.Vm
 							// Pop arguments from transition stack into local arguments
 							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
 								state.Stack[i] = arguments.Pop();
+							 * 
+							 */
 
 							continue;
 						}
@@ -386,7 +405,8 @@ namespace Xi.Vm
 						break;
 
 					case Opcode.New:
-						state.Stack.Push(new Variant(new Class(state.Classes[(int)instruction.Operand.IntValue])));
+						// TODO Reimplement
+						//state.Stack.Push(new Variant(new Class(state.Classes[(int)instruction.Operand.IntValue])));
 						break;
 
 					case Opcode.CastVariant:

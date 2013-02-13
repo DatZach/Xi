@@ -9,16 +9,31 @@ namespace Xi
 		public const string ClassNameDefault = "Global";
 		public const string MethodNameEntry = "Main";
 
-		public List<Class> Classes { get; private set; }
+		public List<Module> Modules { get; private set; }
+		public List<Class> Classes { get; private set; } // TODO remove
+
+		private Module CurrentModule
+		{
+			get
+			{
+				return Modules.Count != 0 ? Modules.Last() : null;
+			}
+		}
 
 		private Class CurrentClass
 		{
-			get { return Classes.Count != 0 ? Classes.Last() : null; }
+			get
+			{
+				return Classes.Count != 0 ? Classes.Last() : null;
+			}
 		}
 
 		private Method CurrentMethod
 		{
-			get { return CurrentClass != null ? CurrentClass.Methods.Last() : null; }
+			get
+			{
+				return CurrentClass != null ? CurrentClass.Methods.Last() : null;
+			}
 		}
 
 		public List<Instruction> Instructions
@@ -33,6 +48,15 @@ namespace Xi
 
 				return CurrentMethod.Instructions;
 			}
+		}
+
+		void AddModule(string name)
+		{
+			foreach (Module m in Modules)
+				if (m.Name == name)
+					Error("Module \"{0}\" already declared previously.", m.Name);
+
+			Modules.Add(new Module(name));
 		}
 
 		void AddClass(string name, Class cBase = null)

@@ -15,7 +15,7 @@ namespace Xi.Vm
 		public Int64 IntValue;
 		public double DoubleValue;
 		public string StringValue;
-		public Class ObjectValue;
+		public object ObjectValue;
 		public List<Variant> ArrayValue;
 
 		public int Length
@@ -93,7 +93,7 @@ namespace Xi.Vm
 			StringValue = value;
 		}
 
-		public Variant(Class value)
+		public Variant(object value)
 		{
 			timestamp = DateTime.Now.Ticks;
 			Type = VariantType.Object;
