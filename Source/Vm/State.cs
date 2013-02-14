@@ -57,12 +57,14 @@ namespace Xi.Vm
 				throw new Exception(String.Format("Cannot set entry point to non-existant module \"{0}\".", moduleName));
 
 			// Make sure it has a body if no method is specified
-			int index = module.GetMethodIndex(methodName);
-			if (index == -1 && module.Body == null)
+			Method method = module.GetMethod(methodName);
+			if (method == null && module.Body == null)
 				throw new Exception(String.Format("Module \"{0}\" has no body, cannot set entry point here.", moduleName));
+			
+			if (method == null)
+				method = module.Body;
 
-			// TODO This is a hack, just get rid of indexs, they're silly
-			CallStack.Push(new CallInfo(module, index, 0));
+			CallStack.Push(new CallInfo(module, method, 0));
 		}
 	}
 }

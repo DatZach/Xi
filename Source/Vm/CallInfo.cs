@@ -19,41 +19,31 @@
 	{
 		public Module Module { get; private set; }
 		public Class Class { get; private set; }
-		public int MethodIndex { get; private set; }	// TODO Change to handle instead of a silly index?
 		public int InstructionPointer;
 
-		public Method Method
-		{
-			get
-			{
-				if (Class == null)
-					return MethodIndex == -1 ? Module.Body : Module.Methods[MethodIndex];
-
-				return Class.Methods[MethodIndex];
-			}
-		}
+		public Method Method { get; private set; }
 
 		public CallInfo()
 		{
 			Module = null;
 			Class = null;
-			MethodIndex = 0;
+			Method = null;
 			InstructionPointer = 0;
 		}
 
-		public CallInfo(Module vmModule, Class vmClass, int methodIndex, int instructionPointer)
+		public CallInfo(Module vmModule, Class vmClass, Method method, int instructionPointer)
 		{
 			Module = vmModule;
 			Class = vmClass;
-			MethodIndex = methodIndex;
+			Method = method;
 			InstructionPointer = instructionPointer;
 		}
 
-		public CallInfo(Module vmModule, int methodIndex, int instructionPointer)
+		public CallInfo(Module vmModule, Method method, int instructionPointer)
 		{
 			Module = vmModule;
 			Class = null;
-			MethodIndex = methodIndex;
+			Method = method;
 			InstructionPointer = instructionPointer;
 		}
 	}

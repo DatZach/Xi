@@ -74,11 +74,9 @@ namespace Xi.Vm
 
 					case Opcode.GetThis:
 						state.Stack.Push(state.CurrentClass == null ? new Variant(state.CurrentModule) : new Variant(state.CurrentClass));
-						//state.Stack.Push(new Variant(state.CurrentClass));
 						break;
 
 					case Opcode.GetBase:
-						// TODO Maybe this shouldn't throw an exception?
 						if (state.CurrentClass == null)
 							throw new Exception("Cannot GetBase outside of the scope of a class.");
 
@@ -335,13 +333,13 @@ namespace Xi.Vm
 							// TODO This is sort of a hack (cannot call cross modules)
 							// Push reentrant info onto call stack
 							state.CallStack.Push(new CallInfo(state.CurrentModule, state.CurrentClass,
-														classHandle.GetMethodIndex(state.CurrentMethod.Name),
+														classHandle.GetMethod(state.CurrentMethod.Name),
 														state.InstructionPointer + 1));
 
 							// Set state's call info to the new call & grab all requested arguments
 							//state.CurrentCall = new CallInfo(classHandle, (int)instruction.Operand.IntValue, 0);
 							// TODO Also a bit of a hack
-							state.CallStack.Push(new CallInfo(state.CurrentModule, classHandle, (int)instruction.Operand.IntValue, 0));
+							state.CallStack.Push(new CallInfo(state.CurrentModule, classHandle, classHandle.GetMethod(instruction.Operand.StringValue), 0));
 							Stack<Variant> arguments = new Stack<Variant>();
 							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
 								arguments.Push(state.Stack.Pop());

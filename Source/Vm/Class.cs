@@ -38,10 +38,5 @@ namespace Xi.Vm
 		{
 			return Methods.First(m => m.Name == name);
 		}
-
-		public int GetMethodIndex(string name)
-		{
-			return Methods.IndexOf(Methods.Single(m => m.Name == name));
-		}
 	}
 }

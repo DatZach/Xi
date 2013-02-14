@@ -26,21 +26,12 @@ namespace Xi.Vm
 
 		public Class GetClass(string name)
 		{
-			return Classes.First(c => c.Name == name);
+			return Classes.Count == 0 ? null : Classes.First(c => c.Name == name);
 		}
 
 		public Method GetMethod(string name)
 		{
-			return Methods.First(m => m.Name == name);
-		}
-
-		public int GetMethodIndex(string name)
-		{
-			// TODO Shit hack until indexs are done away with
-			if (name == "")
-				return -1;
-
-			return Methods.IndexOf(Methods.Single(m => m.Name == name));
+			return Methods.Count == 0 ? null : Methods.First(m => m.Name == name);
 		}
 
 		public static string GetNameFromFilename(string filename)
