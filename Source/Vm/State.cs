@@ -58,19 +58,20 @@ namespace Xi.Vm
 			Scope = new ExpandoObject();
 		}
 
-		public void SetEntryPoint(string moduleName)
+		public void SetEntryPoint(string moduleName, string methodName = "")
 		{
 			// Find module
 			Module module = Modules.First(m => m.Name == moduleName);
 			if (module == null)
 				throw new Exception(String.Format("Cannot set entry point to non-existant module \"{0}\".", moduleName));
 
-			// Make sure it has a body
-			if (module.Body == null)
+			// Make sure it has a body if no method is specified
+			int index = module.GetMethodIndex(methodName);
+			if (index == -1 && module.Body == null)
 				throw new Exception(String.Format("Module \"{0}\" has no body, cannot set entry point here.", moduleName));
 
 			// TODO This is a hack, just get rid of indexs, they're silly
-			CallStack.Push(new CallInfo(module, -1, 0));
+			CallStack.Push(new CallInfo(module, index, 0));
 		}
 	}
 }

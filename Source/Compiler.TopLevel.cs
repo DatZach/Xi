@@ -19,7 +19,7 @@ namespace Xi
 				else if (stream.Accept(TokenType.Delimiter, "{"))
 					OrphanDeclaration();
 				else
-					OrphanDeclaration(); // TODO This is a dirty hack
+					BodyDeclaration();
 			}
 		}
 
@@ -56,10 +56,13 @@ namespace Xi
 
 		private void OrphanDeclaration()
 		{
-			//AddClass(ClassNameDefault);
-			//AddMethod(MethodNameEntry);
 			AddModuleBody();
+			Block();
+		}
 
+		private void BodyDeclaration()
+		{
+			AddModuleBody();
 			Block();
 		}
 
@@ -114,8 +117,14 @@ namespace Xi
 
 		private void Block()
 		{
-			VariableDeclaration();
-			Statement();
+			do
+			{
+				VariableDeclaration();
+				if (stream.EndOfStream)
+					break;
+
+				Assignment();
+			} while (!stream.EndOfStream && !stream.Accept(TokenType.Delimiter, "}"));
 		}
 	}
 }

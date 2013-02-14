@@ -18,14 +18,35 @@ namespace Xi.Lexer
 
 		public static List<Token> ParseString(string value)
 		{
-			return ParseStream(new StringStream(value), "");
+			try
+			{
+				return ParseStream(new StringStream(value), "");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("Lexer Error: {0}", e.Message);
+				return null;
+			}
 		}
 
 		public static List<Token> ParseFile(string filename)
 		{
-			using (StreamReader reader = new StreamReader(filename))
+			try
 			{
-				return ParseStream(new StringStream(reader.ReadToEnd()), filename);
+				using (StreamReader reader = new StreamReader(filename))
+				{
+					return ParseStream(new StringStream(reader.ReadToEnd()), filename);
+				}
+			}
+			catch(IOException)
+			{
+				Console.WriteLine("Error: Cannot open file \"{0}\" for reading.", filename);
+				return null;
+			}
+			catch(Exception e)
+			{
+				Console.WriteLine("Lexer Error: {0}", e.Message);
+				return null;
 			}
 		}
 

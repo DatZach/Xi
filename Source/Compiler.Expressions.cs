@@ -6,11 +6,11 @@ namespace Xi
 {
 	internal partial class Compiler
 	{
-		private void Statement()
+		/*private void Statement()
 		{
-			while (!stream.EndOfStream && !stream.Accept(TokenType.Delimiter, "}"))
+			while (!stream.Accept(TokenType.Delimiter, "}"))
 				Assignment();
-		}
+		}*/
 
 		private void Assignment()
 		{

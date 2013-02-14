@@ -73,6 +73,7 @@
     <Compile Include="Compiler.Expressions.cs" />
     <Compile Include="Compiler.Main.cs" />
     <Compile Include="Compiler.TopLevel.cs" />
+    <Compile Include="Util\CommandLine.cs" />
     <Compile Include="Util\Disassembler.cs" />
     <Compile Include="Label.cs" />
     <Compile Include="Lexer\Parser.cs" />

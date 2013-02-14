@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Xi.Lexer;
 using Xi.Util;
 using Xi.Vm;
@@ -11,42 +10,49 @@ namespace Xi
 	{
 		public static void Main(string[] args)
 		{
-			if (args.Length == 1 && args[0][0] == '-' && args[0][1] == '-') // TODO Fix this hack
-			{
-				HandleCommandLineSwitches(args[0]);
-				return;
-			}
+			// Handle command line
+			CommandLine.ParseArguments(args);
+			if (CommandLine.Flags.Contains("--help"))
+				CommandLine.PrintUsage();
+			else if (CommandLine.Flags.Contains("--version"))
+				CommandLine.PrintVersion();
 
-			if (args.Length != 0)
-				RunProgram(args[0], args.Length > 1 ? args[1] : "");
+			// Run script mode
+			if (CommandLine.Filename != null)
+				RunScript(CommandLine.Filename);
 			else
 				RunRepl();
 
+			// Pause -- will be removed later
 			Console.ReadKey();
 		}
 
-		private static void RunProgram(string filename, string entry)
+		private static void RunScript(string filename)
 		{
-			// TODO Too ugly?
-			Script script = new Script();
+			// Compile script
+			Compiler compiler = new Compiler();
+
+			List<Token> tokenStream = Tokenizer.ParseFile(filename);
+			if (tokenStream == null)
+				return;
+
+			if (!compiler.Compile(new TokenStream(tokenStream)))
+				return;
+
+			// Create state and add modules
+			State state = new State();
+			state.Modules.AddRange(compiler.Modules);
+
+			// Run script
 			try
 			{
-				if (!script.LoadFile(filename))
-				{
-					Console.WriteLine("Cannot open script \"{0}\"!", filename);
-					return;
-				}
+				state.SetEntryPoint(Module.GetNameFromFilename(filename));
+				VirtualMachine.Execute(state);
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e.Message);
+				Console.WriteLine("VM Error: {0}", e.Message);
 			}
-
-			// TODO Fix this bs
-			if (String.IsNullOrEmpty(entry))
-				entry = Compiler.ClassNameDefault + "." + Compiler.MethodNameEntry;
-
-			script.Call(entry);
 		}
 
 		private static void RunRepl()
@@ -58,35 +64,24 @@ namespace Xi
 				Console.Write(">> ");
 				value = Console.ReadLine();
 
-				List<Token> tokenStream;
+				// Compile line
 				Compiler compiler = new Compiler();
 
-				try
-				{
-					tokenStream = Tokenizer.ParseString(value);
-				}
-				catch(Exception e)
-				{
-					Console.WriteLine("Lexer Error: {0}", e.Message);
+				List<Token> tokenStream = Tokenizer.ParseString(value);
+				if (tokenStream == null)
 					continue;
-				}
 
-				// TODO Maybe move the catch up a level to provide better management up here?
 				if (!compiler.Compile(new TokenStream(tokenStream)))
 					continue;
 
-				Disassembler.Dump(compiler.Modules);
-
-				// TODO: Preserve VM state
+				// Add line
 				State state = new State();
 				state.Modules.AddRange(compiler.Modules);
 
+				// Run line
 				try
 				{
-					// TODO Add Compiler.EntryClass/Compiler.EntryMethod
-					//state.SetEntryPoint(Compiler.ClassNameDefault, Compiler.MethodNameEntry);
-					// TODO a tad bit of a hack
-					state.SetEntryPoint(state.Modules[0].Name);
+					state.SetEntryPoint(Module.ModuleDefaultName);
 					VirtualMachine.Execute(state);
 				}
 				catch (Exception e)
@@ -94,47 +89,6 @@ namespace Xi
 					Console.WriteLine("VM Error: {0}", e.Message);
 				}
 			} while (value != "exit");
-		}
-
-		private static void HandleCommandLineSwitches(string value)
-		{
-			const int helpTopicTabLength = 14;
-
-			Dictionary<string, string> helpTopics = new Dictionary<string, string>
-			{
-				{ "[filename]",		"Filename of script to run." },
-				{ "[entrypoint]",	"Entry point to start executing the script from.\n" +
-									"Follows the format Class.Method, class and method must be static."},
-				{ "[flags]",		"Flags that change the behavior of the script." },
-				{ "--version",		"Display Xi version." },
-				{ "--help",			"Display this information." },
-				{ "--args",			"Command line arguments to pass" }
-			};
-
-			switch (value)
-			{
-				case "--help":
-					Console.WriteLine("Usage: Xi [flags] [filename] [entrypoint]");
-					foreach(KeyValuePair<string, string> topic in helpTopics)
-					{
-						int indentValue = topic.Key.Length;
-						Console.Write(topic.Key);
-
-						foreach (string helpValue in topic.Value.Split(new [] { '\n' }))
-						{
-							for (; indentValue < helpTopicTabLength; ++indentValue)
-								Console.Write(" ");
-
-							Console.WriteLine(helpValue);
-							indentValue = 0;
-						}
-					}
-					break;
-
-				case "--version":
-					Console.WriteLine("Xi {0}", Assembly.GetExecutingAssembly().GetName().Version);
-					break;
-			}
 		}
 	}
 }

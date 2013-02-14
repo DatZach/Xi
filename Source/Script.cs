@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -17,6 +17,9 @@ namespace Xi
 		public bool LoadString(string value)
 		{
 			List<Token> tokens = Tokenizer.ParseString(value);
+			if (tokens == null)
+				return false;
+
 			return CompileStream(new TokenStream(tokens));
 		}
 
@@ -26,14 +29,15 @@ namespace Xi
 			return CompileStream(new TokenStream(tokens));
 		}
 
+		public void Call()
+		{
+			state.SetEntryPoint(state.Modules.First().Name);
+			VirtualMachine.Execute(state);
+		}
+
 		public Variant[] Call(string method, params Variant[] arguments)
 		{
-			string[ ] values = method.Split('.');
-			if (values.Length != 2)
-				throw new ArgumentException("Invalid \"method\" value, expected format \"Class.Method\".");
-
-			// TODO a tad bit of a hack
-			state.SetEntryPoint(state.Modules[0].Name);
+			state.SetEntryPoint(state.Modules.First().Name, method);
 			VirtualMachine.Execute(state);
 
 			return null;

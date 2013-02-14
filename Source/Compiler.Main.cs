@@ -23,7 +23,7 @@ namespace Xi
 
 			try
 			{
-				Module(Path.GetFileNameWithoutExtension(tokenStream.Filename));
+				Module(Vm.Module.GetNameFromFilename(tokenStream.Filename));
 			}
 			catch(Exception e)
 			{
