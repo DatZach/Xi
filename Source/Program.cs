@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Xi.Compile;
 using Xi.Lexer;
 using Xi.Util;
 using Xi.Vm;

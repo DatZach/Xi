@@ -4,9 +4,8 @@ using System.IO;
 using Xi.Lexer;
 using Xi.Vm;
 
-namespace Xi
+namespace Xi.Compile
 {
-	// TODO Somehow move this into its own namespace
 	internal partial class Compiler
 	{
 		private TokenStream stream;

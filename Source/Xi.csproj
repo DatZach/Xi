@@ -70,12 +70,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Compiler.Expressions.cs" />
-    <Compile Include="Compiler.Main.cs" />
-    <Compile Include="Compiler.TopLevel.cs" />
+    <Compile Include="Compile\Compiler.Expressions.cs" />
+    <Compile Include="Compile\Compiler.Main.cs" />
+    <Compile Include="Compile\Compiler.TopLevel.cs" />
     <Compile Include="Util\CommandLine.cs" />
     <Compile Include="Util\Disassembler.cs" />
-    <Compile Include="Label.cs" />
+    <Compile Include="Compile\Label.cs" />
     <Compile Include="Lexer\Parser.cs" />
     <Compile Include="Lexer\Token.cs" />
     <Compile Include="Lexer\Tokenizer.cs" />
@@ -121,10 +121,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compiler.Errors.cs" />
+    <Compile Include="Compile\Compiler.Errors.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compiler.Lookup.cs" />
+    <Compile Include="Compile\Compiler.Lookup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

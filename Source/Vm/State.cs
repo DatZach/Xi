@@ -33,15 +33,6 @@ namespace Xi.Vm
 			{
 				return CallStack.Top.Method;
 			}
-
-			// TODO wth is this?
-			/*set
-			{
-				if (CurrentClass == null)
-					return;
-
-				CurrentClass.Methods[CallStack.Top.MethodIndex] = value;
-			}*/
 		}
 
 		public int InstructionPointer

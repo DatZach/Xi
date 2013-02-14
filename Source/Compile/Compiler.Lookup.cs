@@ -2,7 +2,7 @@
 using System.Linq;
 using Xi.Vm;
 
-namespace Xi
+namespace Xi.Compile
 {
 	internal partial class Compiler
 	{

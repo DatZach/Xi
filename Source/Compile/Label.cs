@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Xi
+namespace Xi.Compile
 {
 	class Label
 	{

@@ -2,7 +2,7 @@
 using Xi.Lexer;
 using Xi.Vm;
 
-namespace Xi
+namespace Xi.Compile
 {
 	partial class Compiler
 	{

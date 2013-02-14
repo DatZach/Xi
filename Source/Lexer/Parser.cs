@@ -4,8 +4,6 @@ namespace Xi.Lexer
 {
 	internal static class Parser
 	{
-		// TODO Should probably move this elsewhere
-
 		public static bool IsAddOperation(Token token)
 		{
 			if (token == null || token.Type != TokenType.Delimiter)

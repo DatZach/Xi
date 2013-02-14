@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Xi.Compile;
 using Xi.Lexer;
 using Xi.Vm;
 
