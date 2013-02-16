@@ -82,7 +82,6 @@
     <Compile Include="Lexer\TokenStream.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Script.cs" />
-    <Compile Include="Util\Assembler.cs" />
     <Compile Include="Util\StringStream.cs" />
     <Compile Include="Vm\Class.cs" />
     <Compile Include="Vm\CallInfo.cs" />
@@ -95,7 +94,6 @@
     <Compile Include="Vm\VirtualMachine.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>

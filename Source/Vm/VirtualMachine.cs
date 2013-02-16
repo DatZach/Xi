@@ -206,6 +206,41 @@ namespace Xi.Vm
 						state.Stack.Push(+state.Stack.Pop());
 						break;
 
+					case Opcode.ModuleCall:
+						{
+							// Grab class to call from stack
+							Module moduleHandle = state.Modules[(int)instruction.Operands[0].IntValue];
+
+							// Push reentrant info onto call stack
+							state.CallStack.Push(new CallInfo(state.CurrentModule, state.CurrentClass,
+															  state.CurrentClass == null
+																  ? state.CurrentModule.GetMethod(state.CurrentMethod.Name)
+																  : state.CurrentClass.GetMethod(state.CurrentMethod.Name),
+															  state.InstructionPointer + 1));
+
+							// Set state's call info to the new call & grab all requested arguments
+							state.CallStack.Push(new CallInfo(moduleHandle,
+															  null,
+															  moduleHandle.Methods[(int)instruction.Operands[1].IntValue],
+															  0));
+
+							Stack<Variant> arguments = new Stack<Variant>();
+							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
+								arguments.Push(state.Stack.Pop());
+
+							// Change stream to current method's instruction stream
+							stream = state.CurrentMethod.Instructions;
+
+							// Push stack scope
+							state.Stack.PushScope(state.CurrentMethod.Variables.Count + state.CurrentMethod.ArgumentCount);
+
+							// Pop arguments from transition stack into local arguments
+							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
+								state.Stack[i] = arguments.Pop();
+
+							continue;
+						}
+
 					case Opcode.CompareEqual:
 						{
 							Variant a = state.Stack.Pop();
@@ -322,8 +357,6 @@ namespace Xi.Vm
 
 					case Opcode.ClassCall:
 						{
-							// NOTE Might be able to avoid argument relocation by integrating the argument area into stack reserve
-
 							// Grab class to call from stack
 							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
 

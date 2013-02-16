@@ -27,7 +27,7 @@ namespace Xi.Compile
 			}
 		}
 
-		private Method CurrentMethod;
+		private Method CurrentMethod { get; set; }
 
 		public List<Instruction> Instructions
 		{

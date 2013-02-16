@@ -52,7 +52,7 @@ namespace Xi.Vm
 			get
 			{
 				if (Type != VariantType.Array)
-					throw new Exception(String.Format("Cannot index type \"{0}\"", Type));
+					throw new InvalidOperationException(String.Format("Cannot index type \"{0}\"", Type));
 
 				return ArrayValue[index];
 			}
@@ -60,7 +60,7 @@ namespace Xi.Vm
 			set
 			{
 				if (Type != VariantType.Array)
-					throw new Exception(String.Format("Cannot index type \"{0}\"", Type));
+					throw new InvalidOperationException(String.Format("Cannot index type \"{0}\"", Type));
 
 				ArrayValue[index] = value;
 			}
@@ -420,10 +420,10 @@ namespace Xi.Vm
 		public static bool operator ==(Variant a, Variant b)
 		{
 			if (((object)a) == null || ((object)b) == null)
-				throw new ArgumentException("Cannot compare null variant.");
+				return false;
 
 			if (a.Type != b.Type)
-				throw new Exception(String.Format("Cannot compare variants of differing types \"{0}\" and \"{1}\"", a.Type, b.Type));
+				return false;
 
 			switch (a.Type)
 			{
@@ -447,10 +447,10 @@ namespace Xi.Vm
 		public static bool operator !=(Variant a, Variant b)
 		{
 			if (((object)a) == null || ((object)b) == null)
-				throw new ArgumentException("Cannot compare null variant.");
+				return false;
 
 			if (a.Type != b.Type)
-				throw new Exception(String.Format("Cannot compare variants of differing types \"{0}\" and \"{1}\"", a.Type, b.Type));
+				return false;
 
 			switch (a.Type)
 			{
