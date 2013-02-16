@@ -105,7 +105,7 @@ namespace Xi.Compile
 				} while(stream.Accept(TokenType.Delimiter, ","));
 			}
 			else if (globalVariable)
-				Expected("keyword \"var\" after keyword \"global\".");
+				stream.Expected("keyword \"var\" after keyword \"global\".");
 
 			stream.Accept(TokenType.Delimiter, ";");
 		}

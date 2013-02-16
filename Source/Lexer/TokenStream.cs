@@ -58,7 +58,6 @@ namespace Xi.Lexer
 			if (!EndOfStream && Read().Type == type)
 				return;
 
-			// TODO Fix errors somehow...
 			Expected(type.ToString());
 		}
 
@@ -71,7 +70,6 @@ namespace Xi.Lexer
 					return;
 			}
 
-			// TODO Fix errors somehow...
 			Expected(value);
 		}
 
@@ -115,8 +113,7 @@ namespace Xi.Lexer
 			Token token = Read();
 			if (token.Type != TokenType.Word)
 			{
-				// TODO Fix this
-				Expected("word");
+				Expected("ident");
 				return "";
 			}
 
@@ -153,19 +150,23 @@ namespace Xi.Lexer
 			}
 
 			// Should this error?
-			// TODO Fix this
 			Expected("variant");
 
 			return new Variant();
 		}
 
-		// TODO fix this redundency
+		public void Error(string message, params object[] args)
+		{
+			string parsedError = String.Format(message, args);
+			string errorMessage = String.Format("Error on line {0}: \n\t", CurrentLine);
+			errorMessage += parsedError.Replace("\n", "\n\t");
+
+			throw new Exception(errorMessage);
+		}
+
 		public void Expected(string value)
 		{
-			Token peekedToken = Peek();
-			string peekedValue = peekedToken == null ? "" : peekedToken.Value;
-
-			throw new Exception(String.Format("Error on line {0}:\n\tExpected \"{1}\" got \"{2}\" instead.", CurrentLine, value, peekedValue));
+			Error("Expected \"{0}\" got \"{1}\" instead.", value, Peek().Value);
 		}
 	}
 }

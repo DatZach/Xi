@@ -352,7 +352,7 @@ namespace Xi.Compile
 				Instructions.Add(new Instruction(Opcode.Push, stream.GetVariant()));
 			}
 			else if (!Parser.IsIncrementOperation(stream.Peek()))
-				Expected("builtin function, variable or literal");
+				stream.Expected("builtin function, variable or literal");
 
 			if (stream.Accept(TokenType.Delimiter, "++"))
 			{

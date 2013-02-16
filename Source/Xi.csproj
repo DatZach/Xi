@@ -121,9 +121,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compile\Compiler.Errors.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Compile\Compiler.Lookup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
