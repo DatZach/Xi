@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Xi.Vm
 {
-	class Module
+	public class Module
 	{
 		public const string ModuleDefaultName = "Main";
 

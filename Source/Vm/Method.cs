@@ -6,7 +6,6 @@ namespace Xi.Vm
 	{
 		public List<Instruction> Instructions { get; private set; }
 		public List<string> Variables;
-		//public int VariableCount { get; private set; }
 		public int ArgumentCount { get; private set; }
 		public string Name { get; private set; }
 
@@ -14,7 +13,6 @@ namespace Xi.Vm
 		{
 			Instructions = new List<Instruction>();
 			Variables = new List<string>();
-			//VariableCount = 0;
 			ArgumentCount = argumentCount;
 			Name = name;
 		}
@@ -24,7 +22,6 @@ namespace Xi.Vm
 			Name = name;
 			Instructions = instructions;
 			Variables = new List<string>();
-			//VariableCount = variableCount;
 			ArgumentCount = argumentCount;
 		}
 	}
