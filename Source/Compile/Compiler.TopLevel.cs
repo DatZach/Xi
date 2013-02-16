@@ -16,6 +16,8 @@ namespace Xi.Compile
 					UsingStatement();
 				else if (stream.Accept(TokenType.Word, "class"))
 					ClassDeclaration();
+				else if (stream.Accept(TokenType.Word, "function"))
+					FunctionDeclaration();
 				else if (stream.Accept(TokenType.Delimiter, "{"))
 					OrphanDeclaration();
 				else
@@ -112,7 +114,23 @@ namespace Xi.Compile
 
 		private void FunctionDeclaration()
 		{
-			
+			string functionName = stream.GetWord();
+			int argCount = 0;
+
+			if (stream.Accept(TokenType.Delimiter, ":"))
+			{
+				do
+				{
+					stream.GetWord();
+					++argCount;
+				} while (stream.Accept(TokenType.Delimiter, ","));
+			}
+
+			stream.Expect(TokenType.Delimiter, "{");
+
+			AddMethod(functionName, argCount);
+
+			Block();
 		}
 
 		private void Block()

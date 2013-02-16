@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xi.Vm;
 
@@ -83,15 +84,21 @@ namespace Xi.Compile
 		{
 			if (CurrentClass == null)
 			{
-				stream.Error("Cannot declare method outside of class scope.");
-				return;
+				foreach (Method m in CurrentModule.Methods.Where(m => m.Name == name))
+					stream.Error("Method \"{0}\" already declared previously.", m.Name);
+
+				CurrentMethod = new Method(name, argCount);
+				CurrentModule.Methods.Add(CurrentMethod);
 			}
+			else
+			{
 
-			foreach (Method m in CurrentClass.Methods.Where(m => m.Name == name))
-				stream.Error("Method \"{0}\" already declared previously.", m.Name);
+				foreach (Method m in CurrentClass.Methods.Where(m => m.Name == name))
+					stream.Error("Method \"{0}\" already declared previously.", m.Name);
 
-			CurrentMethod = new Method(name, argCount);
-			CurrentClass.Methods.Add(CurrentMethod);
+				CurrentMethod = new Method(name, argCount);
+				CurrentClass.Methods.Add(CurrentMethod);
+			}
 		}
 
 		void AddVariable(string name)

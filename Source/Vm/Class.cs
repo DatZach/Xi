@@ -41,7 +41,14 @@ namespace Xi.Vm
 
 		public Method GetMethod(string name)
 		{
-			return Methods.First(m => m.Name == name);
+			try
+			{
+				return Methods.First(m => m.Name == name);
+			}
+			catch(Exception)
+			{
+				return null;
+			}
 		}
 
 		public int GetMethodIndex(string name)

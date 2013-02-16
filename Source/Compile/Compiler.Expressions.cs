@@ -344,6 +344,30 @@ namespace Xi.Compile
 
 					Instructions.Add(new Instruction(Opcode.GetArrayVariable, arrayVariable));
 				}
+				else if (stream.PeekAhead(1).Value == "(")
+				{
+					string functionName = stream.GetWord();
+					stream.Expect(TokenType.Delimiter, "(");
+					stream.Expect(TokenType.Delimiter, ")");
+
+					if (CurrentClass == null)
+					{
+						List<Variant> operands = new List<Variant>
+						{
+							new Variant(Modules.Count - 1),
+							new Variant(CurrentModule.GetMethodIndex(functionName))
+						};
+
+						Instructions.Add(new Instruction(Opcode.ModuleCall, operands));
+					}
+					else
+					{
+						Instructions.Add(new Instruction(Opcode.GetThis));
+						Instructions.Add(new Instruction(Opcode.ClassCall, new Variant(CurrentClass.GetMethodIndex(functionName))));
+					}
+
+					//Instructions.Add(new Instruction(Opcode.ClassCall, new Variant(GetMethodIndex(functionName, CurrentModule, CurrentClass))));
+				}
 				else
 					Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(GetVariableIndex(stream.GetWord()))));
 			}
