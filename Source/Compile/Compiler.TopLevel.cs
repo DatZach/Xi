@@ -115,20 +115,21 @@ namespace Xi.Compile
 		private void FunctionDeclaration()
 		{
 			string functionName = stream.GetWord();
-			int argCount = 0;
+			List<string> arguments = new List<string>();
 
 			if (stream.Accept(TokenType.Delimiter, ":"))
 			{
 				do
 				{
-					stream.GetWord();
-					++argCount;
+					arguments.Add(stream.GetWord());
 				} while (stream.Accept(TokenType.Delimiter, ","));
 			}
 
 			stream.Expect(TokenType.Delimiter, "{");
 
-			AddMethod(functionName, argCount);
+			AddMethod(functionName, arguments.Count);
+			foreach(string arg in arguments)
+				AddVariable(arg);
 
 			Block();
 		}

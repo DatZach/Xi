@@ -347,8 +347,14 @@ namespace Xi.Compile
 				else if (stream.PeekAhead(1).Value == "(")
 				{
 					string functionName = stream.GetWord();
+
+					// Verify the proper number of arguments were passed
 					stream.Expect(TokenType.Delimiter, "(");
-					stream.Expect(TokenType.Delimiter, ")");
+					while (!stream.Accept(TokenType.Delimiter, ")"))
+					{
+						TernaryExpression();
+						stream.Accept(TokenType.Delimiter, ",");
+					}
 
 					if (CurrentClass == null)
 					{
