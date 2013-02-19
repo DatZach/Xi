@@ -23,7 +23,7 @@ namespace Xi.Compile
 			{
 				Module(Vm.Module.GetNameFromFilename(tokenStream.Filename));
 			}
-			catch(StackOverflowException e)
+			catch(Exception e)
 			{
 				Console.WriteLine(e.Message);
 				return false;

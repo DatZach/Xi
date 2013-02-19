@@ -12,13 +12,13 @@ namespace Xi.Compile
 
 			while (!stream.EndOfStream)
 			{
-				if (stream.Accept(TokenType.Word, "using"))
+				if (stream.Pass("using"))
 					UsingStatement();
-				else if (stream.Accept(TokenType.Word, "class"))
+				else if (stream.Pass("class"))
 					ClassDeclaration();
-				else if (stream.Accept(TokenType.Word, "function"))
+				else if (stream.Pass("function"))
 					FunctionDeclaration();
-				else if (stream.Accept(TokenType.Delimiter, "{"))
+				else if (stream.Pass(TokenType.Delimiter, "{"))
 					OrphanDeclaration();
 				else
 					BodyDeclaration();
@@ -27,12 +27,14 @@ namespace Xi.Compile
 
 		private void UsingStatement()
 		{
-
+			stream.Expect(TokenType.Word, "using");
 		}
 
 		private void ClassDeclaration()
 		{
 			// TODO allow for multiple inherited classes
+
+			stream.Expect(TokenType.Word, "class");
 
 			// Get class name & base name
 			string name = stream.GetWord();
@@ -65,7 +67,22 @@ namespace Xi.Compile
 		private void BodyDeclaration()
 		{
 			AddModuleBody();
-			Block();
+
+			do
+			{
+				if (stream.Accept(TokenType.Word, "return"))
+				{
+					ReturnStatement();
+				}
+				else
+				{
+					VariableDeclaration();
+					if (stream.EndOfStream)
+						break;
+
+					Assignment();
+				}
+			} while (!stream.EndOfStream);
 		}
 
 		private void VariableDeclaration()
@@ -114,6 +131,8 @@ namespace Xi.Compile
 
 		private void FunctionDeclaration()
 		{
+			stream.Expect(TokenType.Word, "function");
+
 			string functionName = stream.GetWord();
 			List<string> arguments = new List<string>();
 
@@ -125,8 +144,6 @@ namespace Xi.Compile
 				} while (stream.Accept(TokenType.Delimiter, ","));
 			}
 
-			stream.Expect(TokenType.Delimiter, "{");
-
 			AddMethod(functionName, arguments.Count);
 			foreach(string arg in arguments)
 				AddVariable(arg);
@@ -136,13 +153,22 @@ namespace Xi.Compile
 
 		private void Block()
 		{
+			stream.Expect(TokenType.Delimiter, "{");
+
 			do
 			{
-				VariableDeclaration();
-				if (stream.EndOfStream)
-					break;
+				if (stream.Accept(TokenType.Word, "return"))
+				{
+					ReturnStatement();
+				}
+				else
+				{
+					VariableDeclaration();
+					if (stream.EndOfStream)
+						break;
 
-				Assignment();
+					Assignment();
+				}
 			} while (!stream.EndOfStream && !stream.Accept(TokenType.Delimiter, "}"));
 		}
 	}

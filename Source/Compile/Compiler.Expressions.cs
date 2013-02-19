@@ -347,6 +347,7 @@ namespace Xi.Compile
 				else if (stream.PeekAhead(1).Value == "(")
 				{
 					string functionName = stream.GetWord();
+					int argCount = 0;
 
 					// Verify the proper number of arguments were passed
 					stream.Expect(TokenType.Delimiter, "(");
@@ -354,10 +355,15 @@ namespace Xi.Compile
 					{
 						TernaryExpression();
 						stream.Accept(TokenType.Delimiter, ",");
+						++argCount;
 					}
 
 					if (CurrentClass == null)
 					{
+						if (CurrentModule.GetMethod(functionName).ArgumentCount != argCount)
+							stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
+								CurrentModule.GetMethod(functionName).ArgumentCount, functionName, argCount);
+
 						List<Variant> operands = new List<Variant>
 						{
 							new Variant(Modules.Count - 1),
@@ -368,6 +374,10 @@ namespace Xi.Compile
 					}
 					else
 					{
+						if (CurrentClass.GetMethod(functionName).ArgumentCount != argCount)
+							stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
+								CurrentClass.GetMethod(functionName).ArgumentCount, functionName, argCount);
+
 						Instructions.Add(new Instruction(Opcode.GetThis));
 						Instructions.Add(new Instruction(Opcode.ClassCall, new Variant(CurrentClass.GetMethodIndex(functionName))));
 					}

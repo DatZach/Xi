@@ -70,6 +70,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Compile\Compiler.ConditionalStatements.cs" />
     <Compile Include="Compile\Compiler.Expressions.cs" />
     <Compile Include="Compile\Compiler.Main.cs" />
     <Compile Include="Compile\Compiler.TopLevel.cs" />
