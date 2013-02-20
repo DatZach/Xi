@@ -40,6 +40,9 @@ namespace Xi.Vm
 		{
 			try
 			{
+				if (Body != null && Body.Name == name)
+					return Body;
+
 				return Methods.Count == 0 ? null : Methods.First(m => m.Name == name);
 			}
 			catch

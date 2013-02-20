@@ -21,6 +21,12 @@ namespace Xi.Util
 					DumpInstructions(module.Body.Instructions);
 				}
 
+				foreach (Method m in module.Methods)
+				{
+					Console.WriteLine("--- Method {0} : {1} ---", m.Name, m.ArgumentCount);
+					DumpInstructions(m.Instructions);
+				}
+
 				// Dump all classes
 				foreach (Class c in module.Classes)
 				{

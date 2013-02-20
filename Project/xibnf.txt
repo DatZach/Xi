@@ -20,6 +20,8 @@
 							'}'
 <parameter-list>		::= [':' <ident> [',' <ident>]*]
 
+<return-statement>		::= 'return' [<ident> | <literal>]
+
 <block>					::= (<variable> | <assignment>)*
 <assignment>			::= [<ident> <assign-op> ]* <ternary-expression>
 <ternary-expression>	::= <logical-and-or> ['?' <logical-and-or> ':' <logical-and-or>]*

@@ -70,18 +70,7 @@ namespace Xi.Compile
 
 			do
 			{
-				if (stream.Accept(TokenType.Word, "return"))
-				{
-					ReturnStatement();
-				}
-				else
-				{
-					VariableDeclaration();
-					if (stream.EndOfStream)
-						break;
-
-					Assignment();
-				}
+				BlockStatement();
 			} while (!stream.EndOfStream);
 		}
 
@@ -157,19 +146,24 @@ namespace Xi.Compile
 
 			do
 			{
-				if (stream.Accept(TokenType.Word, "return"))
-				{
-					ReturnStatement();
-				}
-				else
-				{
-					VariableDeclaration();
-					if (stream.EndOfStream)
-						break;
-
-					Assignment();
-				}
+				BlockStatement();
 			} while (!stream.EndOfStream && !stream.Accept(TokenType.Delimiter, "}"));
+		}
+
+		private void BlockStatement()
+		{
+			if (stream.Pass("return"))
+			{
+				ReturnStatement();
+			}
+			else
+			{
+				VariableDeclaration();
+				if (stream.EndOfStream)
+					return;
+
+				Assignment();
+			}
 		}
 	}
 }
