@@ -152,17 +152,23 @@ namespace Xi.Compile
 
 		private void BlockStatement()
 		{
-			if (stream.Pass("return"))
+			switch(stream.Peek().Value)
 			{
-				ReturnStatement();
-			}
-			else
-			{
-				VariableDeclaration();
-				if (stream.EndOfStream)
-					return;
+				case "if":
+					IfStatement();
+					break;
 
-				Assignment();
+				case "return":
+					ReturnStatement();
+					break;
+
+				case "var":
+					VariableDeclaration();
+					break;
+
+				default:
+					Assignment();
+					break;
 			}
 		}
 	}

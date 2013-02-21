@@ -6,12 +6,6 @@ namespace Xi.Compile
 {
 	internal partial class Compiler
 	{
-		/*private void Statement()
-		{
-			while (!stream.Accept(TokenType.Delimiter, "}"))
-				Assignment();
-		}*/
-
 		private void Assignment()
 		{
 			if (Parser.IsAssignOperation(stream.PeekAhead(1)))
