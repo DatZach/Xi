@@ -87,7 +87,7 @@ namespace Xi
 					state.SetEntryPoint(Module.ModuleDefaultName);
 					VirtualMachine.Execute(state);
 				}
-				catch (StackOverflowException e)
+				catch (Exception e)
 				{
 					Console.WriteLine("VM Error: {0}", e.Message);
 				}

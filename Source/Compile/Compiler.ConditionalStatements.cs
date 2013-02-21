@@ -32,6 +32,37 @@ namespace Xi.Compile
 				BlockStatement();
 
 			labelEnd.Mark();
+
+			labelElse.Fix();
+			labelEnd.Fix();
+		}
+
+		private void WhileStatement()
+		{
+			Label labelStart = new Label(this);
+			Label labelEnd = new Label(this);
+
+			stream.Expect(TokenType.Word, "while");
+			stream.Expect(TokenType.Delimiter, "(");
+
+			labelStart.Mark();
+			TernaryExpression();
+			stream.Expect(TokenType.Delimiter, ")");
+
+			Instructions.Add(new Instruction(Opcode.Push, new Variant(1)));
+			Instructions.Add(new Instruction(Opcode.CompareEqual));
+			Instructions.Add(new Instruction(Opcode.IfFalse, new Variant(0)));
+			labelEnd.PatchHere();
+
+			BlockStatement();
+
+			Instructions.Add(new Instruction(Opcode.Jump, new Variant(0)));
+			labelStart.PatchHere();
+
+			labelEnd.Mark();
+
+			labelStart.Fix();
+			labelEnd.Fix();
 		}
 
 		private void ReturnStatement()

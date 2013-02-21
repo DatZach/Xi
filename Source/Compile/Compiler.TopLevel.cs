@@ -171,6 +171,10 @@ namespace Xi.Compile
 					IfStatement();
 					break;
 
+				case "while":
+					WhileStatement();
+					break;
+
 				case "return":
 					ReturnStatement();
 					break;

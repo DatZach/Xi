@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Xi.Compile;
 using Xi.Vm;
 
 namespace Xi.Lexer
@@ -171,7 +172,7 @@ namespace Xi.Lexer
 			string errorMessage = String.Format("Error on line {0}: \n\t", CurrentLine);
 			errorMessage += parsedError.Replace("\n", "\n\t");
 
-			throw new Exception(errorMessage);
+			throw new CompilerException(errorMessage);
 		}
 
 		public void Expected(string value)

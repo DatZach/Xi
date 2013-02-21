@@ -92,6 +92,9 @@ namespace Xi.Compile
 				labelElse.Mark();
 				LogicalAndOr();
 				labelEnd.Mark();
+
+				labelElse.Fix();
+				labelEnd.Fix();
 			}
 		}
 
