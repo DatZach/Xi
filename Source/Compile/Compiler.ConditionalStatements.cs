@@ -22,14 +22,14 @@ namespace Xi.Compile
 			Instructions.Add(new Instruction(Opcode.IfFalse, new Variant(0)));
 			labelElse.PatchHere();
 
-			Assignment();
+			BlockStatement();
 
 			Instructions.Add(new Instruction(Opcode.Jump, new Variant(0)));
 			labelEnd.PatchHere();
 
 			labelElse.Mark();
 			if (stream.Accept(TokenType.Word, "else"))
-				Assignment();
+				BlockStatement();
 
 			labelEnd.Mark();
 		}

@@ -101,7 +101,7 @@ namespace Xi.Compile
 							Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayValues)));
 						}
 						else
-							Instructions.Add(new Instruction(Opcode.Push, stream.GetVariant()));
+							TernaryExpression();
 
 						Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
 					}
@@ -152,7 +152,20 @@ namespace Xi.Compile
 
 		private void BlockStatement()
 		{
-			switch(stream.Peek().Value)
+			if (stream.Accept(TokenType.Delimiter, "{"))
+			{
+				do
+				{
+					BlockStatementInner();
+				} while (!stream.Accept(TokenType.Delimiter, "}"));
+			}
+			else
+				BlockStatementInner();
+		}
+
+		private void BlockStatementInner()
+		{
+			switch (stream.Peek().Value)
 			{
 				case "if":
 					IfStatement();

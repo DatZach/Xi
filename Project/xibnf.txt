@@ -20,9 +20,14 @@
 							'}'
 <parameter-list>		::= [':' <ident> [',' <ident>]*]
 
+<block>					::= <block-statement>*
+<block-statement>		::= ('{' (<variable> | <conditional-statement> | <assignment>)* '}' | (<variable> | <assignment>))
+
+<conditional-statement>	::= (<return-statement> | <if-statement>)
+
+<if-statement>			::= 'if' '(' <ternary-expression> ')' <block-statement> ['else' <block-statement>]
 <return-statement>		::= 'return' [<ident> | <literal>]
 
-<block>					::= (<variable> | <assignment>)*
 <assignment>			::= [<ident> <assign-op> ]* <ternary-expression>
 <ternary-expression>	::= <logical-and-or> ['?' <logical-and-or> ':' <logical-and-or>]*
 <logical-and-or>		::= <bitwise-xor-or> [<logical-and-or-op> <bitwise-xor-or>]*

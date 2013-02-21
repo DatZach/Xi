@@ -327,6 +327,10 @@ namespace Xi.Compile
 
 				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayValues)));
 			}
+			else if (stream.Accept(TokenType.Word, "true"))
+				Instructions.Add(new Instruction(Opcode.Push, new Variant(1)));
+			else if (stream.Accept(TokenType.Word, "false"))
+				Instructions.Add(new Instruction(Opcode.Push, new Variant(0)));
 			else if (stream.Pass(TokenType.Word))
 			{
 				if (stream.PeekAhead(1).Value == "[")
