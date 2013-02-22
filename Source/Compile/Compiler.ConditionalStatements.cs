@@ -65,6 +65,38 @@ namespace Xi.Compile
 			labelEnd.Fix();
 		}
 
+		private void ForStatement()
+		{
+			stream.Expect(TokenType.Word, "for");
+			stream.Expect(TokenType.Delimiter, "(");
+
+			BlockStatement();
+
+			stream.Expect(TokenType.Delimiter, ";");
+
+
+		}
+
+		private void ForeachStatement()
+		{
+			
+		}
+
+		private void SwitchStatement()
+		{
+			
+		}
+
+		private void ContinueStatement()
+		{
+			
+		}
+
+		private void BreakStatement()
+		{
+			
+		}
+
 		private void ReturnStatement()
 		{
 			stream.Expect(TokenType.Word, "return");

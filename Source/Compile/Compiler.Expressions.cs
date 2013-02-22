@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -320,7 +321,7 @@ namespace Xi.Compile
 			}
 			else if (stream.Accept(TokenType.Delimiter, "["))
 			{
-				List<Variant> arrayValues = new List<Variant>();
+				/*List<Variant> arrayValues = new List<Variant>();
 
 				while (!stream.Accept(TokenType.Delimiter, "]"))
 				{
@@ -328,7 +329,43 @@ namespace Xi.Compile
 					stream.Accept(TokenType.Delimiter, ",");
 				}
 
-				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayValues)));
+				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayValues)));*/
+
+				// TODO Nasty little hack here
+				string name = "tempArray" + new Random().Next().ToString("G");
+				AddVariable(name);
+
+				int initialPosition = stream.Position;
+
+				List<Variant> arrayInitializer = new List<Variant>();
+				while (!stream.Accept(TokenType.Delimiter, "]"))
+				{
+					arrayInitializer.Add(new Variant());
+
+					while (!stream.Accept(TokenType.Delimiter, ","))
+					{
+						if (stream.Pass(TokenType.Delimiter, "]"))
+							break;
+
+						++stream.Position;
+					}
+				}
+
+				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
+				Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
+
+				stream.Position = initialPosition;
+
+				for (int i = 0; i < arrayInitializer.Count; ++i)
+				{
+					TernaryExpression();
+					Instructions.Add(new Instruction(Opcode.Push, new Variant(i)));
+					Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(GetVariableIndex(name))));
+
+					stream.Accept(TokenType.Delimiter, ",");
+				}
+
+				stream.Expect(TokenType.Delimiter, "]");
 			}
 			else if (stream.Accept(TokenType.Word, "true"))
 				Instructions.Add(new Instruction(Opcode.Push, new Variant(1)));
@@ -398,13 +435,11 @@ namespace Xi.Compile
 			if (stream.Accept(TokenType.Delimiter, "++"))
 			{
 				int variableIndex = GetVariableIndex(stream.PeekAhead(-2).Value);
-				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
 				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(1) }));
 			}
 			else if (stream.Accept(TokenType.Delimiter, "--"))
 			{
 				int variableIndex = GetVariableIndex(stream.PeekAhead(-2).Value);
-				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
 				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(-1) }));
 			}
 		}

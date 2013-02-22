@@ -90,20 +90,43 @@ namespace Xi.Compile
 					{
 						if (stream.Accept(TokenType.Delimiter, "["))
 						{
-							List<Variant> arrayValues = new List<Variant>();
+							int initialPosition = stream.Position;
 
+							List<Variant> arrayInitializer = new List<Variant>();
 							while (!stream.Accept(TokenType.Delimiter, "]"))
 							{
-								arrayValues.Add(stream.GetVariant());
+								arrayInitializer.Add(new Variant());
+
+								while (!stream.Accept(TokenType.Delimiter, ","))
+								{
+									if (stream.Pass(TokenType.Delimiter, "]"))
+										break;
+
+									++stream.Position;
+								}
+							}
+
+							Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
+							Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
+
+							stream.Position = initialPosition;
+
+							for (int i = 0; i < arrayInitializer.Count; ++i)
+							{
+								TernaryExpression();
+								Instructions.Add(new Instruction(Opcode.Push, new Variant(i)));
+								Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(GetVariableIndex(name))));
+
 								stream.Accept(TokenType.Delimiter, ",");
 							}
 
-							Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayValues)));
+							stream.Expect(TokenType.Delimiter, "]");
 						}
 						else
+						{
 							TernaryExpression();
-
-						Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
+							Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
+						}
 					}
 					else
 					{
