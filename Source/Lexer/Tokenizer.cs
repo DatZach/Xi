@@ -170,7 +170,21 @@ namespace Xi.Lexer
 				while (!stream.IsEndOfStream && (char.IsLetterOrDigit(stream.Peek()) || stream.Peek() == '_'))
 					word += stream.Read();
 
-				tokens.Add(new Token(TokenType.Word, word, filename, line));
+				switch (word)
+				{
+					case "true":
+						tokens.Add(new Token(TokenType.Number, "1", filename, line));
+						break;
+
+					case "false":
+						tokens.Add(new Token(TokenType.Number, "0", filename, line));
+						break;
+
+					default:
+						tokens.Add(new Token(TokenType.Word, word, filename, line));
+						break;
+				}
+
 				return true;
 			}
 

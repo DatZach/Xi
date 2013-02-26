@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Xi.Vm;
 
@@ -125,6 +124,14 @@ namespace Xi.Compile
 				stream.Error("Undeclared variable \"{0}\".", name);
 
 			return index;
+		}
+
+		bool IsVariable(string name)
+		{
+			if (CurrentMethod == null)
+				return false;
+
+			return CurrentMethod.Variables.IndexOf(name) != -1;
 		}
 	}
 }

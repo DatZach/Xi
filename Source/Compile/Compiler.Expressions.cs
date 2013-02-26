@@ -9,9 +9,18 @@ namespace Xi.Compile
 	{
 		private void Assignment()
 		{
-			if (Parser.IsAssignOperation(stream.PeekAhead(1)))
+			if (IsVariable(stream.Peek().Value))
 			{
 				int variableIndex = GetVariableIndex(stream.GetWord());
+				int indexOffset = -1;
+
+				if (stream.Accept(TokenType.Delimiter, "["))
+				{
+					indexOffset = stream.Position;
+					while (!stream.Accept(TokenType.Delimiter, "]"))
+						stream.Read();
+				}
+
 				Token operation = stream.Read();
 
 				if (operation.Value != "=")
@@ -62,7 +71,19 @@ namespace Xi.Compile
 						break;
 				}
 
-				Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
+				if (indexOffset == -1)
+					Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
+				else
+				{
+					int forwardPosition = stream.Position;
+					stream.Position = indexOffset;
+
+					TernaryExpression();
+
+					Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(variableIndex)));
+
+					stream.Position = forwardPosition;
+				}
 			}
 			else
 				TernaryExpression();
@@ -321,16 +342,6 @@ namespace Xi.Compile
 			}
 			else if (stream.Accept(TokenType.Delimiter, "["))
 			{
-				/*List<Variant> arrayValues = new List<Variant>();
-
-				while (!stream.Accept(TokenType.Delimiter, "]"))
-				{
-					arrayValues.Add(stream.GetVariant());
-					stream.Accept(TokenType.Delimiter, ",");
-				}
-
-				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayValues)));*/
-
 				// TODO Nasty little hack here
 				string name = "tempArray" + new Random().Next().ToString("G");
 				AddVariable(name);
@@ -367,10 +378,6 @@ namespace Xi.Compile
 
 				stream.Expect(TokenType.Delimiter, "]");
 			}
-			else if (stream.Accept(TokenType.Word, "true"))
-				Instructions.Add(new Instruction(Opcode.Push, new Variant(1)));
-			else if (stream.Accept(TokenType.Word, "false"))
-				Instructions.Add(new Instruction(Opcode.Push, new Variant(0)));
 			else if (stream.Pass(TokenType.Word))
 			{
 				if (stream.PeekAhead(1).Value == "[")
