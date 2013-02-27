@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xi.Vm;
 
@@ -109,6 +110,27 @@ namespace Xi.Compile
 			}
 
 			CurrentMethod.Variables.Add(name);
+		}
+
+		int AddTempVariable()
+		{
+			Random rng = new Random();
+			string name = "";
+
+			if (CurrentMethod == null)
+			{
+				stream.Error("Cannot create temporary variable");
+				return -1;
+			}
+
+			do
+			{
+				name = "__tempVariable" + rng.Next().ToString("G");
+			} while (CurrentMethod.Variables.IndexOf(name) != -1);
+
+			AddVariable(name);
+
+			return GetVariableIndex(name);
 		}
 
 		int GetVariableIndex(string name)

@@ -91,60 +91,7 @@ namespace Xi.Compile
 					{
 						if (stream.Accept(TokenType.Delimiter, "["))
 						{
-							if (stream.PeekAhead(1).Value == "..")
-							{
-								List<Variant> arrayInitializer = new List<Variant>();
-								int initialPosition = 0;
-
-								Variant min = stream.GetVariant();
-								stream.Expect(TokenType.Delimiter, "..");
-								Variant max = stream.GetVariant();
-
-								if (min.Type != VariantType.Int64 || max.Type != VariantType.Int64)
-									stream.Error("Low and high range initializers must be Int64s");
-
-								stream.Expect(TokenType.Delimiter, "]");
-
-								for (int i = 0; i < max.IntValue - min.IntValue + 1; ++i)
-									arrayInitializer.Add(new Variant());
-
-								Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
-								Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
-							}
-							else
-							{
-								List<Variant> arrayInitializer = new List<Variant>();
-								int initialPosition = stream.Position;
-
-								while (!stream.Accept(TokenType.Delimiter, "]"))
-								{
-									arrayInitializer.Add(new Variant());
-
-									while (!stream.Accept(TokenType.Delimiter, ","))
-									{
-										if (stream.Pass(TokenType.Delimiter, "]"))
-											break;
-
-										++stream.Position;
-									}
-								}
-
-								Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
-								Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
-
-								stream.Position = initialPosition;
-
-								for (int i = 0; i < arrayInitializer.Count; ++i)
-								{
-									TernaryExpression();
-									Instructions.Add(new Instruction(Opcode.Push, new Variant(i)));
-									Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(GetVariableIndex(name))));
-
-									stream.Accept(TokenType.Delimiter, ",");
-								}
-
-								stream.Expect(TokenType.Delimiter, "]");
-							}
+							ArrayDeclaration(GetVariableIndex(name));
 						}
 						else
 						{
@@ -185,6 +132,10 @@ namespace Xi.Compile
 				AddVariable(arg);
 
 			Block();
+
+			// Add protective return
+			// TODO Optimize this
+			Instructions.Add(new Instruction(Opcode.Return, new Variant(0)));
 		}
 
 		private void Block()

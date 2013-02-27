@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -346,95 +345,31 @@ namespace Xi.Compile
 			}
 			else if (stream.Accept(TokenType.Delimiter, "["))
 			{
-				// TODO Nasty little hack here
-				string name = "tempArray" + new Random().Next().ToString("G");
-				AddVariable(name);
-
-				int initialPosition = stream.Position;
-
-				List<Variant> arrayInitializer = new List<Variant>();
-				while (!stream.Accept(TokenType.Delimiter, "]"))
-				{
-					arrayInitializer.Add(new Variant());
-
-					while (!stream.Accept(TokenType.Delimiter, ","))
-					{
-						if (stream.Pass(TokenType.Delimiter, "]"))
-							break;
-
-						++stream.Position;
-					}
-				}
-
-				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
-				Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
-
-				stream.Position = initialPosition;
-
-				for (int i = 0; i < arrayInitializer.Count; ++i)
-				{
-					TernaryExpression();
-					Instructions.Add(new Instruction(Opcode.Push, new Variant(i)));
-					Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(GetVariableIndex(name))));
-
-					stream.Accept(TokenType.Delimiter, ",");
-				}
-
-				stream.Expect(TokenType.Delimiter, "]");
+				ArrayDeclaration(AddTempVariable());
 			}
 			else if (stream.Pass(TokenType.Word))
 			{
-				if (stream.PeekAhead(1).Value == "[")
+				switch (stream.PeekAhead(1).Value)
 				{
-					Variant arrayVariable = new Variant(GetVariableIndex(stream.GetWord()));
-					stream.Expect(TokenType.Delimiter, "[");
-					Expression();
-					stream.Expect(TokenType.Delimiter, "]");
-
-					Instructions.Add(new Instruction(Opcode.GetArrayVariable, arrayVariable));
-				}
-				else if (stream.PeekAhead(1).Value == "(")
-				{
-					string functionName = stream.GetWord();
-					int argCount = 0;
-
-					// Verify the proper number of arguments were passed
-					stream.Expect(TokenType.Delimiter, "(");
-					while (!stream.Accept(TokenType.Delimiter, ")"))
-					{
-						TernaryExpression();
-						stream.Accept(TokenType.Delimiter, ",");
-						++argCount;
-					}
-
-					if (CurrentClass == null)
-					{
-						if (CurrentModule.GetMethod(functionName).ArgumentCount != argCount)
-							stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
-								CurrentModule.GetMethod(functionName).ArgumentCount, functionName, argCount);
-
-						List<Variant> operands = new List<Variant>
+					case "[":
 						{
-							new Variant(Modules.Count - 1),
-							new Variant(CurrentModule.GetMethodIndex(functionName))
-						};
+							Variant arrayVariable = new Variant(GetVariableIndex(stream.GetWord()));
+							stream.Expect(TokenType.Delimiter, "[");
+							Expression();
+							stream.Expect(TokenType.Delimiter, "]");
 
-						Instructions.Add(new Instruction(Opcode.ModuleCall, operands));
-					}
-					else
-					{
-						if (CurrentClass.GetMethod(functionName).ArgumentCount != argCount)
-							stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
-								CurrentClass.GetMethod(functionName).ArgumentCount, functionName, argCount);
+							Instructions.Add(new Instruction(Opcode.GetArrayVariable, arrayVariable));
+							break;
+						}
 
-						Instructions.Add(new Instruction(Opcode.GetThis));
-						Instructions.Add(new Instruction(Opcode.ClassCall, new Variant(CurrentClass.GetMethodIndex(functionName))));
-					}
+					case "(":
+						MethodCall();
+						break;
 
-					//Instructions.Add(new Instruction(Opcode.ClassCall, new Variant(GetMethodIndex(functionName, CurrentModule, CurrentClass))));
+					default:
+						Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(GetVariableIndex(stream.GetWord()))));
+						break;
 				}
-				else
-					Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(GetVariableIndex(stream.GetWord()))));
 			}
 			else if (stream.Pass(TokenType.Number) || stream.Pass(TokenType.String))
 			{
@@ -452,6 +387,105 @@ namespace Xi.Compile
 			{
 				int variableIndex = GetVariableIndex(stream.PeekAhead(-2).Value);
 				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(-1) }));
+			}
+		}
+
+		// TODO This should probably be moved out of here
+		private void ArrayDeclaration(int variableIndex)
+		{
+			//stream.Expect(TokenType.Delimiter, "[");
+
+			if (stream.PeekAhead(1).Value == "..")
+			{
+				List<Variant> arrayInitializer = new List<Variant>();
+
+				Variant min = stream.GetVariant();
+				stream.Expect(TokenType.Delimiter, "..");
+				Variant max = stream.GetVariant();
+
+				if (min.Type != VariantType.Int64 || max.Type != VariantType.Int64)
+					stream.Error("Low and high range initializers must be Int64s");
+
+				stream.Expect(TokenType.Delimiter, "]");
+
+				for (int i = 0; i < max.IntValue - min.IntValue + 1; ++i)
+					arrayInitializer.Add(new Variant());
+
+				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
+				Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
+			}
+			else
+			{
+				List<Variant> arrayInitializer = new List<Variant>();
+				stream.PushPosition();
+
+				while (!stream.Accept(TokenType.Delimiter, "]"))
+				{
+					arrayInitializer.Add(new Variant());
+
+					while (!stream.Accept(TokenType.Delimiter, ","))
+					{
+						if (stream.Pass(TokenType.Delimiter, "]"))
+							break;
+
+						++stream.Position;
+					}
+				}
+
+				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
+				Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
+
+				stream.PopPosition();
+
+				for (int i = 0; i < arrayInitializer.Count; ++i)
+				{
+					TernaryExpression();
+					Instructions.Add(new Instruction(Opcode.Push, new Variant(i)));
+					Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(variableIndex)));
+
+					stream.Accept(TokenType.Delimiter, ",");
+				}
+
+				stream.Expect(TokenType.Delimiter, "]");
+			}
+		}
+
+		private void MethodCall()
+		{
+			string functionName = stream.GetWord();
+			int argCount = 0;
+
+			// Verify the proper number of arguments were passed
+			stream.Expect(TokenType.Delimiter, "(");
+			while (!stream.Accept(TokenType.Delimiter, ")"))
+			{
+				TernaryExpression();
+				stream.Accept(TokenType.Delimiter, ",");
+				++argCount;
+			}
+
+			if (CurrentClass == null)
+			{
+				if (CurrentModule.GetMethod(functionName).ArgumentCount != argCount)
+					stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
+						CurrentModule.GetMethod(functionName).ArgumentCount, functionName, argCount);
+
+				List<Variant> operands = new List<Variant>
+						{
+							new Variant(Modules.Count - 1),
+							new Variant(CurrentModule.GetMethodIndex(functionName))
+						};
+
+				Instructions.Add(new Instruction(Opcode.ModuleCall, operands));
+			}
+			else
+			{
+				if (CurrentClass.GetMethod(functionName).ArgumentCount != argCount)
+					stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
+						CurrentClass.GetMethod(functionName).ArgumentCount, functionName, argCount);
+
+				Instructions.Add(new Instruction(Opcode.GetThis));
+				Instructions.Add(new Instruction(Opcode.ClassCall, new Variant(CurrentClass.GetMethodIndex(functionName))));
 			}
 		}
 	}

@@ -9,6 +9,7 @@ namespace Xi.Lexer
 {
 	internal class TokenStream
 	{
+		private Stack<int> positionStack; 
 		private readonly List<Token> tokens;
 		public int Position;
 
@@ -35,6 +36,7 @@ namespace Xi.Lexer
 
 		public TokenStream(List<Token> tokens)
 		{
+			positionStack = new Stack<int>();
 			this.tokens = tokens;
 			Position = 0;
 		}
@@ -164,6 +166,16 @@ namespace Xi.Lexer
 			Expected("variant");
 
 			return new Variant();
+		}
+
+		public void PushPosition()
+		{
+			positionStack.Push(Position);
+		}
+
+		public void PopPosition()
+		{
+			Position = positionStack.Pop();
 		}
 
 		public void Error(string message, params object[] args)

@@ -454,7 +454,7 @@ namespace Xi.Vm
 						break;
 
 					default:
-						throw new ArgumentOutOfRangeException();
+						throw new Exception(String.Format("Opcode {0:X} is invalid!", (int)instruction.Opcode));
 				}
 
 				++state.InstructionPointer;
