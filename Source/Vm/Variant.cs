@@ -5,6 +5,16 @@ using System.Text;
 
 namespace Xi.Vm
 {
+	public enum VariantType
+	{
+		Int64,
+		Double,
+		String,
+		Object,
+		Array,
+		Nil
+	}
+
 	public class Variant
 	{
 		public static double Epsilon = Double.Epsilon;
@@ -22,7 +32,7 @@ namespace Xi.Vm
 		{
 			get
 			{
-				switch(Type)
+				switch (Type)
 				{
 					case VariantType.String:
 						return StringValue.Length;
@@ -33,7 +43,7 @@ namespace Xi.Vm
 					case VariantType.Int64:
 						return 8;
 
-					case VariantType.Nill:
+					case VariantType.Nil:
 						return 0;
 
 					case VariantType.Array:
@@ -69,7 +79,7 @@ namespace Xi.Vm
 		public Variant()
 		{
 			timestamp = DateTime.Now.Ticks;
-			Type = VariantType.Nill;
+			Type = VariantType.Nil;
 		}
 
 		public Variant(Int64 value)
@@ -142,7 +152,7 @@ namespace Xi.Vm
 				}
 			}
 
-			return "nill";
+			return "nil";
 		}
 
 		public override bool Equals(object obj)
@@ -152,9 +162,9 @@ namespace Xi.Vm
 
 		public override int GetHashCode()
 		{
-			int hashCode = 0x7FFFFFFF ^ (int)timestamp;
+			int hashCode = 0x7FFFFFFF ^ (int) timestamp;
 
-			return hashCode ^ ((int)Type << 8) ^ ((int)Type << 6) ^ ((int)Type << 4) ^ ((int)Type << 2);
+			return hashCode ^ ((int) Type << 8) ^ ((int) Type << 6) ^ ((int) Type << 4) ^ ((int) Type << 2);
 		}
 
 		public Variant Cast(VariantType type)
@@ -166,7 +176,7 @@ namespace Xi.Vm
 						return new Variant(ToString());
 
 					if (type == VariantType.Double)
-						return new Variant((double)IntValue);
+						return new Variant((double) IntValue);
 
 					break;
 
@@ -175,7 +185,7 @@ namespace Xi.Vm
 						return new Variant(ToString());
 
 					if (type == VariantType.Int64)
-						return new Variant((Int64)DoubleValue);
+						return new Variant((Int64) DoubleValue);
 
 					break;
 
@@ -209,13 +219,13 @@ namespace Xi.Vm
 					return new Variant(a.StringValue + b.StringValue);
 
 				case VariantType.Array:
-					{
-						var c = new List<Variant>();
-						c.AddRange(a.ArrayValue);
-						c.AddRange(b.ArrayValue);
+				{
+					var c = new List<Variant>();
+					c.AddRange(a.ArrayValue);
+					c.AddRange(b.ArrayValue);
 
-						return new Variant(c);
-					}
+					return new Variant(c);
+				}
 			}
 
 			throw new Exception(String.Format("Cannot + variant type \"{0}\"", a.Type));
@@ -419,7 +429,7 @@ namespace Xi.Vm
 
 		public static bool operator ==(Variant a, Variant b)
 		{
-			if (((object)a) == null || ((object)b) == null)
+			if (((object) a) == null || ((object) b) == null)
 				return false;
 
 			if (a.Type != b.Type)
@@ -446,7 +456,7 @@ namespace Xi.Vm
 
 		public static bool operator !=(Variant a, Variant b)
 		{
-			if (((object)a) == null || ((object)b) == null)
+			if (((object) a) == null || ((object) b) == null)
 				return false;
 
 			if (a.Type != b.Type)
@@ -470,15 +480,5 @@ namespace Xi.Vm
 
 			return false;
 		}
-	}
-
-	public enum VariantType
-	{
-		Int64,
-		Double,
-		String,
-		Object,
-		Array,
-		Nill
 	}
 }

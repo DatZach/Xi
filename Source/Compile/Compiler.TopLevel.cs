@@ -66,12 +66,13 @@ namespace Xi.Compile
 
 		private void BodyDeclaration()
 		{
-			AddModuleBody();
+			if (CurrentModule.Body == null)
+				AddModuleBody();
 
-			do
-			{
+			//do
+			//{
 				BlockStatement();
-			} while (!stream.EndOfStream);
+			//} while (!stream.EndOfStream);
 		}
 
 		private void VariableDeclaration()
@@ -90,37 +91,60 @@ namespace Xi.Compile
 					{
 						if (stream.Accept(TokenType.Delimiter, "["))
 						{
-							int initialPosition = stream.Position;
-
-							List<Variant> arrayInitializer = new List<Variant>();
-							while (!stream.Accept(TokenType.Delimiter, "]"))
+							if (stream.PeekAhead(1).Value == "..")
 							{
-								arrayInitializer.Add(new Variant());
+								List<Variant> arrayInitializer = new List<Variant>();
+								int initialPosition = 0;
 
-								while (!stream.Accept(TokenType.Delimiter, ","))
+								Variant min = stream.GetVariant();
+								stream.Expect(TokenType.Delimiter, "..");
+								Variant max = stream.GetVariant();
+
+								if (min.Type != VariantType.Int64 || max.Type != VariantType.Int64)
+									stream.Error("Low and high range initializers must be Int64s");
+
+								stream.Expect(TokenType.Delimiter, "]");
+
+								for (int i = 0; i < max.IntValue - min.IntValue + 1; ++i)
+									arrayInitializer.Add(new Variant());
+
+								Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
+								Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
+							}
+							else
+							{
+								List<Variant> arrayInitializer = new List<Variant>();
+								int initialPosition = stream.Position;
+
+								while (!stream.Accept(TokenType.Delimiter, "]"))
 								{
-									if (stream.Pass(TokenType.Delimiter, "]"))
-										break;
+									arrayInitializer.Add(new Variant());
 
-									++stream.Position;
+									while (!stream.Accept(TokenType.Delimiter, ","))
+									{
+										if (stream.Pass(TokenType.Delimiter, "]"))
+											break;
+
+										++stream.Position;
+									}
 								}
+
+								Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
+								Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
+
+								stream.Position = initialPosition;
+
+								for (int i = 0; i < arrayInitializer.Count; ++i)
+								{
+									TernaryExpression();
+									Instructions.Add(new Instruction(Opcode.Push, new Variant(i)));
+									Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(GetVariableIndex(name))));
+
+									stream.Accept(TokenType.Delimiter, ",");
+								}
+
+								stream.Expect(TokenType.Delimiter, "]");
 							}
-
-							Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
-							Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
-
-							stream.Position = initialPosition;
-
-							for (int i = 0; i < arrayInitializer.Count; ++i)
-							{
-								TernaryExpression();
-								Instructions.Add(new Instruction(Opcode.Push, new Variant(i)));
-								Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(GetVariableIndex(name))));
-
-								stream.Accept(TokenType.Delimiter, ",");
-							}
-
-							stream.Expect(TokenType.Delimiter, "]");
 						}
 						else
 						{

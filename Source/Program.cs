@@ -40,6 +40,8 @@ namespace Xi
 			if (!compiler.Compile(new TokenStream(tokenStream)))
 				return;
 
+			Disassembler.Dump(compiler.Modules);
+
 			// Create state and add modules
 			State state = new State();
 			state.Modules.AddRange(compiler.Modules);
@@ -50,7 +52,7 @@ namespace Xi
 				state.SetEntryPoint(Module.GetNameFromFilename(filename));
 				VirtualMachine.Execute(state);
 			}
-			catch (Exception e)
+			catch (StackOverflowException e)
 			{
 				Console.WriteLine("VM Error: {0}", e.Message);
 			}

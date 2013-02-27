@@ -1,0 +1,16 @@
+[ ] Builtin modules
+[ ] Hook modules from C#
+[ ] Conditional statements
+	[ ] for
+	[ ] foreach
+	[ ] do while
+	[ ] repeat
+	[ ] break
+	[ ] continue
+[ ] Classes
+	[ ] this
+	[ ] base
+[ ] Xi Standard Library
+[ ] Constants
+[ ] Typecasts
+[ ] Scoped variables

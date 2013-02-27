@@ -70,11 +70,17 @@ namespace Xi.Compile
 			stream.Expect(TokenType.Word, "for");
 			stream.Expect(TokenType.Delimiter, "(");
 
-			BlockStatement();
+			// TODO Fix this
+			TernaryExpression();
 
 			stream.Expect(TokenType.Delimiter, ";");
 
-
+			Label condition = new Label(this);
+			TernaryExpression();
+			Instructions.Add(new Instruction(Opcode.Push, new Variant(1)));
+			Instructions.Add(new Instruction(Opcode.CompareEqual));
+			Instructions.Add(new Instruction(Opcode.IfFalse, new Variant(0)));
+			condition.PatchHere();
 		}
 
 		private void ForeachStatement()
