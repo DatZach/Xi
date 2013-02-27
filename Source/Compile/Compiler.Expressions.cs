@@ -335,6 +335,10 @@ namespace Xi.Compile
 				TernaryExpression();
 				Instructions.Add(new Instruction(Opcode.GetVariableLength));
 			}
+			else if (stream.Accept(TokenType.Word, "nil"))
+			{
+				Instructions.Add(new Instruction(Opcode.Push, new Variant()));
+			}
 			else if (stream.Accept(TokenType.Delimiter, "("))
 			{
 				TernaryExpression();
