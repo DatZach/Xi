@@ -448,7 +448,10 @@ namespace Xi.Vm
 
 				case VariantType.Array:
 				case VariantType.Object:
-					return a.Equals(b);
+					return a.Equals(b.Type == VariantType.Nil ? null : b);
+
+				case VariantType.Nil:
+					return true;
 			}
 
 			return false;
