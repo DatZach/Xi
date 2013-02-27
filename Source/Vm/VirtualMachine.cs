@@ -5,6 +5,8 @@ namespace Xi.Vm
 {
 	static class VirtualMachine
 	{
+		public const ushort Version = 1;
+
 		public static void Execute(State state)
 		{
 			List<Instruction> stream = state.CurrentMethod.Instructions;

@@ -5,8 +5,10 @@ using Xi.Vm;
 
 namespace Xi.Compile
 {
-	internal partial class Compiler
+	public partial class Compiler
 	{
+		public const ushort Version = 1;
+
 		private TokenStream stream;
  
 		public Compiler()

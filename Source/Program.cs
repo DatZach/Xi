@@ -41,6 +41,8 @@ namespace Xi
 				return;
 
 			Disassembler.Dump(compiler.Modules);
+			BytecodeObject bco = new BytecodeObject(compiler);
+			bco.Save("test.xbc");
 
 			// Create state and add modules
 			State state = new State();

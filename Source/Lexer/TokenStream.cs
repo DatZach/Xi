@@ -7,7 +7,7 @@ using Xi.Vm;
 
 namespace Xi.Lexer
 {
-	internal class TokenStream
+	public class TokenStream
 	{
 		private Stack<int> positionStack; 
 		private readonly List<Token> tokens;

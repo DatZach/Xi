@@ -4,7 +4,7 @@ using Xi.Vm;
 
 namespace Xi.Compile
 {
-	partial class Compiler
+	public partial class Compiler
 	{
 		private void Module(string name)
 		{

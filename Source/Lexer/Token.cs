@@ -1,6 +1,6 @@
 ﻿namespace Xi.Lexer
 {
-	internal class Token
+	public class Token
 	{
 		public TokenType Type { get; private set; }
 		public string Value { get; private set; }
@@ -24,7 +24,7 @@
 		}
 	}
 
-	internal enum TokenType
+	public enum TokenType
 	{
 		EndOfStream,
 		Unknown,

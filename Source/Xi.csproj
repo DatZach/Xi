@@ -75,6 +75,7 @@
     <Compile Include="Compile\Compiler.Main.cs" />
     <Compile Include="Compile\Compiler.TopLevel.cs" />
     <Compile Include="Compile\CompilerException.cs" />
+    <Compile Include="Util\BytecodeObject.cs" />
     <Compile Include="Util\CommandLine.cs" />
     <Compile Include="Util\Disassembler.cs" />
     <Compile Include="Compile\Label.cs" />
