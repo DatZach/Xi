@@ -60,7 +60,7 @@ namespace Xi.Util
 
 				int count = stream.ReadInt32();
 				while (count-- != 0)
-					ReadModule(stream);
+					Modules.Add(ReadModule(stream));
 			}
 		}
 
@@ -153,12 +153,34 @@ namespace Xi.Util
 
 			module.Body = ReadMethod(stream);
 
+			uint classCount = stream.ReadUInt32();
+			while(classCount-- != 0)
+				module.Classes.Add(ReadClass(stream));
+
+			uint methodCount = stream.ReadUInt32();
+			while(methodCount-- != 0)
+				module.Methods.Add(ReadMethod(stream));
+
 			return module;
 		}
 
 		private Class ReadClass(BinaryReader stream)
 		{
-			return null;
+			List<Variant> fields;
+			string name = stream.ReadString();
+			string baseName = stream.ReadString();
+
+			Class cClass = new Class(name, null);
+
+			ushort fieldCount = stream.ReadUInt16();
+			while(fieldCount-- != 0)
+				cClass.Fields.Add(new Variant());
+
+			uint methodCount = stream.ReadUInt32();
+			while(methodCount-- != 0)
+				cClass.Methods.Add(ReadMethod(stream));
+
+			return cClass;
 		}
 
 		private Method ReadMethod(BinaryReader stream)
