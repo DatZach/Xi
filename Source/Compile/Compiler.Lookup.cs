@@ -11,6 +11,7 @@ namespace Xi.Compile
 		public const string MethodNameEntry = "Main";
 
 		public List<Module> Modules { get; private set; }
+		private readonly Stack<Method> methodStack; 
 
 		private Module CurrentModule
 		{
@@ -28,7 +29,13 @@ namespace Xi.Compile
 			}
 		}
 
-		private Method CurrentMethod { get; set; }
+		private Method CurrentMethod
+		{
+			get
+			{
+				return methodStack.Peek();
+			}
+		}
 
 		public List<Instruction> Instructions
 		{
@@ -69,7 +76,8 @@ namespace Xi.Compile
 			}
 
 			CurrentModule.Body = new Method("Body", 0);
-			CurrentMethod = CurrentModule.Body;
+			//CurrentMethod = CurrentModule.Body;
+			methodStack.Push(CurrentModule.Body);
 		}
 
 		void AddClass(string name, Class cBase = null)
@@ -87,7 +95,8 @@ namespace Xi.Compile
 				foreach (Method m in CurrentModule.Methods.Where(m => m.Name == name))
 					Stream.Error("Method \"{0}\" already declared previously.", m.Name);
 
-				CurrentMethod = new Method(name, argCount);
+				//CurrentMethod = new Method(name, argCount);
+				methodStack.Push(new Method(name, argCount));
 				CurrentModule.Methods.Add(CurrentMethod);
 			}
 			else
@@ -96,9 +105,16 @@ namespace Xi.Compile
 				foreach (Method m in CurrentClass.Methods.Where(m => m.Name == name))
 					Stream.Error("Method \"{0}\" already declared previously.", m.Name);
 
-				CurrentMethod = new Method(name, argCount);
+				//CurrentMethod = new Method(name, argCount);
+				methodStack.Push(new Method(name, argCount));
 				CurrentClass.Methods.Add(CurrentMethod);
 			}
+		}
+
+		// TODO Maybe just have methodStack.Pop() wherever this is needed?
+		void LeaveMethod()
+		{
+			methodStack.Pop();
 		}
 
 		void AddVariable(string name)
@@ -115,7 +131,7 @@ namespace Xi.Compile
 		int AddTempVariable()
 		{
 			Random rng = new Random();
-			string name = "";
+			string name;
 
 			if (CurrentMethod == null)
 			{

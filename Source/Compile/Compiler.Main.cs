@@ -23,8 +23,8 @@ namespace Xi.Compile
 		public Compiler()
 		{
 			streamStack = new Stack<TokenStream>();
+			methodStack = new Stack<Method>();
 			Modules = new List<Module>();
-			CurrentMethod = null;
 		}
 
 		public bool Compile(TokenStream tokenStream)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -22,8 +23,16 @@ namespace Xi.Compile
 				else if (Stream.Pass(TokenType.Delimiter, "{"))
 					OrphanDeclaration();
 				else
-					BodyDeclaration();
+				{
+					if (CurrentModule.Body == null)
+						AddModuleBody();
+
+					BlockStatement();
+				}
 			}
+
+			if (CurrentModule.Body != null)
+				LeaveMethod();
 		}
 
 		private void UsingStatement()
@@ -79,19 +88,20 @@ namespace Xi.Compile
 
 		private void OrphanDeclaration()
 		{
-			AddModuleBody();
-			Block();
-		}
+			if (CurrentModule.Name == Vm.Module.ModuleDefaultName)
+			{
+				if (CurrentModule.Body == null)
+					AddModuleBody();
 
-		private void BodyDeclaration()
-		{
-			if (CurrentModule.Body == null)
-				AddModuleBody();
+				Block();
+			}
+			else
+			{
+				Stream.Expect(TokenType.Delimiter, "{");
 
-			//do
-			//{
-				BlockStatement();
-			//} while (!stream.EndOfStream);
+				while (!Stream.Accept(TokenType.Delimiter, "}"))
+					Stream.Read();
+			}
 		}
 
 		private void ClassField()
@@ -158,8 +168,10 @@ namespace Xi.Compile
 			Block();
 
 			// Add protective return
-			// TODO Optimize this
-			Instructions.Add(new Instruction(Opcode.Return, new Variant(0)));
+			if (Instructions.Last().Opcode != Opcode.Return)
+				Instructions.Add(new Instruction(Opcode.Return, new Variant(0)));
+
+			LeaveMethod();
 		}
 
 		private void Block()
