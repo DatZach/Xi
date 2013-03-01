@@ -36,7 +36,7 @@ namespace Xi.Compile
 			{
 				if (CurrentMethod == null)
 				{
-					stream.Error("Cannot declare body outside of method.");
+					Stream.Error("Cannot declare body outside of method.");
 					return null;
 				}
 
@@ -48,7 +48,7 @@ namespace Xi.Compile
 		{
 			foreach (Module m in Modules)
 				if (m.Name == name)
-					stream.Error("Module \"{0}\" already declared previously.", m.Name);
+					Stream.Error("Module \"{0}\" already declared previously.", m.Name);
 
 			Modules.Add(new Module(name));
 		}
@@ -58,13 +58,13 @@ namespace Xi.Compile
 			// Neither of these errors should technically be triggerable
 			if (CurrentModule == null)
 			{
-				stream.Error("Cannot declare body to non-existant module.");
+				Stream.Error("Cannot declare body to non-existant module.");
 				return;
 			}
 
 			if (CurrentModule.Body != null)
 			{
-				stream.Error("Module \"{0}\" already has a body declared!", CurrentModule.Name);
+				Stream.Error("Module \"{0}\" already has a body declared!", CurrentModule.Name);
 				return;
 			}
 
@@ -75,7 +75,7 @@ namespace Xi.Compile
 		void AddClass(string name, Class cBase = null)
 		{
 			foreach (Class c in CurrentModule.Classes.Where(c => c.Name == name))
-				stream.Error("Class \"{0}\" already declared previously.", c.Name);
+				Stream.Error("Class \"{0}\" already declared previously.", c.Name);
 
 			CurrentModule.Classes.Add(new Class(name, cBase));
 		}
@@ -85,7 +85,7 @@ namespace Xi.Compile
 			if (CurrentClass == null)
 			{
 				foreach (Method m in CurrentModule.Methods.Where(m => m.Name == name))
-					stream.Error("Method \"{0}\" already declared previously.", m.Name);
+					Stream.Error("Method \"{0}\" already declared previously.", m.Name);
 
 				CurrentMethod = new Method(name, argCount);
 				CurrentModule.Methods.Add(CurrentMethod);
@@ -94,7 +94,7 @@ namespace Xi.Compile
 			{
 
 				foreach (Method m in CurrentClass.Methods.Where(m => m.Name == name))
-					stream.Error("Method \"{0}\" already declared previously.", m.Name);
+					Stream.Error("Method \"{0}\" already declared previously.", m.Name);
 
 				CurrentMethod = new Method(name, argCount);
 				CurrentClass.Methods.Add(CurrentMethod);
@@ -105,7 +105,7 @@ namespace Xi.Compile
 		{
 			if (CurrentMethod == null)
 			{
-				stream.Error("Cannot declare variable outside of method scope.");
+				Stream.Error("Cannot declare variable outside of method scope.");
 				return;
 			}
 
@@ -119,7 +119,7 @@ namespace Xi.Compile
 
 			if (CurrentMethod == null)
 			{
-				stream.Error("Cannot create temporary variable");
+				Stream.Error("Cannot create temporary variable");
 				return -1;
 			}
 
@@ -137,13 +137,13 @@ namespace Xi.Compile
 		{
 			if (CurrentMethod == null)
 			{
-				stream.Error("Cannot get variable outside of method scope.");
+				Stream.Error("Cannot get variable outside of method scope.");
 				return 0;
 			}
 
 			int index = CurrentMethod.Variables.IndexOf(name);
 			if (index == -1)
-				stream.Error("Undeclared variable \"{0}\".", name);
+				Stream.Error("Undeclared variable \"{0}\".", name);
 
 			return index;
 		}

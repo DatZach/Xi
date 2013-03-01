@@ -23,9 +23,6 @@ namespace Xi
 				RunScript(CommandLine.Filename);
 			else
 				RunRepl();
-
-			// Pause -- will be removed later
-			Console.ReadKey();
 		}
 
 		private static void RunScript(string filename)
@@ -41,8 +38,6 @@ namespace Xi
 				return;
 
 			Disassembler.Dump(compiler.Modules);
-			BytecodeObject bco = new BytecodeObject(compiler);
-			bco.Save("test.xbc");
 
 			// Create state and add modules
 			State state = new State();

@@ -9,17 +9,27 @@ namespace Xi.Compile
 	{
 		public const ushort Version = 1;
 
-		private TokenStream stream;
+		//private TokenStream stream;
+		private readonly Stack<TokenStream> streamStack;
+ 
+		private TokenStream Stream
+		{
+			get
+			{
+				return streamStack.Peek();
+			}
+		}
  
 		public Compiler()
 		{
+			streamStack = new Stack<TokenStream>();
 			Modules = new List<Module>();
 			CurrentMethod = null;
 		}
 
 		public bool Compile(TokenStream tokenStream)
 		{
-			stream = tokenStream;
+			streamStack.Push(tokenStream);
 
 			try
 			{
@@ -27,9 +37,12 @@ namespace Xi.Compile
 			}
 			catch (CompilerException e)
 			{
+				streamStack.Pop();
 				Console.WriteLine(e.Message);
 				return false;
 			}
+
+			streamStack.Pop();
 
 			return true;
 		}

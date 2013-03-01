@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Xi.Lexer;
 using Xi.Vm;
 
@@ -10,15 +11,15 @@ namespace Xi.Compile
 		{
 			AddModule(name);
 
-			while (!stream.EndOfStream)
+			while (!Stream.EndOfStream)
 			{
-				if (stream.Pass("using"))
+				if (Stream.Pass("using"))
 					UsingStatement();
-				else if (stream.Pass("class"))
+				else if (Stream.Pass("class"))
 					ClassDeclaration();
-				else if (stream.Pass("function"))
+				else if (Stream.Pass("function"))
 					FunctionDeclaration();
-				else if (stream.Pass(TokenType.Delimiter, "{"))
+				else if (Stream.Pass(TokenType.Delimiter, "{"))
 					OrphanDeclaration();
 				else
 					BodyDeclaration();
@@ -27,31 +28,49 @@ namespace Xi.Compile
 
 		private void UsingStatement()
 		{
-			stream.Expect(TokenType.Word, "using");
+			Stream.Expect(TokenType.Word, "using");
+
+			string modulePath = "";
+
+			do
+			{
+				modulePath += Stream.Read().Value;
+			} while (!Stream.Accept(TokenType.Delimiter, ";"));
+
+			string path = Path.Combine(modulePath.Split(new [ ] { '.' }));
+
+			List<Token> tokenStream = Tokenizer.ParseFile(path);
+			if (tokenStream == null)
+				return;
+
+			if (!Compile(new TokenStream(tokenStream)))
+				Stream.Error("Could not compile module \"{0}\"", modulePath);
+
+			// TODO Make call to other module body
 		}
 
 		private void ClassDeclaration()
 		{
 			// TODO allow for multiple inherited classes
 
-			stream.Expect(TokenType.Word, "class");
+			Stream.Expect(TokenType.Word, "class");
 
 			// Get class name & base name
-			string name = stream.GetWord();
+			string name = Stream.GetWord();
 			string baseName = "";
 
 			// Do we have a base class?
-			if (stream.Accept(TokenType.Delimiter, ":"))
-				baseName = stream.GetWord();
+			if (Stream.Accept(TokenType.Delimiter, ":"))
+				baseName = Stream.GetWord();
 
 			// Add class
 			AddClass(name, CurrentModule.Classes.Find(c => c.Name == baseName));
 
-			stream.Expect(TokenType.Delimiter, "{");
+			Stream.Expect(TokenType.Delimiter, "{");
 
-			while (!stream.Accept(TokenType.Delimiter, "}"))
+			while (!Stream.Accept(TokenType.Delimiter, "}"))
 			{
-				// <class-variable>
+				ClassField();
 				// <constructor>
 				// <destructor>
 				// <class-function>
@@ -75,21 +94,26 @@ namespace Xi.Compile
 			//} while (!stream.EndOfStream);
 		}
 
+		private void ClassField()
+		{
+			
+		}
+
 		private void VariableDeclaration()
 		{
-			bool globalVariable = stream.Accept(TokenType.Word, "global");
+			bool globalVariable = Stream.Accept(TokenType.Word, "global");
 
-			if (stream.Accept(TokenType.Word, "var"))
+			if (Stream.Accept(TokenType.Word, "var"))
 			{
 				do
 				{
-					string name = stream.GetWord();
+					string name = Stream.GetWord();
 
 					AddVariable(name);
 
-					if (stream.Accept(TokenType.Delimiter, "="))
+					if (Stream.Accept(TokenType.Delimiter, "="))
 					{
-						if (stream.Accept(TokenType.Delimiter, "["))
+						if (Stream.Accept(TokenType.Delimiter, "["))
 						{
 							ArrayDeclaration(GetVariableIndex(name));
 						}
@@ -104,27 +128,27 @@ namespace Xi.Compile
 						Instructions.Add(new Instruction(Opcode.Push, new Variant()));
 						Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(GetVariableIndex(name))));
 					}
-				} while(stream.Accept(TokenType.Delimiter, ","));
+				} while(Stream.Accept(TokenType.Delimiter, ","));
 			}
 			else if (globalVariable)
-				stream.Expected("keyword \"var\" after keyword \"global\".");
+				Stream.Expected("keyword \"var\" after keyword \"global\".");
 
-			stream.Accept(TokenType.Delimiter, ";");
+			Stream.Accept(TokenType.Delimiter, ";");
 		}
 
 		private void FunctionDeclaration()
 		{
-			stream.Expect(TokenType.Word, "function");
+			Stream.Expect(TokenType.Word, "function");
 
-			string functionName = stream.GetWord();
+			string functionName = Stream.GetWord();
 			List<string> arguments = new List<string>();
 
-			if (stream.Accept(TokenType.Delimiter, ":"))
+			if (Stream.Accept(TokenType.Delimiter, ":"))
 			{
 				do
 				{
-					arguments.Add(stream.GetWord());
-				} while (stream.Accept(TokenType.Delimiter, ","));
+					arguments.Add(Stream.GetWord());
+				} while (Stream.Accept(TokenType.Delimiter, ","));
 			}
 
 			AddMethod(functionName, arguments.Count);
@@ -140,22 +164,22 @@ namespace Xi.Compile
 
 		private void Block()
 		{
-			stream.Expect(TokenType.Delimiter, "{");
+			Stream.Expect(TokenType.Delimiter, "{");
 
 			do
 			{
 				BlockStatement();
-			} while (!stream.EndOfStream && !stream.Accept(TokenType.Delimiter, "}"));
+			} while (!Stream.EndOfStream && !Stream.Accept(TokenType.Delimiter, "}"));
 		}
 
 		private void BlockStatement()
 		{
-			if (stream.Accept(TokenType.Delimiter, "{"))
+			if (Stream.Accept(TokenType.Delimiter, "{"))
 			{
 				do
 				{
 					BlockStatementInner();
-				} while (!stream.Accept(TokenType.Delimiter, "}"));
+				} while (!Stream.Accept(TokenType.Delimiter, "}"));
 			}
 			else
 				BlockStatementInner();
@@ -163,7 +187,7 @@ namespace Xi.Compile
 
 		private void BlockStatementInner()
 		{
-			switch (stream.Peek().Value)
+			switch (Stream.Peek().Value)
 			{
 				case "if":
 					IfStatement();

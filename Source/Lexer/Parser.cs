@@ -75,5 +75,15 @@ namespace Xi.Lexer
 
 			return new List<string> { "++", "--" }.Contains(token.Value);
 		}
+
+		public static bool IsTypeCastOperation(Token token)
+		{
+			if (token == null || token.Type != TokenType.Word)
+				return false;
+
+			// TODO Support object casts
+			// TODO Should support array casts?
+			return new List<string> { "int", "double", "string" }.Contains(token.Value);
+		}
 	}
 }

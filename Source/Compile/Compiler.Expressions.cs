@@ -8,19 +8,19 @@ namespace Xi.Compile
 	{
 		private void Assignment()
 		{
-			if (IsVariable(stream.Peek().Value))
+			if (IsVariable(Stream.Peek().Value))
 			{
-				int variableIndex = GetVariableIndex(stream.GetWord());
+				int variableIndex = GetVariableIndex(Stream.GetWord());
 				int indexOffset = -1;
 
-				if (stream.Accept(TokenType.Delimiter, "["))
+				if (Stream.Accept(TokenType.Delimiter, "["))
 				{
-					indexOffset = stream.Position;
-					while (!stream.Accept(TokenType.Delimiter, "]"))
-						stream.Read();
+					indexOffset = Stream.Position;
+					while (!Stream.Accept(TokenType.Delimiter, "]"))
+						Stream.Read();
 				}
 
-				Token operation = stream.Read();
+				Token operation = Stream.Read();
 
 				if (operation.Value != "=")
 					Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
@@ -74,27 +74,27 @@ namespace Xi.Compile
 					Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
 				else
 				{
-					int forwardPosition = stream.Position;
-					stream.Position = indexOffset;
+					int forwardPosition = Stream.Position;
+					Stream.Position = indexOffset;
 
 					TernaryExpression();
 
 					Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(variableIndex)));
 
-					stream.Position = forwardPosition;
+					Stream.Position = forwardPosition;
 				}
 			}
 			else
 				TernaryExpression();
 
-			stream.Accept(TokenType.Delimiter, ";");
+			Stream.Accept(TokenType.Delimiter, ";");
 		}
 
 		private void TernaryExpression()
 		{
 			LogicalAndOr();
 
-			while (stream.Accept(TokenType.Delimiter, "?"))
+			while (Stream.Accept(TokenType.Delimiter, "?"))
 			{
 				Label labelElse = new Label(this);
 				Label labelEnd = new Label(this);
@@ -108,7 +108,7 @@ namespace Xi.Compile
 				Instructions.Add(new Instruction(Opcode.Jump, new Variant(0)));
 				labelEnd.PatchHere();
 
-				stream.Expect(TokenType.Delimiter, ":");
+				Stream.Expect(TokenType.Delimiter, ":");
 
 				labelElse.Mark();
 				LogicalAndOr();
@@ -123,15 +123,15 @@ namespace Xi.Compile
 		{
 			BitwiseXorOr();
 
-			while (Parser.IsLogicalAndOrOperation(stream.Peek()))
+			while (Parser.IsLogicalAndOrOperation(Stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "&&"))
+				if (Stream.Accept(TokenType.Delimiter, "&&"))
 				{
 					BitwiseXorOr();
 
 					Instructions.Add(new Instruction(Opcode.CompareEqual));
 				}
-				else if (stream.Accept(TokenType.Delimiter, "||"))
+				else if (Stream.Accept(TokenType.Delimiter, "||"))
 				{
 					BitwiseXorOr();
 
@@ -146,14 +146,14 @@ namespace Xi.Compile
 		{
 			BitwiseAnd();
 
-			while (Parser.IsBitwiseXorOrOperation(stream.Peek()))
+			while (Parser.IsBitwiseXorOrOperation(Stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "^"))
+				if (Stream.Accept(TokenType.Delimiter, "^"))
 				{
 					BitwiseAnd();
 					Instructions.Add(new Instruction(Opcode.BitwiseXor));
 				}
-				else if (stream.Accept(TokenType.Delimiter, "|"))
+				else if (Stream.Accept(TokenType.Delimiter, "|"))
 				{
 					BitwiseAnd();
 					Instructions.Add(new Instruction(Opcode.BitwiseOr));
@@ -165,7 +165,7 @@ namespace Xi.Compile
 		{
 			RelationTerm();
 
-			while (stream.Accept(TokenType.Delimiter, "&"))
+			while (Stream.Accept(TokenType.Delimiter, "&"))
 			{
 				RelationTerm();
 				Instructions.Add(new Instruction(Opcode.BitwiseAnd));
@@ -176,14 +176,14 @@ namespace Xi.Compile
 		{
 			RelationGlTerm();
 
-			while (Parser.IsRelationOperation(stream.Peek()))
+			while (Parser.IsRelationOperation(Stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "=="))
+				if (Stream.Accept(TokenType.Delimiter, "=="))
 				{
 					RelationGlTerm();
 					Instructions.Add(new Instruction(Opcode.CompareEqual));
 				}
-				else if (stream.Accept(TokenType.Delimiter, "!="))
+				else if (Stream.Accept(TokenType.Delimiter, "!="))
 				{
 					RelationGlTerm();
 					Instructions.Add(new Instruction(Opcode.CompareNotEqual));
@@ -195,24 +195,24 @@ namespace Xi.Compile
 		{
 			ShiftTerm();
 
-			while (Parser.IsRelationGlOperation(stream.Peek()))
+			while (Parser.IsRelationGlOperation(Stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "<"))
+				if (Stream.Accept(TokenType.Delimiter, "<"))
 				{
 					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.CompareLesserThan));
 				}
-				else if (stream.Accept(TokenType.Delimiter, ">"))
+				else if (Stream.Accept(TokenType.Delimiter, ">"))
 				{
 					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.CompareGreaterThan));
 				}
-				else if (stream.Accept(TokenType.Delimiter, "<="))
+				else if (Stream.Accept(TokenType.Delimiter, "<="))
 				{
 					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.CompareLesserThanOrEqual));
 				}
-				else if (stream.Accept(TokenType.Delimiter, ">="))
+				else if (Stream.Accept(TokenType.Delimiter, ">="))
 				{
 					ShiftTerm();
 					Instructions.Add(new Instruction(Opcode.CompareGreaterThanOrEqual));
@@ -224,14 +224,14 @@ namespace Xi.Compile
 		{
 			Expression();
 
-			while (Parser.IsBitwiseShiftOperation(stream.Peek()))
+			while (Parser.IsBitwiseShiftOperation(Stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "<<"))
+				if (Stream.Accept(TokenType.Delimiter, "<<"))
 				{
 					Expression();
 					Instructions.Add(new Instruction(Opcode.BitwiseShiftLeft));
 				}
-				else if (stream.Accept(TokenType.Delimiter, ">>"))
+				else if (Stream.Accept(TokenType.Delimiter, ">>"))
 				{
 					Expression();
 					Instructions.Add(new Instruction(Opcode.BitwiseShiftRight));
@@ -243,14 +243,14 @@ namespace Xi.Compile
 		{
 			Term();
 
-			while (Parser.IsAddOperation(stream.Peek()))
+			while (Parser.IsAddOperation(Stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "+"))
+				if (Stream.Accept(TokenType.Delimiter, "+"))
 				{
 					Term();
 					Instructions.Add(new Instruction(Opcode.Add));
 				}
-				else if (stream.Accept(TokenType.Delimiter, "-"))
+				else if (Stream.Accept(TokenType.Delimiter, "-"))
 				{
 					Term();
 					Instructions.Add(new Instruction(Opcode.Subtract));
@@ -262,19 +262,19 @@ namespace Xi.Compile
 		{
 			SignedFactor();
 
-			while (Parser.IsMulOperation(stream.Peek()))
+			while (Parser.IsMulOperation(Stream.Peek()))
 			{
-				if (stream.Accept(TokenType.Delimiter, "*"))
+				if (Stream.Accept(TokenType.Delimiter, "*"))
 				{
 					SignedFactor();
 					Instructions.Add(new Instruction(Opcode.Multiply));
 				}
-				else if (stream.Accept(TokenType.Delimiter, "/"))
+				else if (Stream.Accept(TokenType.Delimiter, "/"))
 				{
 					SignedFactor();
 					Instructions.Add(new Instruction(Opcode.Divide));
 				}
-				else if (stream.Accept(TokenType.Delimiter, "%"))
+				else if (Stream.Accept(TokenType.Delimiter, "%"))
 				{
 					SignedFactor();
 					Instructions.Add(new Instruction(Opcode.Modulo));
@@ -284,39 +284,43 @@ namespace Xi.Compile
 
 		private void SignedFactor()
 		{
-			if (stream.Accept(TokenType.Delimiter, "+"))
+			if (Stream.Accept(TokenType.Delimiter, "+"))
 			{
 				Factor();
 
 				Instructions.Add(new Instruction(Opcode.AbsoluteValue));
 			}
-			else if (stream.Accept(TokenType.Delimiter, "-"))
+			else if (Stream.Accept(TokenType.Delimiter, "-"))
 			{
 				Factor();
 
 				Instructions.Add(new Instruction(Opcode.LogicalNegate));
 			}
-			else if (stream.Accept(TokenType.Delimiter, "!"))
+			else if (Stream.Accept(TokenType.Delimiter, "!"))
 			{
 				Factor();
 				Instructions.Add(new Instruction(Opcode.BitwiseNot));
 			}
-			else if (stream.Accept(TokenType.Delimiter, "~"))
+			else if (Stream.Accept(TokenType.Delimiter, "~"))
 			{
 				Factor();
 				Instructions.Add(new Instruction(Opcode.BitwiseNegate));
 			}
-			else if (stream.Accept(TokenType.Delimiter, "++"))
+			else if (Stream.Accept(TokenType.Delimiter, "++"))
 			{
-				int variableIndex = GetVariableIndex(stream.GetWord());
+				int variableIndex = GetVariableIndex(Stream.GetWord());
 				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(1) }));
 				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
 			}
-			else if (stream.Accept(TokenType.Delimiter, "--"))
+			else if (Stream.Accept(TokenType.Delimiter, "--"))
 			{
-				int variableIndex = GetVariableIndex(stream.GetWord());
+				int variableIndex = GetVariableIndex(Stream.GetWord());
 				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(-1) }));
 				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(variableIndex)));
+			}
+			else if (Parser.IsTypeCastOperation(Stream.Peek()) && Stream.PeekAhead(1).Value == "(")
+			{
+				TypeCast();
 			}
 			else
 				Factor();
@@ -324,39 +328,39 @@ namespace Xi.Compile
 
 		private void Factor()
 		{
-			if (stream.Accept(TokenType.Word, "print"))
+			if (Stream.Accept(TokenType.Word, "print"))
 			{
 				TernaryExpression();
 				Instructions.Add(new Instruction(Opcode.Print));
 			}
-			else if (stream.Accept(TokenType.Word, "len"))
+			else if (Stream.Accept(TokenType.Word, "len"))
 			{
 				TernaryExpression();
 				Instructions.Add(new Instruction(Opcode.GetVariableLength));
 			}
-			else if (stream.Accept(TokenType.Word, "nil"))
+			else if (Stream.Accept(TokenType.Word, "nil"))
 			{
 				Instructions.Add(new Instruction(Opcode.Push, new Variant()));
 			}
-			else if (stream.Accept(TokenType.Delimiter, "("))
+			else if (Stream.Accept(TokenType.Delimiter, "("))
 			{
 				TernaryExpression();
-				stream.Expect(TokenType.Delimiter, ")");
+				Stream.Expect(TokenType.Delimiter, ")");
 			}
-			else if (stream.Accept(TokenType.Delimiter, "["))
+			else if (Stream.Accept(TokenType.Delimiter, "["))
 			{
 				ArrayDeclaration(AddTempVariable());
 			}
-			else if (stream.Pass(TokenType.Word))
+			else if (Stream.Pass(TokenType.Word))
 			{
-				switch (stream.PeekAhead(1).Value)
+				switch (Stream.PeekAhead(1).Value)
 				{
 					case "[":
 						{
-							Variant arrayVariable = new Variant(GetVariableIndex(stream.GetWord()));
-							stream.Expect(TokenType.Delimiter, "[");
+							Variant arrayVariable = new Variant(GetVariableIndex(Stream.GetWord()));
+							Stream.Expect(TokenType.Delimiter, "[");
 							Expression();
-							stream.Expect(TokenType.Delimiter, "]");
+							Stream.Expect(TokenType.Delimiter, "]");
 
 							Instructions.Add(new Instruction(Opcode.GetArrayVariable, arrayVariable));
 							break;
@@ -367,26 +371,50 @@ namespace Xi.Compile
 						break;
 
 					default:
-						Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(GetVariableIndex(stream.GetWord()))));
+						Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(GetVariableIndex(Stream.GetWord()))));
 						break;
 				}
 			}
-			else if (stream.Pass(TokenType.Number) || stream.Pass(TokenType.String))
+			else if (Stream.Pass(TokenType.Number) || Stream.Pass(TokenType.String))
 			{
-				Instructions.Add(new Instruction(Opcode.Push, stream.GetVariant()));
+				Instructions.Add(new Instruction(Opcode.Push, Stream.GetVariant()));
 			}
-			else if (!Parser.IsIncrementOperation(stream.Peek()))
-				stream.Expected("builtin function, variable or literal");
+			else if (!Parser.IsIncrementOperation(Stream.Peek()))
+				Stream.Expected("builtin function, variable or literal");
 
-			if (stream.Accept(TokenType.Delimiter, "++"))
+			if (Stream.Accept(TokenType.Delimiter, "++"))
 			{
-				int variableIndex = GetVariableIndex(stream.PeekAhead(-2).Value);
+				int variableIndex = GetVariableIndex(Stream.PeekAhead(-2).Value);
 				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(1) }));
 			}
-			else if (stream.Accept(TokenType.Delimiter, "--"))
+			else if (Stream.Accept(TokenType.Delimiter, "--"))
 			{
-				int variableIndex = GetVariableIndex(stream.PeekAhead(-2).Value);
+				int variableIndex = GetVariableIndex(Stream.PeekAhead(-2).Value);
 				Instructions.Add(new Instruction(Opcode.IncrementVariable, new List<Variant> { new Variant(variableIndex), new Variant(-1) }));
+			}
+		}
+
+		private void TypeCast()
+		{
+			Token castType = Stream.Read();
+
+			Stream.Expect(TokenType.Delimiter, "(");
+			TernaryExpression();
+			Stream.Expect(TokenType.Delimiter, ")");
+
+			switch(castType.Value)
+			{
+				case "int":
+					Instructions.Add(new Instruction(Opcode.CastVariant, new Variant((int)VariantType.Int64)));
+					break;
+
+				case "double":
+					Instructions.Add(new Instruction(Opcode.CastVariant, new Variant((int)VariantType.Double)));
+					break;
+
+				case "string":
+					Instructions.Add(new Instruction(Opcode.CastVariant, new Variant((int)VariantType.String)));
+					break;
 			}
 		}
 
@@ -395,18 +423,18 @@ namespace Xi.Compile
 		{
 			//stream.Expect(TokenType.Delimiter, "[");
 
-			if (stream.PeekAhead(1).Value == "..")
+			if (Stream.PeekAhead(1).Value == "..")
 			{
 				List<Variant> arrayInitializer = new List<Variant>();
 
-				Variant min = stream.GetVariant();
-				stream.Expect(TokenType.Delimiter, "..");
-				Variant max = stream.GetVariant();
+				Variant min = Stream.GetVariant();
+				Stream.Expect(TokenType.Delimiter, "..");
+				Variant max = Stream.GetVariant();
 
 				if (min.Type != VariantType.Int64 || max.Type != VariantType.Int64)
-					stream.Error("Low and high range initializers must be Int64s");
+					Stream.Error("Low and high range initializers must be Int64s");
 
-				stream.Expect(TokenType.Delimiter, "]");
+				Stream.Expect(TokenType.Delimiter, "]");
 
 				for (int i = 0; i < max.IntValue - min.IntValue + 1; ++i)
 					arrayInitializer.Add(new Variant());
@@ -417,25 +445,25 @@ namespace Xi.Compile
 			else
 			{
 				List<Variant> arrayInitializer = new List<Variant>();
-				stream.PushPosition();
+				Stream.PushPosition();
 
-				while (!stream.Accept(TokenType.Delimiter, "]"))
+				while (!Stream.Accept(TokenType.Delimiter, "]"))
 				{
 					arrayInitializer.Add(new Variant());
 
-					while (!stream.Accept(TokenType.Delimiter, ","))
+					while (!Stream.Accept(TokenType.Delimiter, ","))
 					{
-						if (stream.Pass(TokenType.Delimiter, "]"))
+						if (Stream.Pass(TokenType.Delimiter, "]"))
 							break;
 
-						++stream.Position;
+						++Stream.Position;
 					}
 				}
 
 				Instructions.Add(new Instruction(Opcode.Push, new Variant(arrayInitializer)));
 				Instructions.Add(new Instruction(Opcode.SetVariable, new Variant(variableIndex)));
 
-				stream.PopPosition();
+				Stream.PopPosition();
 
 				for (int i = 0; i < arrayInitializer.Count; ++i)
 				{
@@ -443,31 +471,31 @@ namespace Xi.Compile
 					Instructions.Add(new Instruction(Opcode.Push, new Variant(i)));
 					Instructions.Add(new Instruction(Opcode.SetArrayVariable, new Variant(variableIndex)));
 
-					stream.Accept(TokenType.Delimiter, ",");
+					Stream.Accept(TokenType.Delimiter, ",");
 				}
 
-				stream.Expect(TokenType.Delimiter, "]");
+				Stream.Expect(TokenType.Delimiter, "]");
 			}
 		}
 
 		private void MethodCall()
 		{
-			string functionName = stream.GetWord();
+			string functionName = Stream.GetWord();
 			int argCount = 0;
 
 			// Verify the proper number of arguments were passed
-			stream.Expect(TokenType.Delimiter, "(");
-			while (!stream.Accept(TokenType.Delimiter, ")"))
+			Stream.Expect(TokenType.Delimiter, "(");
+			while (!Stream.Accept(TokenType.Delimiter, ")"))
 			{
 				TernaryExpression();
-				stream.Accept(TokenType.Delimiter, ",");
+				Stream.Accept(TokenType.Delimiter, ",");
 				++argCount;
 			}
 
 			if (CurrentClass == null)
 			{
 				if (CurrentModule.GetMethod(functionName).ArgumentCount != argCount)
-					stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
+					Stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
 						CurrentModule.GetMethod(functionName).ArgumentCount, functionName, argCount);
 
 				List<Variant> operands = new List<Variant>
@@ -481,7 +509,7 @@ namespace Xi.Compile
 			else
 			{
 				if (CurrentClass.GetMethod(functionName).ArgumentCount != argCount)
-					stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
+					Stream.Error("Expected {0} arguments to be passed to \"{1}\", {2} were passed.",
 						CurrentClass.GetMethod(functionName).ArgumentCount, functionName, argCount);
 
 				Instructions.Add(new Instruction(Opcode.GetThis));

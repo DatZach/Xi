@@ -10,12 +10,12 @@ namespace Xi.Compile
 			Label labelElse = new Label(this);
 			Label labelEnd = new Label(this);
 
-			stream.Expect(TokenType.Word, "if");
-			stream.Expect(TokenType.Delimiter, "(");
+			Stream.Expect(TokenType.Word, "if");
+			Stream.Expect(TokenType.Delimiter, "(");
 
 			TernaryExpression();
 
-			stream.Expect(TokenType.Delimiter, ")");
+			Stream.Expect(TokenType.Delimiter, ")");
 
 			Instructions.Add(new Instruction(Opcode.Push, new Variant(1)));
 			Instructions.Add(new Instruction(Opcode.CompareEqual));
@@ -28,7 +28,7 @@ namespace Xi.Compile
 			labelEnd.PatchHere();
 
 			labelElse.Mark();
-			if (stream.Accept(TokenType.Word, "else"))
+			if (Stream.Accept(TokenType.Word, "else"))
 				BlockStatement();
 
 			labelEnd.Mark();
@@ -42,12 +42,12 @@ namespace Xi.Compile
 			Label labelStart = new Label(this);
 			Label labelEnd = new Label(this);
 
-			stream.Expect(TokenType.Word, "while");
-			stream.Expect(TokenType.Delimiter, "(");
+			Stream.Expect(TokenType.Word, "while");
+			Stream.Expect(TokenType.Delimiter, "(");
 
 			labelStart.Mark();
 			TernaryExpression();
-			stream.Expect(TokenType.Delimiter, ")");
+			Stream.Expect(TokenType.Delimiter, ")");
 
 			Instructions.Add(new Instruction(Opcode.Push, new Variant(1)));
 			Instructions.Add(new Instruction(Opcode.CompareEqual));
@@ -67,13 +67,13 @@ namespace Xi.Compile
 
 		private void ForStatement()
 		{
-			stream.Expect(TokenType.Word, "for");
-			stream.Expect(TokenType.Delimiter, "(");
+			Stream.Expect(TokenType.Word, "for");
+			Stream.Expect(TokenType.Delimiter, "(");
 
 			// TODO Fix this
 			TernaryExpression();
 
-			stream.Expect(TokenType.Delimiter, ";");
+			Stream.Expect(TokenType.Delimiter, ";");
 
 			Label condition = new Label(this);
 			TernaryExpression();
@@ -105,14 +105,14 @@ namespace Xi.Compile
 
 		private void ReturnStatement()
 		{
-			stream.Expect(TokenType.Word, "return");
+			Stream.Expect(TokenType.Word, "return");
 
-			if (!stream.Accept(TokenType.Delimiter, ";"))
+			if (!Stream.Accept(TokenType.Delimiter, ";"))
 			{
 				// TODO Check for commas, denoting multiple returns
 				TernaryExpression();
 				Instructions.Add(new Instruction(Opcode.Return, new Variant(1)));
-				stream.Expect(TokenType.Delimiter, ";");
+				Stream.Expect(TokenType.Delimiter, ";");
 			}
 			else
 				Instructions.Add(new Instruction(Opcode.Return, new Variant(0)));

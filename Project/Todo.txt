@@ -12,5 +12,6 @@
 	[ ] base
 [ ] Xi Standard Library
 [ ] Constants
-[ ] Typecasts
+[X] Typecasts
 [ ] Scoped variables
+[ ] chr & ord
