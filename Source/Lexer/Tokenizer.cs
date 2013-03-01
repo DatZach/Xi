@@ -156,7 +156,7 @@ namespace Xi.Lexer
 				SkipWhitespace(stream);
 			}
 
-			tokens.Add(new Token(TokenType.String, value, filename, startLine));
+			tokens.Add(new Token(TokenType.String, ParseEscapeSequences(value), filename, startLine));
 
 			return true;
 		}
@@ -260,6 +260,83 @@ namespace Xi.Lexer
 			}
 
 			return false;
+		}
+
+		private static string ParseEscapeSequences(string value)
+		{
+			StringStream ss = new StringStream(value);
+			string parsedValue = "";
+
+			while (!ss.IsEndOfStream)
+			{
+				// Read non-escaping characters
+				if (ss.Peek() != '\\')
+				{
+					parsedValue += ss.Read();
+					continue;
+				}
+
+				// Skip backslash
+				ss.Read();
+
+				switch (ss.Read())
+				{
+					case 'a':
+						parsedValue += '\a';
+						continue;
+
+					case 'b':
+						parsedValue += '\b';
+						continue;
+
+					case 'f':
+						parsedValue += '\f';
+						continue;
+
+					case 'n':
+						parsedValue += '\n';
+						continue;
+
+					case 'r':
+						parsedValue += '\r';
+						continue;
+
+					case 't':
+						parsedValue += '\t';
+						continue;
+
+					case 'v':
+						parsedValue += '\v';
+						continue;
+
+					case '\'':
+						parsedValue += '\'';
+						continue;
+
+					case '\"':
+						parsedValue += '\"';
+						continue;
+
+					case '\\':
+						parsedValue += '\\';
+						continue;
+
+					case 'x':
+						{
+							string hexString = new string(new[] { ss.Read(), ss.Read() });
+							parsedValue += (char)Convert.ToInt32(hexString, 16);
+							continue;
+						}
+
+					case 'u':
+					case 'U':
+						throw new NotImplementedException();
+				}
+
+				throw new Exception("Bad escape sequence.");
+			}
+
+			return parsedValue;
 		}
 	}
 }
