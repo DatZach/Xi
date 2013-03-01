@@ -31,8 +31,13 @@ namespace Xi.Compile
 				}
 			}
 
+			if (CurrentModule.Name != Modules.First().Name)
+				Instructions.Add(new Instruction(Opcode.Return, new Variant(0)));
+
 			if (CurrentModule.Body != null)
 				LeaveMethod();
+
+			LeaveModule();
 		}
 
 		private void UsingStatement()
@@ -46,7 +51,8 @@ namespace Xi.Compile
 				modulePath += Stream.Read().Value;
 			} while (!Stream.Accept(TokenType.Delimiter, ";"));
 
-			string path = Path.Combine(modulePath.Split(new [ ] { '.' }));
+			string path = Path.Combine(modulePath.Split(new[ ] { '.' }));
+			path += ".xi";
 
 			List<Token> tokenStream = Tokenizer.ParseFile(path);
 			if (tokenStream == null)
@@ -55,7 +61,11 @@ namespace Xi.Compile
 			if (!Compile(new TokenStream(tokenStream)))
 				Stream.Error("Could not compile module \"{0}\"", modulePath);
 
+			if (CurrentModule.Body == null)
+				AddModuleBody();
+
 			// TODO Make call to other module body
+			Instructions.Add(new Instruction(Opcode.ModuleCall, new List<Variant> { new Variant(1), new Variant(-1) }));
 		}
 
 		private void ClassDeclaration()
@@ -88,7 +98,7 @@ namespace Xi.Compile
 
 		private void OrphanDeclaration()
 		{
-			if (CurrentModule.Name == Vm.Module.ModuleDefaultName)
+			if (CurrentModule.Name == Modules.First().Name)
 			{
 				if (CurrentModule.Body == null)
 					AddModuleBody();

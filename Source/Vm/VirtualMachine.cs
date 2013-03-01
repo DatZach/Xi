@@ -223,7 +223,9 @@ namespace Xi.Vm
 							// Set state's call info to the new call & grab all requested arguments
 							state.CallStack.Push(new CallInfo(moduleHandle,
 															  null,
-															  moduleHandle.Methods[(int)instruction.Operands[1].IntValue],
+															  (int)instruction.Operands[1].IntValue == -1
+																? moduleHandle.Body
+																: moduleHandle.Methods[(int)instruction.Operands[1].IntValue],
 															  0));
 
 							Stack<Variant> arguments = new Stack<Variant>();

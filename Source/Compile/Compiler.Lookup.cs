@@ -11,13 +11,15 @@ namespace Xi.Compile
 		public const string MethodNameEntry = "Main";
 
 		public List<Module> Modules { get; private set; }
+		private readonly Stack<Module> moduleStack; 
 		private readonly Stack<Method> methodStack; 
 
 		private Module CurrentModule
 		{
 			get
 			{
-				return Modules.Count != 0 ? Modules.Last() : null;
+				return moduleStack.Peek();
+				//return Modules.Count != 0 ? Modules.Last() : null;
 			}
 		}
 
@@ -57,7 +59,15 @@ namespace Xi.Compile
 				if (m.Name == name)
 					Stream.Error("Module \"{0}\" already declared previously.", m.Name);
 
-			Modules.Add(new Module(name));
+			Module module = new Module(name);
+			moduleStack.Push(module);
+			Modules.Add(module);
+		}
+
+		// TODO Might want to replace this wherever used
+		void LeaveModule()
+		{
+			moduleStack.Pop();
 		}
 
 		void AddModuleBody()

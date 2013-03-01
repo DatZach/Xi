@@ -24,6 +24,7 @@ namespace Xi.Compile
 		{
 			streamStack = new Stack<TokenStream>();
 			methodStack = new Stack<Method>();
+			moduleStack = new Stack<Module>();
 			Modules = new List<Module>();
 		}
 

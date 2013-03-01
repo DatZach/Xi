@@ -23,6 +23,8 @@ namespace Xi
 				RunScript(CommandLine.Filename);
 			else
 				RunRepl();
+
+			Console.ReadKey();
 		}
 
 		private static void RunScript(string filename)
