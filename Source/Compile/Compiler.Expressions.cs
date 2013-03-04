@@ -349,7 +349,9 @@ namespace Xi.Compile
 			}
 			else if (Stream.Accept(TokenType.Delimiter, "["))
 			{
-				ArrayDeclaration(AddTempVariable());
+				int varIndex = AddTempVariable();
+				ArrayDeclaration(varIndex);
+				Instructions.Add(new Instruction(Opcode.GetVariable, new Variant(varIndex)));
 			}
 			else if (Stream.Pass(TokenType.Word))
 			{

@@ -282,16 +282,14 @@ namespace Xi.Vm
 
 					case Opcode.Return:
 						{
-							List<Variant> arguments = new List<Variant>();
-
-							// If there are no more calls in the stack then we must be at the end of our spawn method
+							state.CallStack.Pop();
 							if (state.CallStack.Count == 0)
 								return;
 
+							List<Variant> arguments = new List<Variant>();
 							for (int i = 0; i < instruction.Operand.IntValue; ++i)
 								arguments.Add(state.Stack.Pop());
 
-							state.CallStack.Pop();
 							stream = state.CurrentMethod.Instructions;
 							state.Stack.PopScope();
 

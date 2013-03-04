@@ -31,8 +31,7 @@ namespace Xi.Compile
 				}
 			}
 
-			if (CurrentModule.Name != Modules.First().Name)
-				Instructions.Add(new Instruction(Opcode.Return, new Variant(0)));
+			Instructions.Add(new Instruction(Opcode.Return, new Variant(0)));
 
 			if (CurrentModule.Body != null)
 				LeaveMethod();
@@ -64,8 +63,7 @@ namespace Xi.Compile
 			if (CurrentModule.Body == null)
 				AddModuleBody();
 
-			// TODO Make call to other module body
-			Instructions.Add(new Instruction(Opcode.ModuleCall, new List<Variant> { new Variant(1), new Variant(-1) }));
+			Instructions.Add(new Instruction(Opcode.ModuleCall, new List<Variant> { new Variant(Modules.Count - 1), new Variant(-1) }));
 		}
 
 		private void ClassDeclaration()
