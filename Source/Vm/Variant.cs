@@ -195,7 +195,11 @@ namespace Xi.Vm
 
 					if (type == VariantType.Double)
 						return new Variant(Double.Parse(StringValue, NumberStyles.Number, CultureInfo.InvariantCulture));
+					break;
 
+				case VariantType.Array:
+					if (type == VariantType.String)
+						return new Variant(ToString());
 					break;
 			}
 

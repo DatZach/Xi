@@ -208,43 +208,6 @@ namespace Xi.Vm
 						state.Stack.Push(+state.Stack.Pop());
 						break;
 
-					case Opcode.ModuleCall:
-						{
-							// Grab class to call from stack
-							Module moduleHandle = state.Modules[(int)instruction.Operands[0].IntValue];
-
-							// Push reentrant info onto call stack
-							state.CallStack.Push(new CallInfo(state.CurrentModule, state.CurrentClass,
-															  state.CurrentClass == null
-																  ? state.CurrentModule.GetMethod(state.CurrentMethod.Name)
-																  : state.CurrentClass.GetMethod(state.CurrentMethod.Name),
-															  state.InstructionPointer + 1));
-
-							// Set state's call info to the new call & grab all requested arguments
-							state.CallStack.Push(new CallInfo(moduleHandle,
-															  null,
-															  (int)instruction.Operands[1].IntValue == -1
-																? moduleHandle.Body
-																: moduleHandle.Methods[(int)instruction.Operands[1].IntValue],
-															  0));
-
-							Stack<Variant> arguments = new Stack<Variant>();
-							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
-								arguments.Push(state.Stack.Pop());
-
-							// Change stream to current method's instruction stream
-							stream = state.CurrentMethod.Instructions;
-
-							// Push stack scope
-							state.Stack.PushScope(state.CurrentMethod.Variables.Count + state.CurrentMethod.ArgumentCount);
-
-							// Pop arguments from transition stack into local arguments
-							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
-								state.Stack[i] = arguments.Pop();
-
-							continue;
-						}
-
 					case Opcode.CompareEqual:
 						{
 							Variant a = state.Stack.Pop();
@@ -338,33 +301,37 @@ namespace Xi.Vm
 							continue;
 						}
 
-					case Opcode.ClassSetFieldStatic:
+					case Opcode.ModuleCall:
 						{
-							Module module = state.Modules[(int)instruction.Operands[0].IntValue];
-							module.Classes[(int)instruction.Operands[1].IntValue].Fields[(int)instruction.Operands[2].IntValue] =
-								state.Stack.Pop();
-							break;
-						}
+							// Grab class to call from stack
+							Module moduleHandle = state.Modules[(int)instruction.Operands[0].IntValue];
 
-					case Opcode.ClassGetFieldStatic:
-						{
-							Module module = state.Modules[(int)instruction.Operands[0].IntValue];
-							state.Stack.Push(module.Classes[(int)instruction.Operands[1].IntValue].Fields[(int)instruction.Operands[2].IntValue]);
-							break;
-						}
+							// Update call info reentrant IP
+							++state.InstructionPointer;
 
-					case Opcode.ClassSetField:
-						{
-							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
-							classHandle.Fields[(int)instruction.Operand.IntValue] = state.Stack.Pop();
-							break;
-						}
+							// Set state's call info to the new call & grab all requested arguments
+							state.CallStack.Push(new CallInfo(moduleHandle,
+															  null,
+															  (int)instruction.Operands[1].IntValue == -1
+																? moduleHandle.Body
+																: moduleHandle.Methods[(int)instruction.Operands[1].IntValue],
+															  0));
 
-					case Opcode.ClassGetField:
-						{
-							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
-							state.Stack.Push(classHandle.Fields[(int)instruction.Operand.IntValue]);
-							break;
+							Stack<Variant> arguments = new Stack<Variant>();
+							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
+								arguments.Push(state.Stack.Pop());
+
+							// Change stream to current method's instruction stream
+							stream = state.CurrentMethod.Instructions;
+
+							// Push stack scope
+							state.Stack.PushScope(state.CurrentMethod.Variables.Count + state.CurrentMethod.ArgumentCount);
+
+							// Pop arguments from transition stack into local arguments
+							for (int i = 0; i < state.CurrentMethod.ArgumentCount; ++i)
+								state.Stack[i] = arguments.Pop();
+
+							continue;
 						}
 
 					case Opcode.ClassCall:
@@ -372,12 +339,8 @@ namespace Xi.Vm
 							// Grab class to call from stack
 							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
 
-							// Push reentrant info onto call stack
-							state.CallStack.Push(new CallInfo(state.CurrentModule, state.CurrentClass,
-														state.CurrentClass == null
-															? state.CurrentModule.GetMethod(state.CurrentMethod.Name)
-															: state.CurrentClass.GetMethod(state.CurrentMethod.Name),
-														state.InstructionPointer + 1));
+							// Update call info reentrant IP
+							++state.InstructionPointer;
 
 							// Set state's call info to the new call & grab all requested arguments
 							state.CallStack.Push(new CallInfo(classHandle.Module,
@@ -409,6 +372,35 @@ namespace Xi.Vm
 					case Opcode.ClassCallVirtual:
 						// Is this even needed? We're not Java
 						break;
+
+					case Opcode.ClassSetFieldStatic:
+						{
+							Module module = state.Modules[(int)instruction.Operands[0].IntValue];
+							module.Classes[(int)instruction.Operands[1].IntValue].Fields[(int)instruction.Operands[2].IntValue] =
+								state.Stack.Pop();
+							break;
+						}
+
+					case Opcode.ClassGetFieldStatic:
+						{
+							Module module = state.Modules[(int)instruction.Operands[0].IntValue];
+							state.Stack.Push(module.Classes[(int)instruction.Operands[1].IntValue].Fields[(int)instruction.Operands[2].IntValue]);
+							break;
+						}
+
+					case Opcode.ClassSetField:
+						{
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+							classHandle.Fields[(int)instruction.Operand.IntValue] = state.Stack.Pop();
+							break;
+						}
+
+					case Opcode.ClassGetField:
+						{
+							Class classHandle = (Class)state.Stack.Pop().ObjectValue;
+							state.Stack.Push(classHandle.Fields[(int)instruction.Operand.IntValue]);
+							break;
+						}
 
 					case Opcode.New:
 						{

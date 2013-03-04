@@ -181,5 +181,19 @@ namespace Xi.Compile
 
 			return CurrentMethod.Variables.IndexOf(name) != -1;
 		}
+
+		void AddField(string name, Variant initializer = null)
+		{
+			if (CurrentClass == null)
+			{
+				Stream.Error("Cannot add field outside of class!");
+				return;
+			}
+
+			Variant v = initializer ?? new Variant();
+
+			CurrentClass.FieldsCompiler.Add(name, v);
+			CurrentClass.Fields.Add(v);
+		}
 	}
 }

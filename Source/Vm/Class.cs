@@ -8,6 +8,7 @@ namespace Xi.Vm
 	{
 		public Module Module;
 		public List<Method> Methods { get; private set; }
+		public Dictionary<string, Variant> FieldsCompiler { get; private set; } 
 		public List<Variant> Fields { get; private set; }
 		public Class Base { get; private set; }
 		public string Name { get; private set; }
@@ -16,6 +17,7 @@ namespace Xi.Vm
 		{
 			Module = null;
 			Methods = new List<Method>();
+			FieldsCompiler = new Dictionary<string, Variant>();
 			Fields = new List<Variant>();
 			Base = cBase;
 			Name = name;

@@ -39,7 +39,7 @@ namespace Xi
 			if (!compiler.Compile(new TokenStream(tokenStream)))
 				return;
 
-			Disassembler.Dump(compiler.Modules);
+			//Disassembler.Dump(compiler.Modules);
 
 			// Create state and add modules
 			State state = new State();
